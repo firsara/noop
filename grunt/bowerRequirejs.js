@@ -1,9 +1,9 @@
 module.exports = function (grunt, options) {
   return {
     target: {
-      rjsConfig: 'src/require.config.js',
+      rjsConfig: 'require.config.js',
       options: {
-        baseUrl: './src/app'
+        baseUrl: './examples/basic'
       }
     }
   };

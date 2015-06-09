@@ -1,4 +1,5 @@
 define([
+  './config',
   './sys',
   './uri',
   './data',
@@ -6,6 +7,7 @@ define([
   './easeljs',
   './utils'
 ], function(
+  config,
   sys,
   uri,
   data,
@@ -14,6 +16,7 @@ define([
   utils
 ){
   return {
+    config: config,
     sys: sys,
     uri: uri,
     data: data,

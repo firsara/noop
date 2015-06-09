@@ -1,7 +1,7 @@
 {
   "name": "noop",
   "version": "1.1.0",
-  "description": "",
+  "description": "dom framework",
   "main": "src/",
   "private": true,
   "scripts": {
