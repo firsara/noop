@@ -38,11 +38,11 @@ define([
    * names are defined through data-name in templates
    *
    * @example
-   * &lt;div class="wrapper" data-name="wrapper"&gt;
-   *   &lt;div data-name="mover" data-class="dom/MoveClip"&gt; &lt;!-- mover will be a MoveClip instance --&gt;
+   * <div class="wrapper" data-name="wrapper">
+   *   <div data-name="mover" data-class="dom/MoveClip"> <!-- mover will be a MoveClip instance -->
    *     DATA
-   *   &lt;/div&gt;
-   * &lt;/div&gt;
+   *   </div>
+   * </div>
    *
    * @example
    * var container = new Container($('.wrapper'));
@@ -91,7 +91,7 @@ define([
     this.data = null;
 
     /**
-     * cached jquery stage instance (for dom containers should always be &lt;body&gt;)
+     * cached jquery stage instance (for dom containers should always be <body>)
      * @memberof dom.Container
      * @instance
      * @var {jQuery} $el
@@ -232,7 +232,7 @@ define([
     // --------------------
 
     /**
-     * cached jquery stage instance (for dom containers should always be &lt;body&gt;)
+     * cached jquery stage instance (for dom containers should always be <body>)
      * @memberof dom.Container
      * @instance
      * @var {jQuery} $stage
@@ -240,7 +240,7 @@ define([
     this.$stage = null;
 
     /**
-     * cached stage instance (for dom containers should always be &lt;body&gt;)
+     * cached stage instance (for dom containers should always be <body>)
      * @memberof dom.Container
      * @instance
      * @var {jQuery} stage
@@ -893,7 +893,7 @@ define([
    *
    * automatically creates a new class instance based on data-class
    *
-   * @example Container.fetch('&lt;div name="mover" data-class="dom/MoveClip"&gt;&lt;/div&gt;');
+   * @example Container.fetch('<div name="mover" data-class="dom/MoveClip"></div>');
    *
    * @method fetch
    * @memberof dom.Container

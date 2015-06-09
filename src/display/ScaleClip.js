@@ -20,7 +20,7 @@ define(['EaselJS'], function(sys, createjs) {
    * @see easeljs.ScaleClip
    *
    * @example
-   * var scaler = new ScaleClip('&lt;img src="image.jpg"&gt;');
+   * var scaler = new ScaleClip('<img src="image.jpg">');
    * scaler.borders.scale = [0.1, 2];
    * scaler.free.scale = true; // overwrites borders
    *

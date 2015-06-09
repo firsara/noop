@@ -20,7 +20,7 @@ define(['EaselJS'], function(sys, createjs) {
    * @see easeljs.RotateClip
    *
    * @example
-   * var rotater = new RotateClip('&lt;img src="image.jpg"&gt;');
+   * var rotater = new RotateClip('<img src="image.jpg">');
    * rotater.borders.rotation = [-10, 10];
    * rotater.free.rotation = true; // overwrites borders
    *

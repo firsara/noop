@@ -33,7 +33,7 @@ define(['EaselJS'], function(createjs) {
    * @see easeljs.MoveClip
    *
    * @example
-   * var mover = new MoveClip('&lt;img src="image.jpg"&gt;');
+   * var mover = new MoveClip('<img src="image.jpg">');
    * mover.borders.x = [-10, 10];
    * mover.scrolls('y');
    * mover.free.x = true; // overwrites borders
