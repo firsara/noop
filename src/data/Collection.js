@@ -77,7 +77,7 @@ define([
       ids.push('ids[]=' + items[i].id);
     }
 
-    return API.endpoint + this.model + 's' + '/' + '?' + ids.join('&');
+    return API.endpoint + this.model + 's' + '?' + ids.join('&');
   };
 
   /**
