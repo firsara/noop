@@ -56,7 +56,7 @@
     "case",
     "return",
     "try",
-    "catch",
+    //"catch",
     "typeof"
   ],
   "requirePaddingNewLinesBeforeLineComments": {

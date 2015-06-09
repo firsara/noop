@@ -13,5 +13,5 @@ define([
     css3: css3,
     fps: fps,
     Context: Context
-  }
+  };
 });

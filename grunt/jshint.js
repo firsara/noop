@@ -3,6 +3,6 @@ module.exports = function (grunt, options) {
     options: {
       jshintrc: true,
     },
-    src: ['src/**/*.js'],
+    src: ['src/**/*.js', '!src/vendor/**/*.js', '!src/dom/Drawable.js'],
   };
 };

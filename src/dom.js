@@ -53,5 +53,5 @@ define([
     RotateClip: RotateClip,
     ScaleClip: ScaleClip,
     TransformClip: TransformClip
-  }
+  };
 });

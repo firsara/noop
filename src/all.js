@@ -23,5 +23,5 @@ define([
     dom: dom,
     easeljs: easeljs,
     utils: utils
-  }
+  };
 });

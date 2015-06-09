@@ -21,5 +21,5 @@ define([
     Model: Model,
     Collection: Collection,
     Synchronizer: Synchronizer
-  }
+  };
 });

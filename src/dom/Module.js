@@ -192,7 +192,7 @@ define([
       if (_this.data) {
         try {
           _this.data.reset();
-        } catch (e){}
+        } catch(e){}
 
         _this.data.removeAll();
         _this.data.destroy();
