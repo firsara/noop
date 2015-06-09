@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/css3.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/css3.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * css3.js
+ * Fabian Irsara
+ * Copyright 2015, Licensed GPL &amp; MIT
+ */
+define(function(){
+  /**
+   * css3 helper functions
+   * @namespace utils.css3
+   * @memberof utils
+   */
+  var css3 = {};
+
+  /**
+   * get transform style prefix based on defined vendor prefixes
+   *
+   * @var {String} transformStylePrefix
+   * @memberof utils.css3
+   **/
+  css3.transformStylePrefix = (function(){
+    var prefix = 'transform';
+
+    if (! (prefix in document.body.style)) {
+      var v = ['ms', 'Khtml', 'O', 'moz', 'Moz', 'webkit', 'Webkit'];
+
+      while (v.length) {
+        var prop = v.pop() + 'Transform';
+        if (prop in document.body.style) {
+          prefix = prop;
+        }
+      }
+    }
+
+    return prefix;
+  })();
+
+  /**
+   * get css filter style property based on defined vendor prefixes
+   *
+   * @var {String} filterStylePrefix
+   * @memberof utils.css3
+   **/
+  css3.filterStylePrefix = (function(){
+    var prefix = 'unknownFilter';
+
+    if (! (prefix in document.body.style)) {
+      var v = ['ms', 'Khtml', 'O', 'moz', 'Moz', 'webkit', 'Webkit'];
+
+      while (v.length) {
+        var prop = v.pop() + 'Filter';
+        if (prop in document.body.style) {
+          prefix = prop;
+        }
+      }
+    }
+
+    if (prefix === 'unknownFilter') {
+      prefix = 'filter';
+    }
+
+    return prefix;
+  })();
+
+  /**
+   * extracts css3 transform rotation based on an html dom element
+   *
+   * @method getRotation
+   * @memberof utils.css3
+   * @param {DomElement} domElement of which transformation should be extracted
+   **/
+  css3.getRotation = function(domElement){
+    // TODO: make simpler
+    //var matrix = domElement.style[css3.transformStylePrefix];
+
+    var obj = $(domElement);
+    var matrix = obj.css('-webkit-transform') ||
+                 obj.css('-moz-transform')    ||
+                 obj.css('-ms-transform')     ||
+                 obj.css('-o-transform')      ||
+                 obj.css('transform');
+
+    var angle = 0;
+
+    if (matrix !== 'none') {
+      var values = matrix.split('(')[1].split(')')[0].split(',');
+      var a = values[0];
+      var b = values[1];
+      angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    } else {
+      angle = 0;
+    }
+
+    return (angle &lt; 0) ? angle + 360 : angle;
+  };
+
+  return css3;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 17:22:52 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

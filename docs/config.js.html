@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: config.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: config.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * config.js
+ * Fabian Irsara
+ * Copyright 2015, Licensed GPL &amp; MIT
+ */
+define(['app.config'], function(configJSON){
+
+  /**
+   * sets application configuration based on environment
+   * @namespace config
+   */
+  var config = configJSON;
+
+  /**
+   * checks if is a touch device
+   * @memberof config
+   * @instance
+   * @var {Boolean} isTouch
+   */
+  config.isTouch = ('ontouchstart' in window) ||
+                   (window.Modernizr &amp;&amp; window.Modernizr.touch) ||
+                   (navigator.msMaxTouchPoints || navigator.maxTouchPoints) > 2;
+
+  /**
+   * wheter the application runs in iOS
+   * @memberof config
+   * @instance
+   * @var {Boolean} iOS
+   */
+  config.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+
+  // add class to body depending on touch support
+  var body = document.getElementsByTagName('body')[0];
+  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.isTouch ? 'touch' : 'no-touch');
+
+  /**
+   * checks current environment (nwjs, phonegap, browser)
+   * @memberof config
+   * @instance
+   * @var {String} environment
+   */
+  if (!! window.nodeRequire) {
+    config.environment = 'nwjs';
+  } else if (!! window.cordova) {
+    config.environment = 'phonegap';
+  } else {
+    config.environment = 'browser';
+  }
+
+  /**
+   * check if app is running on localhost
+   * @memberof config
+   * @instance
+   * @var {Boolean} isLocal
+   */
+  config.isLocal = window.location.href.indexOf('localhost') >= 0;
+
+  // for nwjs applications:
+  if (config.environment === 'nwjs') {
+    var gui = nodeRequire('nw.gui');
+    var win = gui.Window.get();
+
+    // if it's not fullscreen or kiosk:
+    if (! (win.isFullscreen || win.isKioskMode)) {
+      // assume it runs local
+      config.isLocal = true;
+    }
+  }
+
+  // merge environment specific data to config
+  // i.e. merge local or live configuration to main config
+  for (var k in config[config.target]) {
+    if (config[config.target].hasOwnProperty(k)) {
+      config[k] = config[config.target][k];
+    }
+  }
+
+  // delete temporary config
+  delete config.local;
+  delete config.live;
+  delete config.testing;
+  delete config.staging;
+
+  return config;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 17:22:52 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

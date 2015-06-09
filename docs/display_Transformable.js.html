@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: display/Transformable.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: display/Transformable.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * Transformable.js
+ * Fabian Irsara
+ * Copyright 2015, Licensed GPL &amp; MIT
+ */
+/** @namespace display.base **/
+define(['../sys', 'EaselJS'], function(sys, createjs) {
+
+  var CALC_VELOCITY = 10;
+
+  // Event constants
+
+  // start gets dispatched when a new finger was detected
+  var START = 'start';
+
+  // calc gets dispatched to let child classes calculate transformations
+  var CALC = 'calc';
+
+  // update gets dispatched after calculations are done
+  var UPDATE = 'update';
+
+  // complete gets called after a finger was released
+  var COMPLETE = 'complete';
+
+  /**
+   * Transformable container base class for transforming shapes&lt;br>
+   * keeps track of fingers, sub-classes can calculate values based on finger positions
+   *
+   * dispatches events:&lt;br>
+   * start, track, calc, update, complete
+   *
+   * @mixin BaseTransformable
+   * @memberof display.base
+   **/
+  function BaseTransformable(){
+    CALC_VELOCITY = Math.max(5, createjs.Ticker.getMeasuredFPS() * 0.125);
+
+    /**
+     * fractions get used for increasing or decreasing calculated offsets&lt;br>
+     * **NOTE**: it is not adviced to change these values as behaviour should be fine
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} fraction
+     * @property {Number} base fraction to adjust move, release, speed etc. fractions (not recommended changing)
+     * @property {object} move[x|y|scale|rotation] how much finger movements transform
+     * @property {object} release[x|y|scale|rotation] how much fade-out tweening after releasing fingers transform
+     * @property {object} speed[move|rotation|scale] how fast a transformation ends when leaving mouse
+     * @property {object} speed.max[move|rotation|scale] sets a maximum speed for ending transformations (event if the calculated was higher)
+     * @property {object} velocity.max sets a maximum velocity (event if the caluclated one is higher)
+     */
+    this.fraction = {base: 1, move: {}, release: {}, speed: {max: {}}, velocity: {max: {}}};
+
+    /**
+     * numeric value to snap transformations by defined value
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} snap
+     * @property {Number} x snap calculated x
+     * @property {Number} y snap calculated y
+     * @property {Number} scale snap calculated scale
+     * @property {Number} rotation snap calculated rotation
+     */
+    this.snap = {};
+
+    /**
+     * freely transformable by property, overwrites borders if true
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} free
+     * @property {Number} x freely transformable at x
+     * @property {Number} y freely transformable at y
+     * @property {Number} scale freely transformable at scale
+     * @property {Number} rotation freely transformable at rotation
+     */
+    this.free = {};
+
+    /**
+     * borders for specific values get stored here
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} borders
+     * @property {Array} x set x borders ([minValue, maxValue])
+     * @property {Array} y set y borders ([minValue, maxValue])
+     * @property {Array} scale set scale borders ([minValue, maxValue])
+     * @property {Array} rotation set rotation borders ([minValue, maxValue])
+     */
+    this.borders = {};
+
+    /**
+     * velocity: calculated velocity of current move speed, re-calculated every x frames
+     * **NOTE**: read-only
+     * @readonly
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} velocity
+     * @property {Number} x velocity at transformed x
+     * @property {Number} y velocity at transformed y
+     * @property {Number} scale velocity at transformed scale
+     * @property {Number} rotation velocity at transformed rotation
+     * @property {Number} direction[x,y,scale,rotation] 1|-1, defines in which direction the element got transformed
+     * @property {Number} delta[x,y,scale,rotation] how much it was transformed since last velocity check (can calculate delta * velocity to get throw value)
+     */
+    this.velocity = {x: 0, y: 0, scale: 0, rotation: 0, direction: {}, delta: {}};
+
+    /**
+     * elastic property expansion (over borders).&lt;br>
+     * if defined, element can be transformed beyond borders.
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} elastic
+     * @property {Number} x set x elasticity
+     * @property {Number} y set y elasticity
+     * @property {Number} scale set scale elasticity
+     * @property {Number} rotation set rotation elasticity
+     */
+    this.elastic = {};
+
+    /**
+     * recognizer event settings&lt;br>
+     * **NOTE**: should not be modified as the behaviour should work as expected
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} recognizer
+     */
+    this.recognizer = {fired: {}};
+
+    /**
+     * event tracking and propagation settings
+     * **NOTE**: should not be modified as the behaviour should work as expected
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} stops
+     */
+    this.stops = {tracking: {}, propagation: {}};
+
+    /**
+     * lock all transformations regardless of other values
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} lock
+     */
+    this.lock = false;
+
+    /**
+     * currently active fingers
+     * **NOTE**: read-only, don't modify from outside!
+     * @readonly
+     * @memberof display.base.BaseTransformable
+     * @instance
+     * @var {object} _activeFingers
+     */
+    this._activeFingers = 0;
+
+    // finger positions
+    this._fingers = [];
+    this._hadMultipleFingers = false;
+
+    // tracked calculations
+    this._track = {};
+
+    // calculated transformation values
+    this._calc = {};
+
+    // helper variables
+    this._changedPositions = false;
+    this._startedTracking = false;
+    this._stoppedTracking = false;
+    this._stoppedPropagation = false;
+
+    // set autoPainting by default to true
+    this.autoUpdate = true;
+    this.autoPaint = true;
+
+    // define class to be initialized (useful for multiple mixins so that base class (Container) does not get initialized twice)
+    this._initializedContainer = true;
+  }
+
+  var p = BaseTransformable.prototype;
+
+  /**
+   * kills a tween used for property throwing (i.e. "flying" element)
+   *
+   * @method _stopTween
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @protected
+   **/
+  p._stopTween = function(t){
+    if (t) t.kill();
+    return null;
+  };
+
+  /**
+   * adds a specific value (chanbeBy) to a specific property
+   * and holds borders accordingly based on if it should keep elasticity or not
+   * i.e. when dragging outside borders and keeping elasticity it will go beyond borders
+   *
+   * @method _hold
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @param {String} prop the property which borders should be held
+   * @param {object} obj (default=this) the object on which to hold borders (can be a plain {}-object, does not have to be a Transformable instance)
+   * @param {Boolean} keepElastic (default=true) if elasicity should be taken into account or if it should just stick to plain borders
+   * @param {Number} changeBy (optional) change held property by x, used in conjunction with keepElastic when calculating transformations
+   * @protected
+   **/
+  p._hold = function(prop, obj, keepElastic, changeBy){
+    obj = sys.setDefaultValue(obj, this);
+
+    // set elasticity based on keepElastic
+    var elasticity = keepElastic ? this.elastic[prop] : 0;
+
+    // defines property to check on (simplify scale check)
+    var objProp = prop === 'scale' ? 'scaleX' : prop;
+
+    // if changeBy is not set
+    if (isNaN(changeBy)) {
+      // assume changeBy is the value that's out of border range
+      // used in throwing at _stopTransform
+      // if out of borders, set property to equal borders and set changeBy to be value that's out of border range
+      if (obj[objProp] &lt; this.borders[prop][0]) {
+        changeBy = obj[objProp] - this.borders[prop][0];
+        obj[objProp] = this.borders[prop][0];
+      } else if (obj[objProp] > this.borders[prop][1]) {
+        changeBy = obj[objProp] - this.borders[prop][1];
+        obj[objProp] = this.borders[prop][1];
+      } else {
+        changeBy = 0;
+      }
+
+      // when already out of bounds: keep it more towards bounds than it would be through throwing
+      changeBy = changeBy / 2.25;
+    }
+
+    var value = obj[objProp];
+    obj[objProp] += changeBy;
+
+    // if property is not affected by bounds
+    if (! this.free[prop]) {
+      // if property is out of bound
+      if (obj[objProp] &lt; this.borders[prop][0]) {
+        // if should keep elasticity
+        if (keepElastic &amp;&amp; elasticity) {
+          // set value to be at border range plus needed changeBy value while taking ealsticity into account
+          obj[objProp] = value + changeBy * elasticity;
+        } else {
+          obj[objProp] = this.borders[prop][0];
+        }
+      } else if (obj[objProp] > this.borders[prop][1]) {
+        if (keepElastic &amp;&amp; elasticity) {
+          obj[objProp] = value + changeBy * elasticity;
+        } else {
+          obj[objProp] = this.borders[prop][1];
+        }
+      }
+    }
+
+    // for scaling set scaleY to be equal to scaleX
+    if (prop === 'scale') {
+      // NOTE: do not allow scaling lower than 0 (i.e. -1)
+      obj.scaleX = Math.max(obj.scaleX, 0.01);
+      obj.scaleY = obj.scaleX;
+    }
+  };
+
+  /**
+   * stores initial finger-positions
+   * initializes other mousemove and mouseup events
+   * prevents default event behaviour
+   * stops propagation if needed (used in nested scrollable containers)
+   *
+   * @method _onMousedown
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @protected
+   **/
+  p._onMousedown = function(event){
+    // prevent event propagation if it should do
+    if (this._stoppedPropagation) {
+      event.stopPropagation();
+    }
+
+    // prevent default move behaviour
+    event.preventDefault();
+
+    // setup initial finger position of detected event
+    this._fingers[event.pointerID] = {
+      start: {x: event.pageX, y: event.pageY},
+      current: {x: event.pageX, y: event.pageY},
+      old: {x: event.pageX, y: event.pageY}
+    };
+
+    // calculate active fingers
+    _calculateActiveFingers.call(this);
+
+    // store that transformable had multiple fingers, if so
+    if (this._activeFingers > 1) {
+      this._hadMultipleFingers = true;
+    }
+
+    // setup initial tracking configuration
+    this._track.ticks = 0;
+    this._track.time = Date.now();
+    this._track.start = {x: 0, y: 0, scale: 0, rotation: 0};
+    this._track.current = {x: 0, y: 0, scale: 0, rotation: 0};
+
+    // reset velocity
+    _calculateVelocity.call(this);
+
+    // tell transformable that it has started tracking
+    this._startedTracking = true;
+
+    // dispatch start event for use in child classes
+    this.dispatchEvent(START);
+  };
+
+  /**
+   * stores new finger positions
+   *
+   * @method _onPressmove
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @protected
+   **/
+  p._onPressmove = function(event){
+    // prevent event propagation if it should do
+    if (this._stoppedPropagation) {
+      event.stopPropagation();
+    }
+
+    // security check. finger with event's pointerID sould be defined anyways
+    if (this._fingers[event.pointerID]) {
+      this._fingers[event.pointerID].current.x = event.pageX;
+      this._fingers[event.pointerID].current.y = event.pageY;
+
+      // calculate active fingers
+      _calculateActiveFingers.call(this);
+
+      // tell transformable that finger positions changed
+      this._changedPositions = true;
+    }
+  };
+
+  /**
+   * if positions changed (through pressmove): dispatch update-event for later usage and keep track of old point-position
+   * dispatch updates only on tick to save some performance
+   *
+   * if positions did not changed: track old position anyways for velocity calculations
+   * i.e. if user did not move for a long time velocity should equal 0
+   *
+   * @method _onEnterFrame
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @protected
+   **/
+  p._onEnterFrame = function(event){
+    // ignore if transformable should not track movements anymore
+    // i.e. for scrollable elements that only make use of one scroll direction
+    // if an element scrolls in 'y' and the user moved towards 'x' the transformable should stop checking 'y'
+    // as the user apparently wanted to drag 'x'
+    if (this._stoppedTracking) {
+      return;
+    }
+
+    // if finger positions changed
+    if (this._changedPositions) {
+      // tell transformable that it noticed the change
+      this._changedPositions = false;
+
+      // assume calculations equal 0
+      // useful if child class does not calculate anyhthing at all
+      this._calc.x = 0;
+      this._calc.y = 0;
+      this._calc.scale = 0;
+      this._calc.rotation = 0;
+
+      // dispatch calc event and let child classes calculate transformations
+      this.dispatchEvent(CALC);
+
+      // re-assign current finger positions to old stored positions
+      // i.e. old and current finger positions get used in child classes to calculate transformations
+      for (var pointerID in this._fingers) {
+        if (this._fingers[pointerID].start) {
+          this._fingers[pointerID].old.x = this._fingers[pointerID].current.x;
+          this._fingers[pointerID].old.y = this._fingers[pointerID].current.y;
+        }
+      }
+
+      // track transformations
+      this._track.current.x += this._calc.x;
+      this._track.current.y += this._calc.y;
+      this._track.current.scale += this._calc.scale;
+      this._track.current.rotation += this._calc.rotation;
+
+      // tell transformable to stop future transformations if tracked position exceeded configured stops.propagation[prop]
+      // this gets used in scrollable nested containers whereas one container scrolls 'x' and the nested one 'y'
+      if (this.stops.propagation.x &amp;&amp; Math.abs(this._track.current.x) > this.stops.propagation.x)
+        this._stoppedPropagation = true;
+      if (this.stops.propagation.y &amp;&amp; Math.abs(this._track.current.y) > this.stops.propagation.y)
+        this._stoppedPropagation = true;
+
+      // tell transformable to stop tracking values if tracked position exceeded configured stops.tracking[prop]
+      // and did not recognize a move in the other direction already
+      // i.e. if it should stop tracking at x = 10 but user already moved beyond y = 10 then it's ok
+      // this gets used in scrollable nested containers whereas one container scrolls 'x' and the nested one 'y'
+      if (this.stops.tracking.x &amp;&amp; Math.abs(this._track.current.x) > this.stops.tracking.x &amp;&amp; ! this.recognizer.fired.y)
+        this._stoppedTracking = true;
+      if (this.stops.tracking.y &amp;&amp; Math.abs(this._track.current.y) > this.stops.tracking.y &amp;&amp; ! this.recognizer.fired.x)
+        this._stoppedTracking = true;
+
+      // dispatch update event for use in child classes that make use of newly calculated positions
+      this.dispatchEvent(UPDATE);
+    }
+
+    // if transformable started tracking (i.e. if it has one active finger)
+    if (this._startedTracking) {
+      // track frame ticks and update velocity every about 10 frames (depending on FPS)
+      // gets better average values than taking the complete time into account
+      this._track.ticks++;
+
+      if (this._track.ticks > CALC_VELOCITY) {
+        _calculateVelocity.call(this);
+
+        // reset tracking values
+        this._track.start.x = this._track.current.x;
+        this._track.start.y = this._track.current.y;
+        this._track.start.scale = this._track.current.scale;
+        this._track.start.rotation = this._track.current.rotation;
+        this._track.ticks = 0;
+        this._track.time = Date.now();
+      }
+    }
+  };
+
+  /**
+   * delete old and unused finger-positions
+   * dispatches complete event and re-calculates velocity if needed
+   *
+   * @method _onPressup
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @protected
+   **/
+  p._onPressup = function(event){
+    // prevent event propagation if it should do
+    if (this._stoppedPropagation) {
+      event.stopPropagation();
+    }
+
+    // security check. finger with event's pointerID sould be defined anyways
+    if (this._fingers[event.pointerID]) {
+      delete(this._fingers[event.pointerID]);
+    }
+
+    // calculate active fingers
+    _calculateActiveFingers.call(this);
+
+    // if no active finger was detected anymore -> unbind events completely and reset start behavior
+    if (this._activeFingers === 0) {
+      this._changedPositions = false;
+      this._startedTracking = false;
+      this._stoppedPropagation = false;
+      this._stoppedTracking = false;
+
+      this.recognizer.fired = {};
+    }
+
+    // calculate end velocity
+    if (this._track.ticks > 2) {
+      _calculateVelocity.call(this);
+    }
+
+    // dispatch complete event
+    this.dispatchEvent(COMPLETE);
+
+    // reset multiple finger check
+    if (this._activeFingers === 0) {
+      this._hadMultipleFingers = false;
+    }
+  };
+
+  /**
+   * calculates velocity based on tracked transformations
+   * gets called every 10 frames and on stopped transformation to have a more accurate and up to date value
+   *
+   * @method _calculateVelocity
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @private
+   **/
+  var _calculateVelocity = function(){
+    var now = Date.now();
+    var deltaTime = now - this._track.time;
+
+    // velocity.delta = absolute value that has changed since last check
+    this.velocity.delta.x = this._track.current.x - this._track.start.x;
+    this.velocity.delta.y = this._track.current.y - this._track.start.y;
+    this.velocity.delta.scale = this._track.current.scale - this._track.start.scale;
+    this.velocity.delta.rotation = this._track.current.rotation - this._track.start.rotation;
+
+    // velocity.direction = -1 / 1, the direction in which the transformation was detected
+    this.velocity.direction.x = this.velocity.delta.x === 0 ? 0 : (this.velocity.delta.x > 0 ? 1 : -1);
+    this.velocity.direction.y = this.velocity.delta.y === 0 ? 0 : (this.velocity.delta.y > 0 ? 1 : -1);
+    this.velocity.direction.scale = this.velocity.delta.scale === 0 ? 0 : (this.velocity.delta.scale > 0 ? 1 : -1);
+    this.velocity.direction.rotation = this.velocity.delta.rotation === 0 ? 0 : (this.velocity.delta.rotation > 0 ? 1 : -1);
+
+    // velocity = the calculated velocity, based delta and time
+    this.velocity.x = deltaTime === 0 ? 0 : Math.abs(this.velocity.delta.x / deltaTime);
+    this.velocity.y = deltaTime === 0 ? 0 : Math.abs(this.velocity.delta.y / deltaTime);
+    this.velocity.scale = deltaTime === 0 ? 0 : Math.abs(this.velocity.delta.scale / deltaTime);
+    this.velocity.rotation = deltaTime === 0 ? 0 : Math.abs(this.velocity.delta.rotation / deltaTime);
+
+    // keep defined maximum velocity
+    this.velocity.x = Math.min(this.velocity.x, this.fraction.velocity.max.x);
+    this.velocity.y = Math.min(this.velocity.y, this.fraction.velocity.max.y);
+    this.velocity.scale = Math.min(this.velocity.scale, this.fraction.velocity.max.scale);
+    this.velocity.rotation = Math.min(this.velocity.rotation, this.fraction.velocity.max.rotation);
+  };
+
+  /**
+   * calculates currently active fingers, can be used later in subclasses
+   *
+   * @method _calculateActiveFingers
+   * @memberof display.base.BaseTransformable
+   * @instance
+   * @private
+   **/
+  var _calculateActiveFingers = function(){
+    this._activeFingers = 0;
+
+    for (var pointerID in this._fingers) {
+      if (this._fingers[pointerID].start) {
+        this._activeFingers++;
+      }
+    }
+  };
+
+  return BaseTransformable;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jun 09 2015 17:22:52 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
