@@ -1,0 +1,1 @@
+only basic example of server output
