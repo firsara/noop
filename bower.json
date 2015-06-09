@@ -17,7 +17,11 @@
     "test",
     "tests",
     "grunt",
-    "docs"
+    "docs",
+    "Gruntfile.js",
+    "package.json",
+    "require.config.js",
+    "examples"
   ],
   "dependencies": {
     "EaselJS": "CreateJS/EaselJS#~0.8.0",
