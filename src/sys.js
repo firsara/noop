@@ -25,6 +25,7 @@ define(['EaselJS'], function(createjs){
    *  console.log(foo.prototype.constructor === MySubClass); // true
    *
    * @method extend
+   * @memberof sys
    * @param {Function} subclass The subclass.
    * @param {Function} superclass The superclass to extend.
    * @return {Function} Returns the subclass's new prototype.
@@ -64,6 +65,7 @@ define(['EaselJS'], function(createjs){
    *  console.log(foo.greet()); // Hello World!?!
    *
    * @method promote
+   * @memberof sys
    * @param {Function} subclass The class to promote super class methods on.
    * @param {String} prefix The prefix to add to the promoted method names. Usually the name of the superclass.
    * @return {Function} Returns the subclass.
