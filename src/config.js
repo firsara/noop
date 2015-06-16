@@ -47,7 +47,7 @@ define(['app.config'], function(configJSON){
     config.environment = 'browser';
   }
 
-  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.environment);
+  body.className = (body.className.length > 0 ? body.className + ' ' : '') + ('env-' + config.environment);
   body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.iOS ? 'ios' : 'no-ios');
 
   /**
