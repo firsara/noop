@@ -213,7 +213,10 @@ define([
       _this._index++;
 
       // store all downloaded files in an array for later use
-      _this._storedFiles.push(fs.correctLocalFilePath(filePath));
+      var filename = fs.correctLocalFilePath(filePath);
+      var dirname = fs.getFolder(filename);
+      if (_this._storedFiles.indexOf(filename) === -1) _this._storedFiles.push(filename);
+      if (_this._storedFiles.indexOf(dirname) === -1) _this._storedFiles.push(dirname);
 
       // call progress event
       _progress.call(_this, _this._index / _this.items.length);
