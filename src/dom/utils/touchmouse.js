@@ -137,9 +137,16 @@ define(function(){
 
     // delete unused tracked touches
     if (type === EVENTS.UP) {
-      for (i = 0, _len = touches.length; i < _len; i++) {
-        touch = touches[i];
-        delete trackedTouches[touch.identifier];
+      var activeTouchIdentifiers = [];
+
+      for (i = 0, _len = event.touches.length; i < _len; i++) {
+        activeTouchIdentifiers.push(event.touches[i].identifier);
+      }
+
+      for (k in trackedTouches) {
+        if (activeTouchIdentifiers.indexOf(k) === -1) {
+          delete trackedTouches[k];
+        }
       }
     }
 
