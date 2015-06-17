@@ -243,7 +243,43 @@ define([
       }
     } else {
       // if all files have been cached: preload cached files
-      this.loadManifest(this._manifest);
+
+      var _removedItem = false;
+
+      // exclude items that should not be preloaded
+      for (var i = 0, _len = this._manifest.length; i < _len; i++) {
+        if (this._manifest[i].preload === false) {
+          var evt = {};
+          evt.item = {id: this._manifest[i].id};
+          evt.result = this._manifest[i].src;
+          this._results.push(evt);
+          this.items.push(evt.result);
+
+          this._manifest[i] = null;
+          _removedItem = true;
+        }
+      }
+
+      // restructure manifest items if items got removed
+      if (_removedItem) {
+        var _tmp = this._manifest;
+        this._manifest = [];
+
+        for (var k in _tmp) {
+          if (_tmp[k] !== null && _tmp.hasOwnProperty(k)) {
+            this._manifest.push(_tmp[k]);
+          }
+        }
+      }
+
+      // if there are still items left to load
+      if (this._manifest.length > 0) {
+        // load manifest
+        this.loadManifest(this._manifest);
+      } else {
+        // otherwise: dispatch complete
+        this.dispatchEvent(new createjs.Event('complete'));
+      }
     }
   };
 
