@@ -145,8 +145,13 @@ define([
     //window.addEventListener('resize', this.__bind(_windowResized));
     $(window).bind('resize', this.__bind(_windowResized));
 
+    this.dispatchEvent('init');
+
     this.init();
     _windowResized.call(this);
+
+    this.dispatchEvent('show');
+
     this.show();
   };
 
@@ -168,6 +173,8 @@ define([
     //window.removeEventListener('resize', this.__bind(_windowResized));
     $(window).unbind('resize', this.__bind(_windowResized));
     this.removeEventListener('removedFromStage', this.__bind(_dispose));
+
+    this.dispatchEvent('dispose');
 
     this.dispose();
   };
@@ -225,6 +232,8 @@ define([
     this.__component._doRenderTimeout = null;
     this.__component._didRender = false;
 
+    this.dispatchEvent('render');
+
     // resize component
     this.render();
   };
@@ -241,6 +250,8 @@ define([
     // unset timeout
     this.__component._doResizeTimeout = null;
     this.__component._didResize = false;
+
+    this.dispatchEvent('resize');
 
     // resize component
     this.resize();
