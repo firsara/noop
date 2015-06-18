@@ -7,10 +7,12 @@
 define([
   '../sys',
   'EaselJS',
+  './Component',
   '../data/Loader'
 ], function(
   sys,
   createjs,
+  Component,
   Loader
 ) {
   var Parent = createjs.EventDispatcher;
@@ -96,9 +98,12 @@ define([
 
       if (ContainerClass) {
         _this.container = new ContainerClass(options);
-        _this.container.controller = _this;
-        _this.container.addEventListener('addedToStage', _init);
+      } else {
+        _this.container = new Component('<div class="module"></div>', null, options);
       }
+
+      _this.container.controller = _this;
+      _this.container.addEventListener('addedToStage', _init);
     };
 
     /**
