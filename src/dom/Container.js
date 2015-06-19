@@ -268,7 +268,15 @@ define([
     // ------------------------
 
     /**
-     * autoPaint transformations to css every frame
+     * mouseEnabled wheter mouse events are enabled on container, defaults to true
+     * @memberof dom.Container
+     * @instance
+     * @var {Boolean} mouseEnabled
+     */
+    this.mouseEnabled = sys.setDefaultValue(this.mouseEnabled, true);
+
+    /**
+     * autoPaint transformations to css every frame, defaults to false
      * @memberof dom.Container
      * @instance
      * @var {Boolean} autoPaint
@@ -276,7 +284,7 @@ define([
     this.autoPaint = sys.setDefaultValue(this.autoPaint, false);
 
     /**
-     * automatically dispatch update events every frame for use in child classes
+     * automatically dispatch update events every frame for use in child classes, defaults to false
      * @memberof dom.Container
      * @instance
      * @var {Boolean} autoUpdate
@@ -374,6 +382,32 @@ define([
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
+
+  /**
+   * defines if mouse is enabled on element or not
+   *
+   * @method setMouseEnabled
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Boolean} value true or false
+   **/
+  p.setMouseEnabled = function(value){
+    this.mouseEnabled = value;
+    var _this = this;
+
+    this.el.removeEventListener('mousedown', this.__bind(_preventMouseEvent), true);
+    this.el.removeEventListener('mouseup', this.__bind(_preventMouseEvent), true);
+    this.el.removeEventListener('click', this.__bind(_preventMouseEvent), true);
+    this.el.removeEventListener('tap', this.__bind(_preventMouseEvent), true);
+
+    if (value === false) {
+      this.el.addEventListener('mousedown', this.__bind(_preventMouseEvent), true);
+      this.el.addEventListener('mouseup', this.__bind(_preventMouseEvent), true);
+      this.el.addEventListener('click', this.__bind(_preventMouseEvent), true);
+      this.el.addEventListener('tap', this.__bind(_preventMouseEvent), true);
+    }
+  };
 
   /**
    * sets autoUpate on container
@@ -822,6 +856,20 @@ define([
     if (this.autoUpdate || this.autoPaint) {
       fps.addEventListener('tick', this.__containerBoundUpdate);
     }
+  };
+
+  /**
+   * prevents all mouse events if mouseEnabled is set to false
+   *
+   * @method _preventMouseEvent
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  var _preventMouseEvent = function(e){
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    e.preventDefault();
   };
 
   /**
