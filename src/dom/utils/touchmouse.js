@@ -145,6 +145,7 @@ define(function(){
 
       for (k in trackedTouches) {
         if (activeTouchIdentifiers.indexOf(k) === -1) {
+          // TODO: IMPORTANT: dispatch mouse up for every deleted tracked touch that was not on changedTouches!
           delete trackedTouches[k];
         }
       }
