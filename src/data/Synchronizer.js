@@ -214,9 +214,17 @@ define([
 
       // store all downloaded files in an array for later use
       var filename = fs.correctLocalFilePath(filePath);
-      var dirname = fs.getFolder(filename);
       if (_this._storedFiles.indexOf(filename) === -1) _this._storedFiles.push(filename);
-      if (_this._storedFiles.indexOf(dirname) === -1) _this._storedFiles.push(dirname);
+
+      var dirname = filename;
+
+      // store up to 10 folders backwards
+      // i.e. if there are nested empty folders they will not be recognized
+      for (var i = 0; i < 10; i++) {
+        dirname = fs.getFolder(dirname);
+        if (dirname + '/' === fs.dataPath) break;
+        if (_this._storedFiles.indexOf(dirname) === -1) _this._storedFiles.push(dirname);
+      }
 
       // call progress event
       _progress.call(_this, _this._index / _this.items.length);
