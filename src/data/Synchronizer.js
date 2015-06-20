@@ -222,7 +222,7 @@ define([
       // i.e. if there are nested empty folders they will not be recognized
       for (var i = 0; i < 10; i++) {
         dirname = fs.getFolder(dirname);
-        if (dirname + '/' === fs.dataPath) break;
+        if (dirname + '/' === fs.dataPath || dirname + '/' === '/') break;
         if (_this._storedFiles.indexOf(dirname) === -1) _this._storedFiles.push(dirname);
       }
 
