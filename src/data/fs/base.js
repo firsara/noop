@@ -73,9 +73,43 @@ define(['../../config', '../API'], function(config, API){
    * @public
    **/
   fs.getFolder = function(path) {
+    var hasBackSlashes = path.indexOf('\\') !== -1;
+    path = path.replace(/\\/g, '/');
     if (path.substring(path.length - 1) === '/') path = path.substring(0, path.length - 1);
     path = path.substring(0, path.lastIndexOf('/'));
-    return path;
+    return hasBackSlashes ? path.replace(/\//g, '\\') : path;
+  };
+
+  /**
+   * gets a filename out of a file path
+   *
+   * @method getFolder
+   * @param {String} path that should return the filename for
+   * @memberof data.fs
+   * @instance
+   * @public
+   **/
+  fs.getFilename = function(path) {
+    path = path.replace(/\\/g, '/');
+    var indexOfSlash = path.lastIndexOf('/');
+    if (indexOfSlash === -1) return path;
+    return path.substring(indexOfSlash + 1);
+  };
+
+  /**
+   * gets the file extension of a specified path
+   *
+   * @method getFileExtension
+   * @param {String} path that should return the file extension for
+   * @memberof data.fs
+   * @instance
+   * @public
+   **/
+  fs.getFileExtension = function(path){
+    if (path.substring(0, 1) === '.') return '';
+    var ext = path.split('.').pop();
+    if (ext === path) return '';
+    return '.' + ext;
   };
 
   /**
