@@ -73,11 +73,9 @@ define(['../../config', '../API'], function(config, API){
    * @public
    **/
   fs.getFolder = function(path) {
-    var hasBackSlashes = path.indexOf('\\') !== -1;
-    path = path.replace(/\\/g, '/');
     if (path.substring(path.length - 1) === '/') path = path.substring(0, path.length - 1);
     path = path.substring(0, path.lastIndexOf('/'));
-    return hasBackSlashes ? path.replace(/\//g, '\\') : path;
+    return path;
   };
 
   /**
