@@ -48,10 +48,10 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
      * @property {String} timingMode (default=requestAnimationFrame) what kind of timing mode should be used
      */
     this.config = {
-      fps: 100,
-      targetFPS: 100,
+      fps: 90,
+      targetFPS: 90,
       minFPS: 30,
-      timingMode: createjs.Ticker.TIMEOUT
+      timingMode: createjs.Ticker.RAF
     };
 
     // set easeljs timing mode to configured one (shouldn't be a different than RAF = requestAnimationFrame)
