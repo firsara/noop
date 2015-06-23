@@ -1,7 +1,7 @@
 {
   "name": "noop",
   "main": "src/",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "authors": [
     "Fabian Irsara <info@fabianirsara.com>"
   ],
