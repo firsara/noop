@@ -353,12 +353,12 @@ define(function(){
     window.addEventListener('touchmove', onTouchEvent);
     window.addEventListener('touchend', onTouchEvent);
     window.addEventListener('touchcancel', onTouchEvent);
-  } else {
-    // otherwise check mouse events and convert them
-    window.addEventListener('mousedown', onMouseEvent);
-    window.addEventListener('mouseup', onMouseEvent);
-    window.addEventListener('mousemove', onMouseEvent);
   }
+
+  // otherwise check mouse events and convert them
+  window.addEventListener('mousedown', onMouseEvent);
+  window.addEventListener('mouseup', onMouseEvent);
+  window.addEventListener('mousemove', onMouseEvent);
 
   // TODO: is buggy, maybe leave mouse events as they are and only check for tap events as they are used internally and not by libraries?
   // check for click events (if moved while trying to click: do not dispatch click)
