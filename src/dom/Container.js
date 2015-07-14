@@ -963,6 +963,12 @@ define([
     if (className) {
       ClassTemplate = require(className);
       options = {};
+
+      var opts = $el[0].getAttribute('data-options');
+
+      if (opts) {
+        options = JSON.parse(opts);
+      }
     }
 
     // create new class instance and set autoPainting and autoUpdating to false by default to save some performance
