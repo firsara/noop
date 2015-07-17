@@ -638,9 +638,20 @@ define([
    * @instance
    **/
   p.getStage = function(){
-    if (document.body.contains(this.el)) {
-      return document.body;
+    var node = this.el;
+    var tmpNode = node;
+
+    while (tmpNode = tmpNode.parentNode) {
+      node = tmpNode;
     }
+
+    if (node.toString().indexOf('HTMLDocument') !== -1) {
+      return node.body;
+    }
+
+    //if (document.body.contains(this.el)) {
+    //  return document.body;
+    //}
 
     return false;
   };
