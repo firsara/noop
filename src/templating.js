@@ -146,4 +146,18 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
     console.log(value);
   });
 
+  /*
+   * Logs given value through window console
+   * usage: {{#if_includes values "mykey"}}output{{else}}other_output{{/if_includes}}
+   *
+   * @helper if_includes
+   */
+  Handlebars.registerHelper('if_includes', function(value, key, options){
+    if (value && key && value.indexOf(key) !== -1) {
+      return options.fn(this);
+    } else {
+      return options.inverse(this);
+    }
+  });
+
 });
