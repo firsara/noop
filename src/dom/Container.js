@@ -641,7 +641,9 @@ define([
     var node = this.el;
     var tmpNode = node;
 
-    while (tmpNode = tmpNode.parentNode) {
+    while (true) {
+      tmpNode = tmpNode.parentNode;
+      if (! tmpNode) break;
       node = tmpNode;
     }
 

@@ -207,7 +207,7 @@ define(['EaselJS'], function(sys, createjs) {
     if (this.lock) return;
 
     // no change in scaling
-    if (Math.abs(this.velocity.delta.scale) === 0 && ! (this.snap || this.snap.scale === 0)
+    if ((Math.abs(this.velocity.delta.scale) === 0 && ! (this.snap || this.snap.scale === 0) || this.fraction.speed.scale === 0)
     ) {
       // NOTE: can cause problems if something was dragged outside elastic bounds and touched directly afterwards
       // CHECK if Problems appear!

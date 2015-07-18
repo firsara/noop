@@ -206,7 +206,7 @@ define(['EaselJS'], function(sys, createjs) {
     if (this.lock) return;
 
     // no change in rotation
-    if (Math.abs(this.velocity.delta.rotation) === 0 && ! (this.snap || this.snap.rotation === 0)
+    if ((Math.abs(this.velocity.delta.rotation) === 0 && ! (this.snap || this.snap.rotation === 0)) || this.fraction.speed.rotation === 0
     ) {
       // NOTE: can cause problems if something was dragged outside elastic bounds and touched directly afterwards
       // CHECK if Problems appear!

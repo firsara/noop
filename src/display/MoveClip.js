@@ -361,10 +361,11 @@ define(['EaselJS'], function(createjs) {
     if (this.lock) return;
 
     // no change in position
-    if (Math.abs(this.velocity.delta.x) === 0 &&
+    if ((Math.abs(this.velocity.delta.x) === 0 &&
       Math.abs(this.velocity.delta.y) === 0 &&
       ! (this.snap || this.snap.x === 0) &&
-      ! (this.snap || this.snap.y === 0)
+      ! (this.snap || this.snap.y === 0)) ||
+      this.fraction.speed.move === 0
     ) {
       // NOTE: can cause problems if something was dragged outside elastic bounds and touched directly afterwards
       // CHECK if Problems appear!
