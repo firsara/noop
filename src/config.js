@@ -27,7 +27,15 @@ define(['app.config'], function(configJSON){
    * @instance
    * @var {Boolean} iOS
    */
-  config.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+  config.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent) || (window.device && window.device.platform.toString().toLowerCase() === 'ios');
+
+  /**
+   * wheter the application runs in android
+   * @memberof config
+   * @instance
+   * @var {Boolean} android
+   */
+  config.android = (window.device && window.device.platform.toString().toLowerCase() === 'android');
 
   // add class to body depending on touch support
   var body = document.getElementsByTagName('body')[0];
