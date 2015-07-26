@@ -275,6 +275,8 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
    * @protected
    **/
   p._onMousedown = function(event){
+    CALC_VELOCITY = Math.max(5, createjs.Ticker.getMeasuredFPS() * 0.125);
+
     // prevent event propagation if it should do
     if (this._stoppedPropagation) {
       event.stopPropagation();
