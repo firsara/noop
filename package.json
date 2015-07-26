@@ -1,6 +1,6 @@
 {
   "name": "noop",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "dom framework",
   "main": "src/",
   "private": true,
