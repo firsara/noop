@@ -515,11 +515,11 @@ define([
             if (type === 'hasMany') {
               instance = require('noop/data/Collection').factory(modelClassName, targetData);
               instance.__oldOverwrite = instance.overwrite;
-              instance.overwrite = this.overwrite;
+              instance.overwrite = _this.overwrite;
             } else {
               instance = Model.factory(modelClassName, targetData);
               instance.__oldOverwrite = instance.overwrite;
-              instance.overwrite = this.overwrite;
+              instance.overwrite = _this.overwrite;
             }
 
             if ((instance._cached || instance._loaded) && ! instance.overwrite) {
