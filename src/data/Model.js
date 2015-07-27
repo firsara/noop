@@ -506,6 +506,7 @@ define([
           var instance = null;
 
           var pulled = function(data){
+            instance.overwrite = instance.__oldOverwrite;
             model[definition.through] = instance;
             callback();
           };
@@ -513,11 +514,15 @@ define([
           require(['models/' + modelClassName], function(ModelClass){
             if (type === 'hasMany') {
               instance = require('noop/data/Collection').factory(modelClassName, targetData);
+              instance.__oldOverwrite = instance.overwrite;
+              instance.overwrite = this.overwrite;
             } else {
               instance = Model.factory(modelClassName, targetData);
+              instance.__oldOverwrite = instance.overwrite;
+              instance.overwrite = this.overwrite;
             }
 
-            if (instance._cached || instance._loaded) {
+            if ((instance._cached || instance._loaded) && ! instance.overwrite) {
               pulled();
             } else {
               if (model.autoPull || definition.autoPull) {
@@ -698,6 +703,10 @@ define([
       if (Model.collection[model] && Model.collection[model][id]) {
         var instance = Model.collection[model][id];
         instance._loaded = true;
+
+        // NOTE: when actually cached but needs to override data on model
+        instance.set(data);
+
         return instance;
       }
     }
