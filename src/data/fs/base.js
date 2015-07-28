@@ -277,6 +277,18 @@ define(['../../config', '../API'], function(config, API){
   fs.readFile = function(filename, callback, errorCallback){};
 
   /**
+   * reads a file from the local file system as binary data
+   *
+   * @method readFileBinary
+   * @memberof data.fs
+   * @instance
+   * @param {String} filename that should be written to
+   * @param {Function} callback when finished
+   * @param {Function} errorCallback when encountered an error
+   **/
+  fs.readFileBinary = function(filename, callback, errorCallback){};
+
+  /**
    * reads all files in a directory<br>
    * returns an array containing all filenames
    *

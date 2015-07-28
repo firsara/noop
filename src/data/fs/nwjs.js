@@ -64,6 +64,31 @@ define(['./base', '../API'], function(fileSystem, API){
       });
     };
 
+    fileSystem.readFileBinary = function(filename, callback, errorCallback){
+      // correct file path
+      filename = fileSystem.correctLocalFilePath(filename);
+
+      // check if file exists first
+      fs.exists(filename, function(exists){
+        if (exists) {
+          // if it exists: read file
+          fs.readFile(filename, function(err, data){
+            if (err) {
+              errorCallback(err);
+            } else {
+              if (callback) {
+                callback(data);
+              }
+            }
+          });
+        } else {
+          if (errorCallback) {
+            errorCallback();
+          }
+        }
+      });
+    };
+
     fileSystem.pipe = function(options){
       // correct file path
       options.local = fileSystem.correctLocalFilePath(options.local);

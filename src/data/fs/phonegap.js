@@ -78,6 +78,39 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       }, errorCallback);
     };
 
+    fileSystem.readFileBinary = function(filename, callback, errorCallback){
+      // correct file path
+      filename = fileSystem.correctLocalFilePath(filename);
+
+      _getFileSystem(function(fs){
+        fs.root.getDirectory(_extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
+          dirEntry.getFile(_extractFilename(filename), {create: false}, function(fileEntry){
+
+            fileEntry.file(function(file){
+
+              var reader = new FileReader();
+
+              reader.onloadend = function(evt) {
+                if (callback) {
+                  callback(evt.target.result);
+                }
+              };
+
+              reader.onerror =  function(evt){
+                if (errorCallback) {
+                  errorCallback();
+                }
+              };
+
+              reader.readAsBinaryString(file);
+
+            }, errorCallback);
+
+          }, errorCallback);
+        }, errorCallback);
+      }, errorCallback);
+    };
+
     fileSystem.pipe = function(options){
       options.local = fileSystem.correctLocalFilePath(options.local);
 
