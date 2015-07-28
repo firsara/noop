@@ -198,6 +198,10 @@ define([
     options.remote = _this.remote + item.remote;
     options.local = _this.local + item.local;
 
+    if (item.checksum) {
+      options.checksum = item.checksum;
+    }
+
     // calculate current item progress
     options.progress = function(p){
       // call progress event

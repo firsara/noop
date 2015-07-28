@@ -147,6 +147,7 @@ define(['../../config', '../API'], function(config, API){
    *
    * * remote {String} that should be downloaded
    * * local {String} that should be stored to
+   * * checksum {String} optional: if passed and file already exists compares checksum and overwrites file if different
    * * overwrite {Boolean} the local file <br> (optionally set overwrite to "try", this way it tries to overwrite and falls back to locally cached file)
    * * progress {Function} while downloading the file (alternative to progress)
    * * success {Function} callback when finished
@@ -174,9 +175,27 @@ define(['../../config', '../API'], function(config, API){
     fs.exists(options.local, function(exists){
       // if it does and should not overwrite
       if (exists && ! options.overwrite) {
-        // call callback
-        if (options.success) {
-          options.success(options.local);
+        // if a checksum was passed
+        if (options.checksum) {
+          // compare it with local file's checksum
+          fs.checksum(options.local, function(sum){
+            // if checksums are identical
+            if (sum === options.checksum) {
+              // call callback
+              if (options.success) {
+                options.success(options.local);
+              }
+            } else {
+              // otherwise: try to download file again
+              options.overwrite = 'try';
+              fs.pipe(options);
+            }
+          });
+        } else {
+          // if there was no checksum passed: call callback
+          if (options.success) {
+            options.success(options.local);
+          }
         }
       } else {
         // pipe remote file to local file
