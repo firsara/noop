@@ -10,6 +10,7 @@ define(['./base', '../API'], function(fileSystem, API){
       var fs = nodeRequire('fs');
       var request = nodeRequire('request');
       var mkdirp = nodeRequire('mkdirp');
+      var checksum = nodeRequire('checksum');
 
       fileSystem.dataPath = nw.App.dataPath + '/' + fileSystem.dataSubFolder + '/';
     }
@@ -396,6 +397,23 @@ define(['./base', '../API'], function(fileSystem, API){
           fs.rename(path, newPath, callback);
         } else {
           if (callback) callback();
+        }
+      });
+    };
+
+    fileSystem.checksum = function(path, callback){
+      // correct file path
+      path = fs.correctLocalFilePath(path);
+
+      checksum.file(path, {algorithm: 'md5'}, function(err, sum) {
+        if (err) {
+          if (callback) {
+            callback('');
+          }
+        } else {
+          if (callback) {
+            callback(sum);
+          }
         }
       });
     };

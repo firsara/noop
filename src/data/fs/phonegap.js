@@ -346,6 +346,23 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       }, callback);
     };
 
+    fileSystem.checksum = function(path, callback){
+      // correct file path
+      path = fs.getLocalFilePath('storage/1/persistent/' + item);
+
+      Checksum.MD5([path], function(result) {
+        if (result && result.md5) {
+          if (callback) {
+            callback(result.md5);
+          }
+        }
+      }, function(){
+        if (callback) {
+          callback('');
+        }
+      });
+    };
+
     fileSystem.init = function(callback){
       _getFileSystem(function(fs){
         fileSystem.dataBasePath = fs.root.nativeURL.replace('file://', '');

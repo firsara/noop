@@ -358,5 +358,16 @@ define(['../../config', '../API'], function(config, API){
    **/
   fs.rename = function(path, newPath, callback){};
 
+  /**
+   * gets the files checksum
+   *
+   * @method checksum
+   * @memberof data.fs
+   * @instance
+   * @param {String} path of file
+   * @param {Function} callback when finished
+   **/
+  fs.checksum = function(path, callback){};
+
   return fs;
 });

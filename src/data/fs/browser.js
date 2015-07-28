@@ -20,6 +20,10 @@ define(['./base'], function(fileSystem){
       $.get(urlToLoad, callback).fail(errorCallback);
     };
 
+    fileSystem.readFileBinary = function(filename, callback, errorCallback){
+      fileSystem.readFile(filename, callback, errorCallback);
+    };
+
     fileSystem.download = function(options, callback){
       if (typeof options === 'string') {
         options = {remote: options};
@@ -59,6 +63,12 @@ define(['./base'], function(fileSystem){
     fileSystem.unlink = function(path, callback){
       if (callback) {
         callback();
+      }
+    };
+
+    fileSystem.checksum = function(path, callback){
+      if (callback) {
+        callback('');
       }
     };
   };
