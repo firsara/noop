@@ -658,7 +658,7 @@ i.e. if it needs to load file use downloadAndRead</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line291">line 291</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line303">line 303</a>
     </li></ul></dd>
     
 
@@ -1359,7 +1359,7 @@ i.e. if it needs to load file use downloadAndRead</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line314">line 314</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line326">line 326</a>
     </li></ul></dd>
     
 
@@ -1700,7 +1700,7 @@ returns an array containing all filenames</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line279">line 279</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line291">line 291</a>
     </li></ul></dd>
     
 
@@ -1909,6 +1909,314 @@ converts to a JSON object if detected</p>
 
     
 
+    <h4 class="name" id="readFileBinary"><span class="type-signature"></span>readFileBinary<span class="signature">(filename, callback, errorCallback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>reads a file from the local file system as binary data</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>filename</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>that should be written to</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>when finished</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>errorCallback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>when encountered an error</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line279">line 279</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="rename"><span class="type-signature"></span>rename<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>initializes FileSystem (i.e. gets root directory on every individual environment)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>when finished</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line37">line 37</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="rename"><span class="type-signature"></span>rename<span class="signature">(path, newPath, callback)</span><span class="type-signature"></span></h4>
 
     
@@ -2055,138 +2363,7 @@ converts to a JSON object if detected</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line337">line 337</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="rename"><span class="type-signature"></span>rename<span class="signature">(callback)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>initializes FileSystem (i.e. gets root directory on every individual environment)</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>when finished</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line37">line 37</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line349">line 349</a>
     </li></ul></dd>
     
 
@@ -2526,7 +2703,7 @@ only use if really sure or on temporary storage</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line302">line 302</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line314">line 314</a>
     </li></ul></dd>
     
 
@@ -2680,7 +2857,7 @@ only use if really sure or on temporary storage</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line326">line 326</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -2929,7 +3106,7 @@ calls appropriate callbacks when finished or encountered an error</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jul 28 2015 11:27:04 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jul 28 2015 16:02:54 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
