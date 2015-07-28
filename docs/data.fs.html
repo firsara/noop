@@ -387,7 +387,7 @@ can be overridden in config via config.dataPath<br>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line361">line 361</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line380">line 380</a>
     </li></ul></dd>
     
 
@@ -613,6 +613,7 @@ i.e. if it needs to load file use downloadAndRead</p>
             <td class="description last"><ul>
 <li>remote {String} that should be downloaded</li>
 <li>local {String} that should be stored to</li>
+<li>checksum {String} optional: if passed and file already exists compares checksum and overwrites file if different</li>
 <li>overwrite {Boolean} the local file <br> (optionally set overwrite to &quot;try&quot;, this way it tries to overwrite and falls back to locally cached file)</li>
 <li>progress {Function} while downloading the file (alternative to progress)</li>
 <li>success {Function} callback when finished</li>
@@ -812,7 +813,7 @@ i.e. if it needs to load file use downloadAndRead</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line303">line 303</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line322">line 322</a>
     </li></ul></dd>
     
 
@@ -1513,7 +1514,7 @@ i.e. if it needs to load file use downloadAndRead</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line326">line 326</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line345">line 345</a>
     </li></ul></dd>
     
 
@@ -1699,7 +1700,7 @@ downloads and dispatches progress</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line189">line 189</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line208">line 208</a>
     </li></ul></dd>
     
 
@@ -1854,7 +1855,7 @@ returns an array containing all filenames</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line291">line 291</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line310">line 310</a>
     </li></ul></dd>
     
 
@@ -2032,7 +2033,7 @@ converts to a JSON object if detected</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line266">line 266</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line285">line 285</a>
     </li></ul></dd>
     
 
@@ -2209,7 +2210,7 @@ converts to a JSON object if detected</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line279">line 279</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -2517,7 +2518,7 @@ converts to a JSON object if detected</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line349">line 349</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line368">line 368</a>
     </li></ul></dd>
     
 
@@ -2702,7 +2703,7 @@ optionally passes in authentication and defines request method</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line212">line 212</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line231">line 231</a>
     </li></ul></dd>
     
 
@@ -2857,7 +2858,7 @@ only use if really sure or on temporary storage</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line314">line 314</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line333">line 333</a>
     </li></ul></dd>
     
 
@@ -3011,7 +3012,7 @@ only use if really sure or on temporary storage</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line338">line 338</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line357">line 357</a>
     </li></ul></dd>
     
 
@@ -3212,7 +3213,7 @@ calls appropriate callbacks when finished or encountered an error</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line252">line 252</a>
+        <a href="data_fs_base.js.html">data/fs/base.js</a>, <a href="data_fs_base.js.html#line271">line 271</a>
     </li></ul></dd>
     
 
@@ -3260,7 +3261,7 @@ calls appropriate callbacks when finished or encountered an error</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jul 28 2015 16:18:18 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.1</a> on Tue Jul 28 2015 16:42:31 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>
