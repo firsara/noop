@@ -136,7 +136,8 @@ define(['./base', '../API'], function(fileSystem, API){
             options.error(err);
           }
 
-          fileSystem.unlink(options.local + '_tmp');
+          // TODO: this somehow creates errors when trying to rename file!!!
+          // fileSystem.unlink(options.local + '_tmp');
         });
 
         // when downloading has finished
