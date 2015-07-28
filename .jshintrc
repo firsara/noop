@@ -44,6 +44,7 @@
     "nodeRequire": true,
     "DocumentTouch": true,
     "LocalFileSystem": true,
-    "FileTransfer": true
+    "FileTransfer": true,
+    "Checksum": true
   }
 }

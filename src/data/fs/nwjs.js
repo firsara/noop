@@ -403,7 +403,7 @@ define(['./base', '../API'], function(fileSystem, API){
 
     fileSystem.checksum = function(path, callback){
       // correct file path
-      path = fs.correctLocalFilePath(path);
+      path = fileSystem.correctLocalFilePath(path);
 
       checksum.file(path, {algorithm: 'md5'}, function(err, sum) {
         if (err) {
