@@ -15,6 +15,17 @@ define(['../../config', '../API'], function(config, API){
   var fs = {};
 
   /**
+   * Subfolder for data storage<br>
+   * can be overridden in config via config.dataPath<br>
+   * (use of a unique identifier recommended, for example com.company.appname)
+   *
+   * @memberof data.fs
+   * @instance
+   * @var {String} dataSubFolder
+   **/
+  fs.dataSubFolder = config.dataPath ? config.dataPath : 'data';
+
+  /**
    * Cache buster to load new date from server without storing it in a local browser cache
    *
    * @memberof data.fs
@@ -51,7 +62,7 @@ define(['../../config', '../API'], function(config, API){
     if (config.environment === 'phonegap') {
       // as phonegap only returns a relative path:
       // strip out data/ first
-      path = path.replace('data/', '');
+      path = path.replace(fs.dataSubFolder + '/', '');
     }
 
     // remove eventual file:// prefix

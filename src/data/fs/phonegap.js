@@ -9,7 +9,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
     fileSystem.correctLocalFilePath = function(path) {
       if (path === '/') path = '';
-      return ('data/' + path.replace(fileSystem.dataPath, '').replace('data/', '')).replace('data/data', 'data/');
+      return (fileSystem.dataSubFolder + '/' + path.replace(fileSystem.dataPath, '').replace(fileSystem.dataSubFolder + '/', '')).replace(fileSystem.dataSubFolder + '/' + fileSystem.dataSubFolder, fileSystem.dataSubFolder + '/');
     };
 
     fileSystem.writeFile = function(filename, data, callback, errorCallback){
@@ -316,7 +316,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
     fileSystem.init = function(callback){
       _getFileSystem(function(fs){
         fileSystem.dataBasePath = fs.root.nativeURL.replace('file://', '');
-        fileSystem.dataPath = fileSystem.dataBasePath + 'data/';
+        fileSystem.dataPath = fileSystem.dataBasePath + fileSystem.dataSubFolder + '/';
 
         if (config.debug) {
           console.log(fileSystem.dataBasePath);

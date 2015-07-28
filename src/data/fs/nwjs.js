@@ -11,7 +11,7 @@ define(['./base', '../API'], function(fileSystem, API){
       var request = nodeRequire('request');
       var mkdirp = nodeRequire('mkdirp');
 
-      fileSystem.dataPath = nw.App.dataPath + '/data/';
+      fileSystem.dataPath = nw.App.dataPath + '/' + fileSystem.dataSubFolder + '/';
     }
 
     fileSystem.writeFile = function(filename, data, callback, errorCallback){
