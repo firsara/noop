@@ -348,7 +348,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
     fileSystem.checksum = function(path, callback){
       // correct file path
-      path = fileSystem.getLocalFilePath('storage/1/persistent/' + item);
+      path = fileSystem.getLocalFilePath(path);
 
       Checksum.MD5([path], function(result) {
         if (result && result.md5) {
