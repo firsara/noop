@@ -132,11 +132,11 @@ define(['./base', '../API'], function(fileSystem, API){
         }
 
         r.on('error', function(err){
-          fs.unlink(options.local + '_tmp');
-
           if (options.error) {
             options.error(err);
           }
+
+          fileSystem.unlink(options.local + '_tmp');
         });
 
         // when downloading has finished
