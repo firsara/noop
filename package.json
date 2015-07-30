@@ -1,7 +1,7 @@
 {
   "name": "noop",
   "version": "1.9.3",
-  "description": "dom framework",
+  "description": "native app framework",
   "main": "src/",
   "private": true,
   "scripts": {
@@ -9,11 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://firsara@bitbucket.org/firsara/noop.git"
+    "url": "https://github.com/firsara/noop.git"
   },
   "author": "Fabian Irsara",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/firsara/noop#readme",
+  "homepage": "https://github.com/firsara/noop",
   "devDependencies": {
     "bower": "^1.4.1",
     "grunt": "^0.4.5",
@@ -26,5 +26,11 @@
     "grunt-jscs": "^1.8.0",
     "grunt-jsdoc": "^0.6.7",
     "load-grunt-config": "^0.17.1"
-  }
+  },
+  "keywords": [
+    "html5",
+    "javascript",
+    "app",
+    "framework"
+  ]
 }
