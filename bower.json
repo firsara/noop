@@ -27,7 +27,6 @@
     "EaselJS": "CreateJS/EaselJS#~0.8.0",
     "PreloadJS": "CreateJS/PreloadJS#~0.6.0",
     "SoundJS": "CreateJS/SoundJS#~0.6.0",
-    "box2dweb": "*",
     "gsap": "~1.16.1",
     "handlebars": "~3.0.0",
     "jquery": "~2.1.3",
