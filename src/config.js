@@ -3,13 +3,13 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['app.config'], function(configJSON){
+define(['text!app.config.json'], function(configJSON){
 
   /**
    * sets application configuration based on environment
    * @namespace config
    */
-  var config = configJSON;
+  var config = JSON.parse(configJSON);
 
   /**
    * checks if is a touch device
@@ -67,30 +67,9 @@ define(['app.config'], function(configJSON){
   config.isLocal = window.location.href.indexOf('localhost') >= 0;
 
   // for nwjs applications:
-  if (config.environment === 'nwjs') {
-    var gui = nodeRequire('nw.gui');
-    var win = gui.Window.get();
-
-    // if it's not fullscreen or kiosk:
-    if (! (win.isFullscreen || win.isKioskMode)) {
-      // assume it runs local
-      config.isLocal = true;
-    }
+  if (config.environment === 'nwjs' || config.environment === 'phonegap') {
+    config.isLocal = true;
   }
-
-  // merge environment specific data to config
-  // i.e. merge local or live configuration to main config
-  for (var k in config[config.target]) {
-    if (config[config.target].hasOwnProperty(k)) {
-      config[k] = config[config.target][k];
-    }
-  }
-
-  // delete temporary config
-  delete config.local;
-  delete config.live;
-  delete config.testing;
-  delete config.staging;
 
   return config;
 });
