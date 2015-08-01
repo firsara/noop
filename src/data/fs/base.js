@@ -262,7 +262,10 @@ define(['../../config', '../API'], function(config, API){
     ajaxOpts.type = options.method || 'GET';
 
     if (options.url.indexOf(API.endpoint) >= 0) {
-      ajaxOpts.headers = {authorization: 'Bearer ' + API.get('token')};
+      var token = API.get('token');
+      if (token && token.length > 0) {
+        ajaxOpts.headers = {authorization: 'Bearer ' + token};
+      }
     }
 
     return $.ajax(ajaxOpts).done(options.success).fail(options.error);

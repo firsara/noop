@@ -191,7 +191,10 @@ define(['./base', '../API'], function(fileSystem, API){
       var requestOptions = {url: options.url};
 
       if (options.url.indexOf(API.endpoint) >= 0) {
-        requestOptions.auth = {bearer: API.get('token')};
+        var token = API.get('token');
+        if (token && token.length > 0) {
+          requestOptions.auth = {bearer: token};
+        }
       }
 
       // pass in request method (GET, POST, PUT, DELETE)

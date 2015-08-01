@@ -126,7 +126,10 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         var downloadOptions = {};
 
         if (options.remote.indexOf(API.endpoint) >= 0) {
-          downloadOptions.headers = {authorization: 'Bearer ' + API.get('token')};
+          var token = API.get('token');
+          if (token && token.length > 0) {
+            downloadOptions.headers = {authorization: 'Bearer ' + token};
+          }
         }
 
         if (options.progress) {
