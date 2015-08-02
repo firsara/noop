@@ -12,6 +12,7 @@ define([
   createjs,
   fs
 ) {
+  var LIST_PROGRESS = 'listProgress';
   var PROGRESS = 'progress';
   var SUCCESS = 'success';
   var ERROR = 'error';
@@ -102,6 +103,14 @@ define([
     this.progress = null;
 
     /**
+     * listProgress callback function. alternative to event listeners
+     * @memberof data.Synchronizer
+     * @instance
+     * @var {Function} listProgress
+     */
+    this.listProgress = null;
+
+    /**
      * error callback function. alternative to event listeners
      * @memberof data.Synchronizer
      * @instance
@@ -190,6 +199,9 @@ define([
         }
 
         _this._index++;
+
+        _listProgress.call(_this, _this._index / _this.items.length);
+
         _compare.call(_this);
       };
 
@@ -363,6 +375,17 @@ define([
         _success.call(_this);
       }
     });
+  };
+
+  var _listProgress = function(p) {
+    console.log(p);
+    if (this.listProgress) {
+      this.listProgress(p);
+    }
+
+    var event = new createjs.Event(LIST_PROGRESS);
+    event.progress = p;
+    this.dispatchEvent(event);
   };
 
   var _progress = function(p) {
