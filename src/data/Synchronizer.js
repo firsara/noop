@@ -112,6 +112,12 @@ define([
     this._stopped = false;
     this._index = 0;
     this._storedFiles = [];
+
+    this._alreadyDownloaded = [];
+    this._needsToDownload = [];
+    this._comparedFiles = false;
+    this._overallProgress = 0;
+    this._overallSize = 0;
   }
 
   var p = sys.extend(Synchronizer, createjs.EventDispatcher);
@@ -135,7 +141,11 @@ define([
    */
   p.resume = function(){
     this._stopped = false;
-    _next.call(this);
+    if (this._comparedFiles) {
+      _next.call(this);
+    } else {
+      _compare.call(this);
+    }
   };
 
   /**
@@ -158,25 +168,72 @@ define([
     this.pause();
   };
 
+  var _compare = function(){
+    if (this._stopped) return;
+
+    // get current item
+    var item = this.items[this._index];
+
+    // if still has items
+    if (item) {
+      var _this = this;
+
+      var options = _getItemOptions.call(this, item);
+
+      var done = function(alreadyDownloaded){
+        if (alreadyDownloaded) {
+          _addStoredFiles.call(_this, options.local);
+          _this._alreadyDownloaded.push(item);
+        } else {
+          if (item.size) _this._overallSize += item.size;
+          _this._needsToDownload.push(item);
+        }
+
+        _this._index++;
+        _compare.call(_this);
+      };
+
+      // download current item
+      fs.exists(options.local, function(exists){
+        if (exists && ! options.overwrite) {
+          if (options.checksum) {
+            fs.checksum(options.local, function(sum){
+              if (sum === options.checksum) {
+                done(true);
+              } else {
+                done(false);
+              }
+            });
+          } else {
+            done(true);
+          }
+        } else {
+          done(false);
+        }
+      });
+    } else {
+      this._index = 0;
+      _next.call(this);
+    }
+  };
+
   var _next = function(){
     if (this._stopped) return;
 
     // get current item
-    var currentItem = this.items[this._index];
+    var item = this._needsToDownload[this._index];
 
     // if still has items
-    if (currentItem) {
+    if (item) {
       // get that item
-      _get.call(this, currentItem);
+      _get.call(this, item);
     } else {
       // otherwise: dispatch done
       _done.call(this);
     }
   };
 
-  var _get = function(item) {
-    var _this = this;
-
+  var _getItemOptions = function(item){
     // if current item was a string: assume remote and local path should be the same
     if (typeof item === 'string') item = {remote: item, local: item};
 
@@ -192,20 +249,48 @@ define([
       options.overwrite = item.overwrite;
     } else {
       // otherwise use defined overwrite option in Synchronizer
-      options.overwrite = _this.overwrite;
+      options.overwrite = this.overwrite;
     }
 
-    options.remote = _this.remote + item.remote;
-    options.local = _this.local + item.local;
+    options.remote = this.remote + item.remote;
+    options.local = this.local + item.local;
 
     if (item.checksum) {
       options.checksum = item.checksum;
     }
 
+    return options;
+  };
+
+  var _addStoredFiles = function(filePath){
+    // store all downloaded files in an array for later use
+    var filename = fs.correctLocalFilePath(filePath);
+    if (this._storedFiles.indexOf(filename) === -1) this._storedFiles.push(filename);
+
+    var dirname = filename;
+
+    // store up to 10 folders backwards
+    // i.e. if there are nested empty folders they will not be recognized
+    for (var i = 0; i < 10; i++) {
+      dirname = fs.getFolder(dirname);
+      if (dirname + '/' === fs.dataPath || dirname + '/' === '/') break;
+      if (this._storedFiles.indexOf(dirname) === -1) this._storedFiles.push(dirname);
+    }
+  };
+
+  var _get = function(item){
+    var _this = this;
+
+    var options = _getItemOptions.call(this, item);
+
     // calculate current item progress
     options.progress = function(p){
       // call progress event
-      _progress.call(_this, (_this._index + p) / _this.items.length);
+      if (_this._overallSize !== 0) {
+        _progress.call(_this, (_this._overallProgress + (p * item.size)) / _this._overallSize);
+      } else {
+        _progress.call(_this, (_this._index + p) / _this._needsToDownload.length);
+      }
     };
 
     options.error = function(err){
@@ -216,22 +301,15 @@ define([
       // increment index when finished downloading
       _this._index++;
 
-      // store all downloaded files in an array for later use
-      var filename = fs.correctLocalFilePath(filePath);
-      if (_this._storedFiles.indexOf(filename) === -1) _this._storedFiles.push(filename);
-
-      var dirname = filename;
-
-      // store up to 10 folders backwards
-      // i.e. if there are nested empty folders they will not be recognized
-      for (var i = 0; i < 10; i++) {
-        dirname = fs.getFolder(dirname);
-        if (dirname + '/' === fs.dataPath || dirname + '/' === '/') break;
-        if (_this._storedFiles.indexOf(dirname) === -1) _this._storedFiles.push(dirname);
-      }
+      _addStoredFiles.call(_this, filePath);
 
       // call progress event
-      _progress.call(_this, _this._index / _this.items.length);
+      if (_this._overallSize !== 0) {
+        _this._overallProgress += item.size;
+        _progress.call(_this, _this._overallProgress / _this._overallSize);
+      } else {
+        _progress.call(_this, _this._index / _this._needsToDownload.length);
+      }
 
       // and sync next item
       _next.call(_this);
