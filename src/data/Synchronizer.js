@@ -378,7 +378,6 @@ define([
   };
 
   var _listProgress = function(p) {
-    console.log(p);
     if (this.listProgress) {
       this.listProgress(p);
     }
