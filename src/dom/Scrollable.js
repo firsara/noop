@@ -37,6 +37,9 @@ function(
     this.borders.x = [0, 0];
     this.borders.y = [0, 0];
 
+    this.fraction.release.x = 0.75;
+    this.fraction.release.y = 0.75;
+
     this.__scollTicks = 0;
     this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() / 2);
     this.autoSetScrollBounds = true;
