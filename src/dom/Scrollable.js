@@ -66,8 +66,8 @@ function(
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
 
-      this.elastic.x = offsetSize.width > 0 ? 0.3 : 0;
-      this.elastic.y = offsetSize.height > 0 ? 0.3 : 0;
+      this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
+      this.elastic.y = offsetSize.height > 0 ? 0.1 : 0;
     }
   };
 
