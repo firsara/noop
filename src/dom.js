@@ -17,6 +17,7 @@ define([
   './dom/RotateClip',
   './dom/ScaleClip',
   './dom/TransformClip',
+  './dom/Scrollable',
 
   './vendor/fastclick'
 ], function(
@@ -37,6 +38,7 @@ define([
   RotateClip,
   ScaleClip,
   TransformClip,
+  Scrollable,
 
   fastclick
 ){
@@ -52,6 +54,7 @@ define([
     MoveClip: MoveClip,
     RotateClip: RotateClip,
     ScaleClip: ScaleClip,
-    TransformClip: TransformClip
+    TransformClip: TransformClip,
+    Scrollable: Scrollable
   };
 });
