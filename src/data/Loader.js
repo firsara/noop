@@ -133,14 +133,21 @@ define([
       manifest = [manifest];
     }
 
-    // if manifest was an object in the form {id: path} transform it to an array instead
+    // if manifest was an object
     if (typeof manifest === 'object' && ! Array.isArray(manifest)) {
-      var tmp = manifest;
-      manifest = [];
+      // if manifest was a single object with a source definition
+      if (manifest.src) {
+        // convert it to an array
+        manifest = [manifest];
+      } else {
+        // otherwise: assume it was in the form {id: path} transform it to an array instead
+        var tmp = manifest;
+        manifest = [];
 
-      for (var k in tmp) {
-        if (tmp.hasOwnProperty(k)) {
-          manifest.push({id: k, src: tmp[k]});
+        for (var k in tmp) {
+          if (tmp.hasOwnProperty(k)) {
+            manifest.push({id: k, src: tmp[k]});
+          }
         }
       }
     }
