@@ -986,8 +986,11 @@ define([
 
     // create new class instance and set autoPainting and autoUpdating to false by default to save some performance
     var ct = new ClassTemplate($el, null, options);
-    ct.autoUpdate = false;
-    ct.autoPaint = false;
+
+    if (! className) {
+      ct.autoUpdate = false;
+      ct.autoPaint = false;
+    }
 
     return ct;
   };
