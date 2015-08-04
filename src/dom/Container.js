@@ -359,7 +359,7 @@ define([
       var _this = this;
 
       // traverse all dom children and auto-fetch containers, set parent etc.
-      var childContainers = _this.el.getAttribute('data-container');
+      var childContainers = _this.el.getAttribute('data-children');
       childContainers = ! (childContainers && childContainers.toString().toLowerCase() === 'false');
 
       if (childContainers) {
