@@ -1,6 +1,6 @@
 {
   "name": "noop",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "native app framework",
   "main": "src/",
   "private": true,
