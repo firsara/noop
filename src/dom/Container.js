@@ -359,15 +359,20 @@ define([
       var _this = this;
 
       // traverse all dom children and auto-fetch containers, set parent etc.
-      this.$el.children().each(function(){
-        var child = Container.fetch($(this));
+      var childContainers = _this.el.getAttribute('data-container');
+      childContainers = ! (childContainers && childContainers.toString().toLowerCase() === 'false');
 
-        child.parent = _this;
-        child.stage = _this.stage;
-        child.$stage = _this.$stage;
-        _this.children.push(child);
-        child._added();
-      });
+      if (childContainers) {
+        this.$el.children().each(function(){
+          var child = Container.fetch($(this));
+
+          child.parent = _this;
+          child.stage = _this.stage;
+          child.$stage = _this.$stage;
+          _this.children.push(child);
+          child._added();
+        });
+      }
     } else {
       throw new Error('Container needs a template (Handlebars, html string, jquery element)');
     }
