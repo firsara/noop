@@ -902,9 +902,6 @@ define([
    * @instance
    **/
   var _render = function(){
-    // if container has a render function: call it
-    if (this.render) this.render();
-
     // check if needs auto rendering
     _checkRendering.call(this);
   };
@@ -919,9 +916,6 @@ define([
    * @instance
    **/
   var _dispose = function(){
-    // if container has a dispose function: call it
-    if (this.dispose) this.dispose();
-
     // remove fps checker
     fps.removeEventListener('tick', this.__containerBoundUpdate);
   };
