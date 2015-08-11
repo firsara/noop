@@ -16,7 +16,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       filename = fileSystem.correctLocalFilePath(filename);
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fileSystem.mkdir(_extractDirectory(filename), 0744, function(dirEntry){
           dirEntry.getFile(_extractFilename(filename), {create: true}, function(fileEntry){
 
@@ -49,7 +49,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       filename = fileSystem.correctLocalFilePath(filename);
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fs.root.getDirectory(_extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
           dirEntry.getFile(_extractFilename(filename), {create: false}, function(fileEntry){
 
@@ -82,7 +82,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       filename = fileSystem.correctLocalFilePath(filename);
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fs.root.getDirectory(_extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
           dirEntry.getFile(_extractFilename(filename), {create: false}, function(fileEntry){
 
@@ -171,7 +171,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         }
       };
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fs.root.getDirectory(path, {create: false, exclusive: false}, function(dirEntry){
           var directoryReader = dirEntry.createReader();
           directoryReader.readEntries(function(entries){
@@ -254,7 +254,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         });
       };
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         cleanup(path, function(){
           fileSystem.removeDirectory(path, callback);
         });
@@ -265,7 +265,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       path = fileSystem.correctLocalFilePath(path);
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fs.root.getDirectory(path, {create: false, exclusive: false}, function(dirEntry){
           dirEntry.remove(callback, callback);
         }, callback);
@@ -300,7 +300,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         createFolder(dirEntry);
       };
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         createFolder(fs.root);
       }, callback);
     };
@@ -310,7 +310,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       path = fileSystem.correctLocalFilePath(path);
 
       if (path.indexOf('.') >= 0) {
-        _getFileSystem(function(fs){
+        fileSystem.getFileSystem(function(fs){
           fs.root.getDirectory(_extractDirectory(path), {create: false, exclusive: false}, function(dirEntry){
             dirEntry.getFile(_extractFilename(path), {create: false}, function(fileEntry){
               fileEntry.remove(callback, callback);
@@ -331,7 +331,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         entry.moveTo(toDirectory, withFilename, callback, callback);
       };
 
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fileSystem.mkdir(_extractDirectory(path), 0744, function(dirEntry){
           fileSystem.mkdir(_extractDirectory(newPath), 0744, function(dirEntryNew){
             // if it is a file
@@ -369,7 +369,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
     };
 
     fileSystem.init = function(callback){
-      _getFileSystem(function(fs){
+      fileSystem.getFileSystem(function(fs){
         fileSystem.dataBasePath = fs.root.nativeURL.replace('file://', '');
         fileSystem.dataPath = fileSystem.dataBasePath + fileSystem.dataSubFolder + '/';
 
@@ -386,7 +386,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
     var _cachedFileSystem = null;
 
-    var _getFileSystem = function(callback){
+    fileSystem.getFileSystem = function(callback){
       if (_cachedFileSystem) {
         if (callback) {
           callback(_cachedFileSystem);
