@@ -17,8 +17,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       filename = fileSystem.correctLocalFilePath(filename);
 
       fileSystem.getFileSystem(function(fs){
-        fileSystem.mkdir(_extractDirectory(filename), 0744, function(dirEntry){
-          dirEntry.getFile(_extractFilename(filename), {create: true}, function(fileEntry){
+        fileSystem.mkdir(fileSystem.extractDirectory(filename), 0744, function(dirEntry){
+          dirEntry.getFile(fileSystem.extractFilename(filename), {create: true}, function(fileEntry){
 
             var fileURL = fileEntry.toURL();
 
@@ -50,8 +50,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       filename = fileSystem.correctLocalFilePath(filename);
 
       fileSystem.getFileSystem(function(fs){
-        fs.root.getDirectory(_extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
-          dirEntry.getFile(_extractFilename(filename), {create: false}, function(fileEntry){
+        fs.root.getDirectory(fileSystem.extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
+          dirEntry.getFile(fileSystem.extractFilename(filename), {create: false}, function(fileEntry){
 
             fileEntry.file(function(file){
 
@@ -83,8 +83,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       filename = fileSystem.correctLocalFilePath(filename);
 
       fileSystem.getFileSystem(function(fs){
-        fs.root.getDirectory(_extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
-          dirEntry.getFile(_extractFilename(filename), {create: false}, function(fileEntry){
+        fs.root.getDirectory(fileSystem.extractDirectory(filename), {create: false, exclusive: false}, function(dirEntry){
+          dirEntry.getFile(fileSystem.extractFilename(filename), {create: false}, function(fileEntry){
 
             fileEntry.file(function(file){
 
@@ -193,8 +193,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       path = fileSystem.correctLocalFilePath(path);
 
-      var dirName = _extractDirectory(path);
-      var fileName = _extractFilename(path);
+      var dirName = fileSystem.extractDirectory(path);
+      var fileName = fileSystem.extractFilename(path);
 
       var success = function(flist){
         for (var i = 0; i < flist.length; i++){
@@ -311,8 +311,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
       if (path.indexOf('.') >= 0) {
         fileSystem.getFileSystem(function(fs){
-          fs.root.getDirectory(_extractDirectory(path), {create: false, exclusive: false}, function(dirEntry){
-            dirEntry.getFile(_extractFilename(path), {create: false}, function(fileEntry){
+          fs.root.getDirectory(fileSystem.extractDirectory(path), {create: false, exclusive: false}, function(dirEntry){
+            dirEntry.getFile(fileSystem.extractFilename(path), {create: false}, function(fileEntry){
               fileEntry.remove(callback, callback);
             }, callback);
           }, callback);
@@ -332,16 +332,16 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       };
 
       fileSystem.getFileSystem(function(fs){
-        fileSystem.mkdir(_extractDirectory(path), 0744, function(dirEntry){
-          fileSystem.mkdir(_extractDirectory(newPath), 0744, function(dirEntryNew){
+        fileSystem.mkdir(fileSystem.extractDirectory(path), 0744, function(dirEntry){
+          fileSystem.mkdir(fileSystem.extractDirectory(newPath), 0744, function(dirEntryNew){
             // if it is a file
             if (path.indexOf('.') >= 0) {
-              dirEntry.getFile(_extractFilename(path), {create: false}, function(entry){
-                move(entry, dirEntryNew, _extractFilename(newPath));
+              dirEntry.getFile(fileSystem.extractFilename(path), {create: false}, function(entry){
+                move(entry, dirEntryNew, fileSystem.extractFilename(newPath));
               });
             } else {
-              dirEntry.getDirectory(_extractFilename(path), {create: false}, function(entry){
-                move(entry, dirEntryNew, _extractFilename(newPath));
+              dirEntry.getDirectory(fileSystem.extractFilename(path), {create: false}, function(entry){
+                move(entry, dirEntryNew, fileSystem.extractFilename(newPath));
               });
             }
           });
@@ -402,7 +402,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       }
     };
 
-    var _extractDirectory = function(path){
+    fileSystem.extractDirectory = function(path){
       var dirPath;
       var lastSlash = path.lastIndexOf('/');
 
@@ -419,7 +419,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       return dirPath;
     };
 
-    var _extractFilename = function(path){
+    fileSystem.extractFilename = function(path){
       var lastSlash = path.lastIndexOf('/');
 
       if (lastSlash === -1){
