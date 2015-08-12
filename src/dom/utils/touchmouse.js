@@ -364,4 +364,6 @@ define(function(){
   // check for click events (if moved while trying to click: do not dispatch click)
   //document.addEventListener('click', onClickEvent, true);
 
+  _resetIdle();
+
 });
