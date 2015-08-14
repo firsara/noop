@@ -145,6 +145,7 @@ define(['../../config'], function(config){
 
       for (k in trackedTouches) {
         if (activeTouchIdentifiers.indexOf(k) === -1) {
+          // !!!!! also important now for remote tracking!!
           // TODO: IMPORTANT: dispatch mouse up for every deleted tracked touch that was not on changedTouches!
           delete trackedTouches[k];
         }
@@ -347,13 +348,15 @@ define(['../../config'], function(config){
   };
 
   // check if supports touch events
-  if (config.isTouch) {
+  if (config.isTouch || config.trackTouch) {
     // if it does: listen to appropriate touch events in whole window
     window.addEventListener('touchstart', onTouchEvent);
     window.addEventListener('touchmove', onTouchEvent);
     window.addEventListener('touchend', onTouchEvent);
     window.addEventListener('touchcancel', onTouchEvent);
-  } else {
+  }
+
+  if (! config.isTouch || config.trackMouse) {
     // otherwise check mouse events and convert them
     window.addEventListener('mousedown', onMouseEvent);
     window.addEventListener('mouseup', onMouseEvent);
