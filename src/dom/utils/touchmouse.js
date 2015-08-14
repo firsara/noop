@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(function(){
+define(['../../config'], function(config){
 
   /**
    * handles mouse and touch events
@@ -347,7 +347,7 @@ define(function(){
   };
 
   // check if supports touch events
-  if (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch)) {
+  if (config.isTouch) {
     // if it does: listen to appropriate touch events in whole window
     window.addEventListener('touchstart', onTouchEvent);
     window.addEventListener('touchmove', onTouchEvent);

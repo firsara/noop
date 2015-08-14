@@ -18,6 +18,7 @@ define(['text!app.config.json'], function(configJSON){
    * @var {Boolean} isTouch
    */
   config.isTouch = ('ontouchstart' in window) ||
+                   (window.DocumentTouch && document instanceof DocumentTouch) ||
                    (window.Modernizr && window.Modernizr.touch) ||
                    (navigator.msMaxTouchPoints || navigator.maxTouchPoints) > 2;
 
