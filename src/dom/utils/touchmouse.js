@@ -46,6 +46,9 @@ define(['../../config'], function(config){
   // stores if was idle before when reactivating
   var wasIdle = false;
 
+  // if tracking both events prevent them by default
+  var preventEvents = config.trackTouch && config.trackMouse;
+
   /**
    * checks event type, tracks positions, converts to touchmouse event, etc.
    *
@@ -56,6 +59,8 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onMouseEvent = function(event) {
+    if (preventEvents) event.preventDefault();
+
     var type, evt;
 
     switch (event.type) {
@@ -97,6 +102,8 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onTouchEvent = function(event) {
+    if (preventEvents) event.preventDefault();
+
     var type, i, _len, target, touch, touches, activeTouches, k, evt;
 
     switch (event.type) {
