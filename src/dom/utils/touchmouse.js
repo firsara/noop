@@ -59,7 +59,12 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onMouseEvent = function(event) {
-    if (preventEvents) event.preventDefault();
+    if (preventEvents) {
+      var nn = event.target.nodeName.toString().toLowerCase();
+      if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
+
+      event.preventDefault();
+    }
 
     var type, evt;
 
@@ -102,7 +107,12 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onTouchEvent = function(event) {
-    if (preventEvents) event.preventDefault();
+    if (preventEvents) {
+      var nn = event.target.nodeName.toString().toLowerCase();
+      if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
+
+      event.preventDefault();
+    }
 
     var type, i, _len, target, touch, touches, activeTouches, k, evt;
 
