@@ -1,5 +1,3 @@
-// TODO: simplify model's internal logic!
-// especially .pull() !!!
 /*
  * Model.js
  * Fabian Irsara
@@ -190,6 +188,28 @@ define([
   var p = Model.prototype;
 
   /**
+   * gets the model's query arguments
+   * @method getQuery
+   * @memberof data.Model
+   * @instance
+   * @protected
+   **/
+  p.getQuery = function(){
+    var query = '';
+
+    for (var k in Model.queryArgs) {
+      if (Model.queryArgs.hasOwnProperty(k)) {
+        if (query.length === 0) query += '?';
+        else query += '&';
+
+        query += (k + '=' + Model.queryArgs[k]);
+      }
+    }
+
+    return query;
+  };
+
+  /**
    * gets model's specific url for pulling data
    * @method getPullURL
    * @memberof data.Model
@@ -197,7 +217,7 @@ define([
    * @protected
    **/
   p.getPullURL = function(){
-    return API.endpoint + this.model + 's' + '/' + this.id;
+    return API.endpoint + this.model + 's' + '/' + this.id + this.getQuery();
   };
 
   /**
@@ -672,9 +692,19 @@ define([
    * @memberof data.Model
    * @public
    * @static
-   * @var {Boolean} collection
+   * @var {Object} collection
    **/
   Model.collection = {};
+
+  /**
+   * query args in the form of key = value that get appended when pulling a model
+   *
+   * @memberof data.Model
+   * @public
+   * @static
+   * @var {Object} queryArgs
+   **/
+  Model.queryArgs = {};
 
   /**
    * factories a new model
