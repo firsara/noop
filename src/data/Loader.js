@@ -241,8 +241,21 @@ define([
           options.overwrite = this.overwrite;
         }
 
+        // merge in item's size if set
+        if (this._manifest[this._loadIndex].size) {
+          options.size = this._manifest[this._loadIndex].size;
+        }
+
+        // merge in item's checksum if set
+        if (this._manifest[this._loadIndex].checksum) {
+          options.checksum = this._manifest[this._loadIndex].checksum;
+        }
+
+        // set remote and local paths
         options.remote = this._manifest[this._loadIndex].src;
         options.local = this._manifest[this._loadIndex].local;
+
+        // and start downloading file
         fs.download(options);
       } else {
         // otherwise: assume it wants to load remote file
