@@ -588,6 +588,8 @@ define([
    * @param {function} errorCallback (optional)
    **/
   p.push = function(dataOrCallback, callback, errorCallback){
+    var _this = this;
+
     if (typeof dataOrCallback === 'function') {
       errorCallback = callback;
       callback = dataOrCallback;
@@ -617,6 +619,10 @@ define([
       // otherwise post a new model to the server
       options.method = 'POST';
     }
+
+    var done = function(){
+      if (_this.pushed) _this.pushed.call(_this, _this);
+    };
 
     fs.request(options, callback, errorCallback);
   };
