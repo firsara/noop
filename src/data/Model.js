@@ -454,6 +454,7 @@ define([
         _getRelations(items[index], next, errorCallback);
       } else {
         _this._cached = true;
+        _this.dispatchEvent('pulled');
         if (_this.pulled) _this.pulled.call(_this, _this);
         if (callback) callback(_this);
       }
@@ -621,6 +622,7 @@ define([
     }
 
     var done = function(){
+      _this.dispatchEvent('pushed');
       if (_this.pushed) _this.pushed.call(_this, _this);
     };
 
