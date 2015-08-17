@@ -47,10 +47,13 @@ define(['../../config'], function(config){
   var wasIdle = false;
 
   // if tracking both events prevent them by default
-  var preventEvents = config.trackTouch && config.trackMouse;
+  var preventDoubleClicks = config.trackTouch && config.trackMouse;
 
   // keep track of mouse down and up events
   var isMouseDown = false;
+
+  // if touch just fired a touchend event
+  var justDidTouchEnd = false;
 
   /**
    * checks event type, tracks positions, converts to touchmouse event, etc.
@@ -62,13 +65,7 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onMouseEvent = function(event) {
-    if (preventEvents) {
-      var nn = event.target.nodeName.toString().toLowerCase();
-      if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
-      if (! (nn === 'button')) {
-        event.preventDefault();
-      }
-    }
+    if (preventDoubleClicks && justDidTouchEnd) return;
 
     var type, evt;
 
@@ -118,14 +115,6 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onTouchEvent = function(event) {
-    if (preventEvents) {
-      var nn = event.target.nodeName.toString().toLowerCase();
-      if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
-      if (! (nn === 'button')) {
-        event.preventDefault();
-      }
-    }
-
     var type, i, _len, target, touch, touches, activeTouches, k, evt;
 
     switch (event.type) {
@@ -228,10 +217,21 @@ define(['../../config'], function(config){
 
       // check if it was a tap on last found target
       checkTap(target, event, touches[0].pageX, touches[0].pageY, touches[0].identifier);
+
+      if (preventDoubleClicks) {
+        // prevent calling mouse events that fire right after a touchend event (i.e. fallback click)
+        justDidTouchEnd = true;
+        setTimeout(_resetTouchEnd, 17);
+      }
     }
 
     // reset idle status
     _resetIdle();
+  };
+
+  // resets touch end to its default state
+  var _resetTouchEnd = function(){
+    justDidTouchEnd = false;
   };
 
   /**
