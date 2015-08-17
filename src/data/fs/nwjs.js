@@ -358,6 +358,14 @@ define(['./base', '../API'], function(fileSystem, API){
     };
 
     fileSystem.mkdir = function(path, mode, callback){
+      if (path + '/' === fileSystem.dataPath) {
+        if (callback) {
+          callback();
+        }
+
+        return;
+      }
+
       // correct file path
       path = fileSystem.correctLocalFilePath(path);
 
