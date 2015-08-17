@@ -49,6 +49,9 @@ define(['../../config'], function(config){
   // if tracking both events prevent them by default
   var preventEvents = config.trackTouch && config.trackMouse;
 
+  // keep track of mouse down and up events
+  var isMouseDown = false;
+
   /**
    * checks event type, tracks positions, converts to touchmouse event, etc.
    *
@@ -62,8 +65,9 @@ define(['../../config'], function(config){
     if (preventEvents) {
       var nn = event.target.nodeName.toString().toLowerCase();
       if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
-
-      event.preventDefault();
+      if (! (nn === 'button')) {
+        event.preventDefault();
+      }
     }
 
     var type, evt;
@@ -76,6 +80,11 @@ define(['../../config'], function(config){
         return;
     }
 
+    if (type === EVENTS.DOWN && isMouseDown) {
+      evt = _createEvent(EVENTS.DOWN, event, event.pageX, event.pageY, -1);
+      isMouseDown.dispatchEvent(evt);
+    }
+
     // create appropriate touchmouse event based on original event
     evt = _createEvent(type, event, event.pageX, event.pageY, -1);
 
@@ -85,12 +94,14 @@ define(['../../config'], function(config){
     if (type === EVENTS.DOWN) {
       // store start mouse position
       trackedPositions.start = {x: evt.pageX, y: evt.pageY};
+      isMouseDown = event.target;
     } else if (type === EVENTS.UP) {
       // store end mouse position
       trackedPositions.end = {x: evt.pageX, y: evt.pageY};
 
       // check if it was a tap
       checkTap(event.target, event, evt.pageX, evt.pageY, -1);
+      isMouseDown = false;
     }
 
     // reset idle status
@@ -110,8 +121,9 @@ define(['../../config'], function(config){
     if (preventEvents) {
       var nn = event.target.nodeName.toString().toLowerCase();
       if (! event.shiftKey && (nn === 'input' || nn === 'textarea' || nn === 'select')) return;
-
-      event.preventDefault();
+      if (! (nn === 'button')) {
+        event.preventDefault();
+      }
     }
 
     var type, i, _len, target, touch, touches, activeTouches, k, evt;
@@ -155,15 +167,35 @@ define(['../../config'], function(config){
     // delete unused tracked touches
     if (type === EVENTS.UP) {
       var activeTouchIdentifiers = [];
+      var eventFiringIdentifiers = [];
 
+      // store currently active touch ids
       for (i = 0, _len = event.touches.length; i < _len; i++) {
         activeTouchIdentifiers.push(event.touches[i].identifier);
       }
 
+      // store touch id's that fired ended event (i.e. fingers that left the screen)
+      for (i = 0, _len = event.changedTouches.length; i < _len; i++) {
+        eventFiringIdentifiers.push(event.changedTouches[i].identifier);
+      }
+
+      // check all tracked touches
       for (k in trackedTouches) {
+        k = parseFloat(k);
+
+        // if the checked finger is not active anymore
         if (activeTouchIdentifiers.indexOf(k) === -1) {
-          // !!!!! also important now for remote tracking!!
-          // TODO: IMPORTANT: dispatch mouse up for every deleted tracked touch that was not on changedTouches!
+          // if that finger will not fire a touchend
+          // (i.e. if it actually isn't actively on the screen anymore, but is still be tracked)
+          if (eventFiringIdentifiers.indexOf(k) === -1) {
+            // fake touchend event on that element
+            evt = _createEvent(type, event, touch.pageX, touch.pageY, k);
+            if (trackedTouches[k].target) {
+              trackedTouches[k].target.dispatchEvent(evt);
+            }
+          }
+
+          // remove it from tracking list
           delete trackedTouches[k];
         }
       }
