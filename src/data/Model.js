@@ -454,8 +454,12 @@ define([
         _getRelations(items[index], next, errorCallback);
       } else {
         _this._cached = true;
-        if (_this.pulled) _this.pulled.call(_this, _this);
-        _this.dispatchEvent('pulled');
+
+        for (var i = 0, _len = items.length; i < _len; i++) {
+          if (items[i].pulled) items[i].pulled.call(items[i], items[i]);
+          items[i].dispatchEvent('pulled');
+        }
+
         if (callback) callback(_this);
       }
     };
