@@ -454,6 +454,7 @@ define([
         _getRelations(items[index], next, errorCallback);
       } else {
         _this._cached = true;
+        if (_this.pulled) _this.pulled.call(_this, _this);
         if (callback) callback(_this);
       }
     };
