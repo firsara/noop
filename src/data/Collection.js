@@ -60,6 +60,26 @@ define([
   var p = sys.extend(Collection, Model);
 
   /**
+   * loops through collection items and calls callback for each of the items
+   * @method each
+   * @memberof data.Collection
+   * @instance
+   * @protected
+   * @param {Function} callback (item, index)
+   **/
+  p.each = function(callback){
+    if (callback) {
+      var items = this.getItems();
+
+      for (var i = 0, _len = items.length; i < _len; i++) {
+        callback.call(this, items[i], i);
+      }
+    }
+
+    return this;
+  };
+
+  /**
    * gets collection's specific url for pulling data
    * @method getPullURL
    * @memberof data.Collection
