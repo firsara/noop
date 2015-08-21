@@ -40,8 +40,10 @@ function(
     this.fraction.release.x = 0.75;
     this.fraction.release.y = 0.75;
 
+    this.fraction.updateScrollBounds = 1;
+
     this.__scollTicks = 0;
-    this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() / 2);
+    this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
     this.autoSetScrollBounds = true;
 
     this.on('addedToStage', _render, this);
@@ -118,7 +120,7 @@ function(
       if (this.__scollTicks % this.__scrollTicksInterval === 0) {
         this.setScrollBounds();
         this.__scollTicks = 0;
-        this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() / 2);
+        this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
       }
     } else {
       this.removeEventListener('tick', this.__bind(_update));
