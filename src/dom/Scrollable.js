@@ -1,6 +1,3 @@
-// TODO: IMPORTANT: rewrite!
-
-
 /*
  * Scrollable.js
  * Fabian Irsara
@@ -45,7 +42,7 @@ function(
     this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
     this.__scrollOldSize = {width: 0, height: 0};
     this.__scrollOldParentSize = {width: 0, height: 0};
-    this.__removeScrollbarTimeout = null;
+    this.__unsetScrollbarTimeout = null;
     this.autoSetScrollBounds = true;
 
     this.on('addedToStage', _render, this);
@@ -136,7 +133,7 @@ function(
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     fps.removeEventListener('tick', this.__bind(_update));
 
-    if (this.__removeScrollbarTimeout) clearTimeout(this.__removeScrollbarTimeout);
+    if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
   };
 
   /**
@@ -172,15 +169,24 @@ function(
   var _positionScrollbar = function(){
     if (this.parent.vScrollbar) {
       var percentage = this.y / this.borders.y[0];
+
       this.parent.vScrollbar.el.style.top = (percentage * this.parent.vScrollbar.offset) + 'px';
       this.parent.vScrollbar.$el.addClass('active');
 
-      if (this.__removeScrollbarTimeout) clearTimeout(this.__removeScrollbarTimeout);
-      this.__removeScrollbarTimeout = setTimeout(this.__bind(_removeScrollbar), 300);
+      if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
+      this.__unsetScrollbarTimeout = setTimeout(this.__bind(_unsetScrollbar), 300);
     }
   };
 
-  var _removeScrollbar = function(){
+  /**
+   * unsets scrollbar visibility status
+   *
+   * @method _unsetScrollbar
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _unsetScrollbar = function(){
     this.parent.vScrollbar.$el.removeClass('active');
   };
 
