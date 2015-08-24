@@ -168,7 +168,6 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
     this._stoppedPropagation = false;
 
     // set autoPainting by default to true
-    this.autoUpdate = true;
     this.autoPaint = true;
 
     // define class to be initialized (useful for multiple mixins so that base class (Container) does not get initialized twice)

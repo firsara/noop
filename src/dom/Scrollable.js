@@ -5,11 +5,13 @@
  */
 define([
   '../sys',
+  '../utils/fps',
   './MoveClip',
   'EaselJS'
 ],
 function(
   sys,
+  fps,
   MoveClip,
   createjs
 ) {
@@ -25,8 +27,8 @@ function(
    * @param {object} options optional options to overwrite container properties before inheriting
    **/
   function Scrollable(template, data, options){
-    this.autoPaint = true;
     this.autoUpdate = true;
+    this.autoPaint = true;
 
     // extend from base class
     MoveClip.call(this, template, data, options);
@@ -88,7 +90,8 @@ function(
     this.el.addEventListener('mousewheel', this.__bind(_scroll));
 
     if (this.autoSetScrollBounds) {
-      this.addEventListener('tick', this.__bind(_update));
+      fps.removeEventListener('tick', this.__bind(_update));
+      fps.addEventListener('tick', this.__bind(_update));
     }
   };
 
@@ -102,7 +105,7 @@ function(
    **/
   var _dispose = function(){
     this.el.removeEventListener('mousewheel', this.__bind(_scroll));
-    this.removeEventListener('tick', this.__bind(_update));
+    fps.removeEventListener('tick', this.__bind(_update));
   };
 
   /**
@@ -123,7 +126,7 @@ function(
         this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
       }
     } else {
-      this.removeEventListener('tick', this.__bind(_update));
+      fps.removeEventListener('tick', this.__bind(_update));
     }
   };
 
