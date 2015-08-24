@@ -35,14 +35,17 @@ define([
   // store container transform status
   var _containerTransform = null;
 
+  // stored item id for looping
+  var itemId = null;
+
   // paint all container items that need to be auto paintd
   var _paint = function(){
-    for (var k in _autoUpdateContainers) {
-      _autoUpdateContainers[k]._painted = false;
+    for (itemId in _autoUpdateContainers) {
+      _autoUpdateContainers[itemId]._painted = false;
     }
 
-    for (var k in _autoPaintContainers) {
-      _autoPaintContainers[k].paint();
+    for (itemId in _autoPaintContainers) {
+      _autoPaintContainers[itemId].paint();
     }
   };
 
