@@ -27,9 +27,6 @@ function(
    * @param {object} options optional options to overwrite container properties before inheriting
    **/
   function Scrollable(template, data, options){
-    this.autoUpdate = true;
-    this.autoPaint = true;
-
     // extend from base class
     MoveClip.call(this, template, data, options);
 

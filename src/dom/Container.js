@@ -26,31 +26,8 @@ define([
   // max container id before prefix id gets incremented
   var maxStoredContainerID = Number.MAX_VALUE - 1;
 
-  // stored container item list
-  var _autoUpdateContainers = {};
-
-  // stored container item list
-  var _autoPaintContainers = {};
-
   // store container transform status
   var _containerTransform = null;
-
-  // stored item id for looping
-  var itemId = null;
-
-  // paint all container items that need to be auto paintd
-  var _paint = function(){
-    for (itemId in _autoUpdateContainers) {
-      _autoUpdateContainers[itemId]._painted = false;
-    }
-
-    for (itemId in _autoPaintContainers) {
-      _autoPaintContainers[itemId].paint();
-    }
-  };
-
-  // listen for tick event globally and paint all needed containers
-  fps.addEventListener('tick', _paint);
 
   /**
    * Base class of all other dom classes<br>
@@ -151,7 +128,8 @@ define([
      * @instance
      * @var {Number} x
      */
-    this.x = 0;
+    this._x = 0;
+    this._cx = '0px';
 
     /**
      * y position of container instance
@@ -159,7 +137,8 @@ define([
      * @instance
      * @var {Number} y
      */
-    this.y = 0;
+    this._y = 0;
+    this._cy = '0px';
 
     /**
      * z position of container instance
@@ -167,7 +146,8 @@ define([
      * @instance
      * @var {Number} x
      */
-    this.z = 0;
+    this._z = 0;
+    this._cz = '0px';
 
     /**
      * rotation of container instance
@@ -175,7 +155,7 @@ define([
      * @instance
      * @var {Number} rotation
      */
-    this.rotation = 0;
+    this._rotation = 0;
 
     /**
      * rotationX of container instance
@@ -183,7 +163,7 @@ define([
      * @instance
      * @var {Number} rotationX
      */
-    this.rotationX = 0;
+    this._rotationX = 0;
 
     /**
      * rotationY of container instance
@@ -191,7 +171,7 @@ define([
      * @instance
      * @var {Number} rotationY
      */
-    this.rotationY = 0;
+    this._rotationY = 0;
 
     /**
      * rotationZ of container instance
@@ -199,7 +179,8 @@ define([
      * @instance
      * @var {Number} rotationZ
      */
-    this.rotationZ = 0;
+    this._rotationZ = 0;
+    this._crotationZ = 0;
 
     /**
      * scaleX of container instance
@@ -207,7 +188,7 @@ define([
      * @instance
      * @var {Number} scaleX
      */
-    this.scaleX = 1;
+    this._scaleX = 1;
 
     /**
      * scaleY of container instance
@@ -215,7 +196,7 @@ define([
      * @instance
      * @var {Number} scaleY
      */
-    this.scaleY = 1;
+    this._scaleY = 1;
 
     /**
      * opacity of container instance
@@ -223,7 +204,7 @@ define([
      * @instance
      * @var {Number} opacity
      */
-    this.opacity = 1;
+    this._opacity = 1;
 
 
     // SPECIAL CONTAINER PROPERTIES
@@ -307,21 +288,7 @@ define([
      * @instance
      * @var {Boolean} autoPaint
      */
-    this.autoPaint = sys.setDefaultValue(this.autoPaint, false);
-
-    /**
-     * automatically dispatch update events every frame for use in child classes, defaults to false
-     * @memberof dom.Container
-     * @instance
-     * @var {Boolean} autoUpdate
-     */
-    this.autoUpdate = sys.setDefaultValue(this.autoUpdate, false);
-
-    // store container painting to prevent double paints
-    this._painted = false;
-
-    // call parent constructor
-    //if (Parent) Parent.call(this);
+    this.autoPaint = sys.setDefaultValue(this.autoPaint, true);
 
     // if options were passed: run through them and overwrite container properties
     if (options) {
@@ -402,13 +369,65 @@ define([
     } else {
       throw new Error('Container needs a template (Handlebars, html string, jquery element)');
     }
-
-    // listen to dom added event
-    this.addEventListener('addedToStage', _render.bind(this));
-    this.addEventListener('removedFromStage', _dispose.bind(this));
   }
 
   var p = sys.extend(Container, createjs.EventDispatcher);
+
+  // define setters and gettrs for autoPainting transformations
+  var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
+
+  var defineProperty = function(property){
+    var realProperty = property.substring(1);
+
+    var setXYZ = function(value){
+      if (this[property] !== value) {
+        this[property] = value;
+        this['_c' + realProperty] = _correctUnit(value);
+
+        if (this.autoPaint) {
+          this.paint();
+        }
+      }
+    };
+
+    var setRotationZ = function(value){
+      if (this[property] !== value) {
+        this[property] = value;
+        this._crotationZ = this.rotation + this.rotationZ;
+
+        if (this.autoPaint) {
+          this.paint();
+        }
+      }
+    };
+
+    var setProperty = function(value){
+      if (this[property] !== value) {
+        this[property] = value;
+
+        if (this.autoPaint) {
+          this.paint();
+        }
+      }
+    };
+
+    if (realProperty === 'x' || realProperty === 'y' || realProperty === 'z') {
+      setProperty = setXYZ;
+    } else if (realProperty === 'rotation' || realProperty === 'rotationZ') {
+      setProperty = setRotationZ;
+    }
+
+    Object.defineProperty(p, realProperty, {
+      set: setProperty,
+      get: function(){
+        return this[property];
+      }
+    });
+  };
+
+  for (var i = 0, _len = props.length; i < _len; i++) {
+    defineProperty(props[i]);
+  }
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
@@ -437,34 +456,6 @@ define([
       this.el.addEventListener('click', this.__bind(_preventMouseEvent), true);
       this.el.addEventListener('tap', this.__bind(_preventMouseEvent), true);
     }
-  };
-
-  /**
-   * sets autoUpate on container
-   *
-   * @method setAutoUpdate
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Boolean} value true or false
-   **/
-  p.setAutoUpdate = function(value){
-    this.autoUpdate = value;
-    _checkRendering.call(this);
-  };
-
-  /**
-   * sets autoPaint on container
-   *
-   * @method setAutoPaint
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Boolean} value true or false
-   **/
-  p.setAutoPaint = function(value){
-    this.autoPaint = value;
-    _checkRendering.call(this);
   };
 
   /**
@@ -699,18 +690,14 @@ define([
   p.paint = function(){
     // if container was not already painted from a function call outside -> paint again
     // saves performance by not letting container be painted twice on one rendered frame
-    if (! this.autoPaint || ! this._painted) {
-      this._painted = true;
+    _containerTransform = 'translate3d(' + this._cx + ',' + this._cy + ',' + this._cz + ')';
+    _containerTransform += ' scale(' + this._scaleX + ', ' + this._scaleY + ')';
+    _containerTransform += ' rotateX(' + this._rotationX + 'deg)';
+    _containerTransform += ' rotateY(' + this._rotationY + 'deg)';
+    _containerTransform += ' rotateZ(' + (this._crotationZ) + 'deg)';
 
-      _containerTransform = 'translate3d(' + _correctUnit(this.x) + ',' + _correctUnit(this.y) + ',' + _correctUnit(this.z) + ')';
-      _containerTransform += ' scale(' + this.scaleX + ', ' + this.scaleY + ')';
-      _containerTransform += ' rotateX(' + this.rotationX + 'deg)';
-      _containerTransform += ' rotateY(' + this.rotationY + 'deg)';
-      _containerTransform += ' rotateZ(' + (this.rotationZ + this.rotation) + 'deg)';
-
-      this.el.style[css3.transformStylePrefix] = _containerTransform;
-      this.el.style.opacity = this.opacity;
-    }
+    this.el.style[css3.transformStylePrefix] = _containerTransform;
+    this.el.style.opacity = this.opacity;
   };
 
   /**
@@ -885,23 +872,6 @@ define([
   };
 
   /**
-   * checks whether the container needs to be auto updated or autoPainted on each frame
-   * function gets called automatically when added or when setAutoPaint or setAutoUpdate is called
-   *
-   * @method _checkRendering
-   * @memberof dom.Container
-   * @private
-   * @instance
-   **/
-  var _checkRendering = function(){
-    delete _autoUpdateContainers[this._containerID];
-    delete _autoPaintContainers[this._containerID];
-
-    if (this.autoUpdate || this.autoPaint) _autoUpdateContainers[this._containerID] = this;
-    if (this.autoPaint) _autoPaintContainers[this._containerID] = this;
-  };
-
-  /**
    * prevents all mouse events if mouseEnabled is set to false
    *
    * @method _preventMouseEvent
@@ -913,37 +883,6 @@ define([
     e.stopPropagation();
     e.stopImmediatePropagation();
     e.preventDefault();
-  };
-
-  /**
-   * checks if element needs to autoPaint
-   * listens to removedFromStage event to dispose rendering
-   * unbinds addedToStage event as container should not be addedToStage again before removedFromStage first
-   * automatically calls render on child class if available
-   *
-   * @method _render
-   * @memberof dom.Container
-   * @private
-   * @instance
-   **/
-  var _render = function(){
-    // check if needs auto rendering
-    _checkRendering.call(this);
-  };
-
-  /**
-   * unbinds fps tick event and re-listens for addedToStage event to render again
-   * automatically calls dispose on child class if available
-   *
-   * @method _dispose
-   * @memberof dom.Container
-   * @private
-   * @instance
-   **/
-  var _dispose = function(){
-    // remove fps checker
-    delete _autoUpdateContainers[this._containerID];
-    delete _autoPaintContainers[this._containerID];
   };
 
   /**
@@ -972,7 +911,7 @@ define([
     var ClassTemplate = Container;
 
     // only tell normal containers that they should not autoPaint
-    var options = {autoUpdate: false, autoPaint: false};
+    var options = {};
 
     // otherwise require class
     // NOTE: class has to be already in require registry
@@ -989,11 +928,6 @@ define([
 
     // create new class instance and set autoPainting and autoUpdating to false by default to save some performance
     var ct = new ClassTemplate($el, null, options);
-
-    if (! className) {
-      ct.autoUpdate = false;
-      ct.autoPaint = false;
-    }
 
     return ct;
   };

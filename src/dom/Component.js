@@ -71,10 +71,6 @@ define([
     // call super constructor if not already done by some other mixin function
     if (! this._initializedContainer) Container.call(this, template, data, options);
 
-    // don't autoPaint component by default
-    this.autoPaint = false;
-    this.autoUpdate = false;
-
     // initialize when added to stage
     this.addEventListener('addedToStage', this.__bind(_init));
   }

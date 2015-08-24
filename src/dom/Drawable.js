@@ -28,8 +28,6 @@ define(['sys', 'dom/Container'], function(sys, Container) {
       // call super constructor
       if (Parent) Parent.call(_this, template, data);
 
-      _this.autoPaint = false;
-
       _canvas = _this.el;
       _ctx = _canvas.getContext('2d');
 
