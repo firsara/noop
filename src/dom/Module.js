@@ -97,7 +97,11 @@ define([
       Parent.call(_this);
 
       if (ContainerClass) {
-        _this.container = new ContainerClass(options);
+        if (typeof ContainerClass === 'string') {
+          _this.container = new Component(ContainerClass, null, options);
+        } else {
+          _this.container = new ContainerClass(options);
+        }
       } else {
         _this.container = new Component('<div class="module"></div>', null, options);
       }
