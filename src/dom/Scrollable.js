@@ -30,9 +30,6 @@ function(
     // extend from base class
     MoveClip.call(this, template, data, options);
 
-    // TODO: implement .scrolls() from moveclip (both sides)
-    // TODO: check .scrolls() in both directions -> to prevent parents events
-    // TODO: check scrollwheel direction? (maybe scroll horizontal even if scrolled down?)
     this.borders.x = [0, 0];
     this.borders.y = [0, 0];
 
@@ -43,6 +40,9 @@ function(
 
     this.__scollTicks = 0;
     this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
+    this.__scrollOldSize = {width: 0, height: 0};
+    this.__scrollOldParentSize = {width: 0, height: 0};
+    this.__removeScrollbarTimeout = null;
     this.autoSetScrollBounds = true;
 
     this.on('addedToStage', _render, this);
@@ -63,6 +63,12 @@ function(
     if (this.parent) {
       var parentSize = {width: this.parent.$el.outerWidth(), height: this.parent.$el.outerHeight()};
       var scrollSize = {width: this.$el.outerWidth(), height: this.$el.outerHeight()};
+
+      if ((this.__scrollOldSize.width === scrollSize.width && this.__scrollOldSize.height === scrollSize.height) &&
+        (this.__scrollOldParentSize.width === parentSize.width && this.__scrollOldParentSize.height === parentSize.height)) {
+        return;
+      }
+
       var offsetSize = {width: scrollSize.width - parentSize.width, height: scrollSize.height - parentSize.height};
       offsetSize.width = Math.max(0, offsetSize.width);
       offsetSize.height = Math.max(0, offsetSize.height);
@@ -70,8 +76,27 @@ function(
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
 
+      if (this.parent.vScrollbar) {
+        var scrollbarHeightOffset = scrollSize.height / parentSize.height;
+        scrollbarHeightOffset = Math.sqrt(scrollbarHeightOffset);
+
+        var scrollbarHeight = Math.max(75, Math.min(parentSize.height * (1 / scrollbarHeightOffset)));
+
+        var scrollbarMarginTop = parseFloat(this.parent.vScrollbar.$el.css('margin-top').replace('px', ''));
+        if (isNaN(scrollbarMarginTop)) scrollbarMarginTop = 0;
+
+        var scrollbarMarginBottom = parseFloat(this.parent.vScrollbar.$el.css('margin-bottom').replace('px', ''));
+        if (isNaN(scrollbarMarginBottom)) scrollbarMarginBottom = 0;
+
+        this.parent.vScrollbar.el.style.height = scrollbarHeight + 'px';
+        this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMarginTop - scrollbarMarginBottom;
+      }
+
       this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
       this.elastic.y = offsetSize.height > 0 ? 0.1 : 0;
+
+      this.__scrollOldSize = scrollSize;
+      this.__scrollOldParentSize = parentSize;
     }
   };
 
@@ -85,11 +110,14 @@ function(
    **/
   var _render = function(){
     this.el.addEventListener('mousewheel', this.__bind(_scroll));
+    this.addEventListener('move', this.__bind(_positionScrollbar));
 
     if (this.autoSetScrollBounds) {
       fps.removeEventListener('tick', this.__bind(_update));
       fps.addEventListener('tick', this.__bind(_update));
     }
+
+    this.setScrollBounds();
   };
 
   /**
@@ -102,7 +130,10 @@ function(
    **/
   var _dispose = function(){
     this.el.removeEventListener('mousewheel', this.__bind(_scroll));
+    this.removeEventListener('move', this.__bind(_positionScrollbar));
     fps.removeEventListener('tick', this.__bind(_update));
+
+    if (this.__removeScrollbarTimeout) clearTimeout(this.__removeScrollbarTimeout);
   };
 
   /**
@@ -128,6 +159,29 @@ function(
   };
 
   /**
+   * move position scrollbar
+   *
+   * @method _positionScrollbar
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _positionScrollbar = function(){
+    if (this.parent.vScrollbar) {
+      var percentage = this.y / this.borders.y[0];
+      this.parent.vScrollbar.el.style.top = (percentage * this.parent.vScrollbar.offset) + 'px';
+      this.parent.vScrollbar.$el.addClass('active');
+
+      if (this.__removeScrollbarTimeout) clearTimeout(this.__removeScrollbarTimeout);
+      this.__removeScrollbarTimeout = setTimeout(this.__bind(_removeScrollbar), 300);
+    }
+  };
+
+  var _removeScrollbar = function(){
+    this.parent.vScrollbar.$el.removeClass('active');
+  };
+
+  /**
    * fake moving moveclip on
    *
    * @method _scroll
@@ -137,6 +191,8 @@ function(
    **/
   var _scroll = function(event){
     var options = {};
+    options.onUpdate = _positionScrollbar;
+    options.onUpdateScope = this;
     options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX));
     options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY));
     options.ease = Quint.easeOut;
