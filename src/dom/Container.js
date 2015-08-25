@@ -385,7 +385,7 @@ define([
         this['_c' + realProperty] = _correctUnit(value);
 
         if (this.autoPaint) {
-          this.paint();
+          _paintContainers[this._containerID] = this;
         }
       }
     };
@@ -396,7 +396,7 @@ define([
         this._crotationZ = this.rotation + this.rotationZ;
 
         if (this.autoPaint) {
-          this.paint();
+          _paintContainers[this._containerID] = this;
         }
       }
     };
@@ -406,7 +406,7 @@ define([
         this[property] = value;
 
         if (this.autoPaint) {
-          this.paint();
+          _paintContainers[this._containerID] = this;
         }
       }
     };
@@ -428,6 +428,18 @@ define([
   for (var i = 0, _len = props.length; i < _len; i++) {
     defineProperty(props[i]);
   }
+
+  // all stored containers that need to be repainted on each frame
+  var _paintContainers = {};
+
+  var _paintAll = function(){
+    for (var k in _paintContainers) {
+      _paintContainers[k].paint();
+      delete _paintContainers[k];
+    }
+  };
+
+  fps.addEventListener('tick', _paintAll);
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
