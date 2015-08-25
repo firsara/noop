@@ -247,10 +247,11 @@ define([
     this.__component._doResizeTimeout = null;
     this.__component._didResize = false;
 
-    this.dispatchEvent('resize');
-
     // resize component
     this.resize();
+
+    // dispatch resize event
+    this.dispatchEvent('resize');
 
     // render component
     _render.call(this);
