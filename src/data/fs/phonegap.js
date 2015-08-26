@@ -353,23 +353,34 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       path = fileSystem.getLocalFilePath(path);
 
+      var _calledCallback = null;
+      var _autoFailTimeout = null;
+
+      var done = function(data){
+        if (_calledCallback) return;
+        _calledCallback = true;
+
+        if (_autoFailTimeout) clearTimeout(_autoFailTimeout);
+
+        if (callback) {
+          callback(data);
+        }
+      };
+
+      var fail = function(){
+        if (_calledCallback) return;
+        done('');
+      };
+
       md5chksum.file(path, function(sum) {
         if (sum && sum.length > 0) {
-          if (callback) {
-            callback(sum);
-          }
+          done(sum);
         } else {
-          if (callback) {
-            callback('');
-          }
+          fail();
         }
-      },
+      }, fail);
 
-      function(){
-        if (callback) {
-          callback('');
-        }
-      });
+      _autoFailTimeout = setTimeout(fail, 100);
     };
 
     fileSystem.init = function(callback){
