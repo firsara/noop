@@ -180,7 +180,7 @@ define(['../../config', '../API'], function(config, API){
           // compare it with local file's checksum
           fs.checksum(options.local, function(sum){
             // if checksums are identical
-            if (sum === options.checksum) {
+            if (sum === options.checksum || ! (sum && sum.length > 0)) {
               // call callback
               if (options.success) {
                 options.success(options.local);

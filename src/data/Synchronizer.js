@@ -210,7 +210,7 @@ define([
         if (exists && ! options.overwrite) {
           if (options.checksum) {
             fs.checksum(options.local, function(sum){
-              if (sum === options.checksum) {
+              if (sum === options.checksum || ! (sum && sum.length > 0)) {
                 done(true);
               } else {
                 done(false);
