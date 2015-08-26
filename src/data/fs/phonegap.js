@@ -12,6 +12,23 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       return (fileSystem.dataSubFolder + '/' + path.replace(fileSystem.dataPath, '').replace(fileSystem.dataSubFolder + '/', '')).replace(fileSystem.dataSubFolder + '/' + fileSystem.dataSubFolder, fileSystem.dataSubFolder + '/');
     };
 
+    fileSystem.getFileEntry = function(filename, callback, errorCallback){
+      // correct file path
+      filename = fileSystem.correctLocalFilePath(filename.replace('file://', ''));
+
+      fileSystem.getFileSystem(function(fs){
+        fileSystem.mkdir(fileSystem.extractDirectory(filename), 0744, function(dirEntry){
+          dirEntry.getFile(fileSystem.extractFilename(filename), {create: true}, function(fileEntry){
+
+            if (callback) {
+              callback(fileEntry);
+            }
+
+          }, errorCallback);
+        }, errorCallback);
+      }, errorCallback);
+    };
+
     fileSystem.writeFile = function(filename, data, callback, errorCallback){
       // correct file path
       filename = fileSystem.correctLocalFilePath(filename);
