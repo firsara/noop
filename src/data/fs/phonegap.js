@@ -353,10 +353,14 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       path = fileSystem.getLocalFilePath(path);
 
-      Checksum.MD5([path], function(result) {
-        if (result && result.md5) {
+      md5chksum.file(path, function(sum) {
+        if (sum && sum.length > 0) {
           if (callback) {
-            callback(result.md5);
+            callback(sum);
+          }
+        } else {
+          if (callback) {
+            callback('');
           }
         }
       },

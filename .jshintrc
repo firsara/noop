@@ -45,6 +45,7 @@
     "DocumentTouch": true,
     "LocalFileSystem": true,
     "FileTransfer": true,
-    "Checksum": true
+    "Checksum": true,
+    "md5chksum": true
   }
 }
