@@ -832,6 +832,11 @@ define([
    * @instance
    **/
   p._childrenRemovedStage = function(){
+    TweenLite.killTweensOf(this);
+    TweenLite.killTweensOf(this.el);
+    TweenLite.killTweensOf(this.$el);
+    TweenLite.killTweensOf(this.el.style);
+
     if (this.children) {
       var kids = this.children;
       for (var i = 0, _len = kids.length; i < _len; i++) {
