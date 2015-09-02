@@ -8,13 +8,11 @@ define([
   '../sys',
   '../utils/css3',
   'EaselJS',
-  '../utils/fps',
   '../utils/Context'
 ], function(
   sys,
   css3,
   createjs,
-  fps,
   Context
 ) {
   // incremental container prefix id. generates a character like "A", "B", etc.
@@ -439,7 +437,7 @@ define([
     }
   };
 
-  fps.addEventListener('tick', _paintAll);
+  createjs.Ticker.addEventListener('tick', _paintAll);
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);

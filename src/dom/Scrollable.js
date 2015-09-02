@@ -5,13 +5,11 @@
  */
 define([
   '../sys',
-  '../utils/fps',
   './MoveClip',
   'EaselJS'
 ],
 function(
   sys,
-  fps,
   MoveClip,
   createjs
 ) {
@@ -113,8 +111,8 @@ function(
     this.addEventListener('move', this.__bind(_positionScrollbar));
 
     if (this.autoSetScrollBounds) {
-      fps.removeEventListener('tick', this.__bind(_update));
-      fps.addEventListener('tick', this.__bind(_update));
+      createjs.Ticker.removeEventListener('tick', this.__bind(_update));
+      createjs.Ticker.addEventListener('tick', this.__bind(_update));
     }
 
     this.setScrollBounds();
@@ -131,7 +129,7 @@ function(
   var _dispose = function(){
     this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    fps.removeEventListener('tick', this.__bind(_update));
+    createjs.Ticker.removeEventListener('tick', this.__bind(_update));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
   };
@@ -154,7 +152,7 @@ function(
         this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
       }
     } else {
-      fps.removeEventListener('tick', this.__bind(_update));
+      createjs.Ticker.removeEventListener('tick', this.__bind(_update));
     }
   };
 

@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function(sys, fps, Container) {
+define(['../sys', 'EaselJS', './Container', './utils/touchmouse'], function(sys, createjs, Container) {
   /**
    * tracks appropriate events and calls child functions accordingly
    * calls child functions based on needed parent class
@@ -49,7 +49,7 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
 
     this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
     this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-    fps.removeEventListener('tick', this.__bind(_enterFrame));
+    createjs.Ticker.removeEventListener('tick', this.__bind(_enterFrame));
   };
 
   /**
@@ -63,12 +63,12 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
   var _mousedown = function(event){
     this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
     this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-    fps.removeEventListener('tick', this.__bind(_enterFrame));
+    createjs.Ticker.removeEventListener('tick', this.__bind(_enterFrame));
 
     // add events to keep track of finger positions
     this.stage.addEventListener('touchmousemove', this.__bind(_pressmove));
     this.stage.addEventListener('touchmouseup', this.__bind(_pressup));
-    fps.addEventListener('tick', this.__bind(_enterFrame));
+    createjs.Ticker.addEventListener('tick', this.__bind(_enterFrame));
 
     this._onMousedown(event);
   };
@@ -113,7 +113,7 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
     if (this._activeFingers === 0) {
       this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
       this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-      fps.removeEventListener('tick', this.__bind(_enterFrame));
+      createjs.Ticker.removeEventListener('tick', this.__bind(_enterFrame));
     }
   };
 

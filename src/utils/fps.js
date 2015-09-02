@@ -63,8 +63,8 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
     // if stats.js is included run a different function updater
     if (window.stats) {
       createjs.Ticker.on('tick', this._updateStats, this);
-    } else {
-      createjs.Ticker.on('tick', this._update, this);
+    //} else {
+    //  createjs.Ticker.on('tick', this._update, this);
     }
 
     // check current fps all 10 seconds
