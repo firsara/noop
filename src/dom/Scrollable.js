@@ -181,14 +181,14 @@ function(
    * @private
    **/
   var _positionScrollbar = function(){
-    if (this.parent.vScrollbar) {
+    if (this.parent.vScrollbar && this.borders.y[0] !== this.borders.y[1]) {
       var percentage = this.y / this.borders.y[0];
 
       this.parent.vScrollbar.el.style.top = (percentage * this.parent.vScrollbar.offset) + 'px';
       this.parent.vScrollbar.$el.addClass('active');
     }
 
-    if (this.parent.hScrollbar) {
+    if (this.parent.hScrollbar && this.borders.x[0] !== this.borders.x[1]) {
       var percentage = this.x / this.borders.x[0];
 
       this.parent.hScrollbar.el.style.left = (percentage * this.parent.hScrollbar.offset) + 'px';
@@ -210,8 +210,8 @@ function(
    * @private
    **/
   var _unsetScrollbar = function(){
-    this.parent.vScrollbar.$el.removeClass('active');
-    this.parent.hScrollbar.$el.removeClass('active');
+    if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('active');
+    if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('active');
   };
 
   /**
