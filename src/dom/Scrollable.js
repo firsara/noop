@@ -90,8 +90,24 @@ function(
         this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMarginTop - scrollbarMarginBottom;
       }
 
-      this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
-      this.elastic.y = offsetSize.height > 0 ? 0.1 : 0;
+      if (this.parent.hScrollbar) {
+        var scrollbarWidthOffset = scrollSize.width / parentSize.width;
+        scrollbarWidthOffset = Math.sqrt(scrollbarWidthOffset);
+
+        var scrollbarWidth = Math.max(75, Math.min(parentSize.width * (1 / scrollbarWidthOffset)));
+
+        var scrollbarMarginLeft = parseFloat(this.parent.hScrollbar.$el.css('margin-left').replace('px', ''));
+        if (isNaN(scrollbarMarginLeft)) scrollbarMarginLeft = 0;
+
+        var scrollbarMarginRight = parseFloat(this.parent.hScrollbar.$el.css('margin-right').replace('px', ''));
+        if (isNaN(scrollbarMarginRight)) scrollbarMarginRight = 0;
+
+        this.parent.hScrollbar.el.style.width = scrollbarWidth + 'px';
+        this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMarginLeft - scrollbarMarginRight;
+      }
+
+      this.elastic.x = offsetSize.height > 0 ? 0.1 : 0;
+      this.elastic.y = offsetSize.width > 0 ? 0.1 : 0;
 
       this.__scrollOldSize = scrollSize;
       this.__scrollOldParentSize = parentSize;
@@ -170,7 +186,16 @@ function(
 
       this.parent.vScrollbar.el.style.top = (percentage * this.parent.vScrollbar.offset) + 'px';
       this.parent.vScrollbar.$el.addClass('active');
+    }
 
+    if (this.parent.hScrollbar) {
+      var percentage = this.x / this.borders.x[0];
+
+      this.parent.hScrollbar.el.style.left = (percentage * this.parent.hScrollbar.offset) + 'px';
+      this.parent.hScrollbar.$el.addClass('active');
+    }
+
+    if (this.parent.vScrollbar || this.parent.hScrollbar) {
       if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
       this.__unsetScrollbarTimeout = setTimeout(this.__bind(_unsetScrollbar), 300);
     }
@@ -186,6 +211,7 @@ function(
    **/
   var _unsetScrollbar = function(){
     this.parent.vScrollbar.$el.removeClass('active');
+    this.parent.hScrollbar.$el.removeClass('active');
   };
 
   /**
