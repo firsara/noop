@@ -106,8 +106,8 @@ function(
         this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMarginLeft - scrollbarMarginRight;
       }
 
-      this.elastic.x = offsetSize.height > 0 ? 0.1 : 0;
-      this.elastic.y = offsetSize.width > 0 ? 0.1 : 0;
+      this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
+      this.elastic.y = offsetSize.height > 0 ? 0.1 : 0;
 
       this.__scrollOldSize = scrollSize;
       this.__scrollOldParentSize = parentSize;
