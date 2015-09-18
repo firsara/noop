@@ -20,7 +20,10 @@ define([
   // Event constants
 
   var PRELOADED = 'preloaded';
+  var INIT = 'init';
+  var SHOW = 'show';
   var SHOWED = 'showed';
+  var HIDE = 'hide';
   var HIDDEN = 'hidden';
 
   return sys.Class({
@@ -122,6 +125,7 @@ define([
      **/
     _this.init = function(){
       _childFunctions.init();
+      _this.dispatchEvent(INIT);
       _this.show();
     };
 
@@ -166,6 +170,7 @@ define([
       // disallow multiple hide calls by setting hide to noop when first called
       _this.hide = _noop;
       _childFunctions.hide();
+      _this.dispatchEvent(HIDE);
     };
 
     /**
@@ -222,6 +227,7 @@ define([
       // re-shows component
       _this.container.el.style.visibility = '';
       _childFunctions.show();
+      _this.dispatchEvent(SHOW);
     };
 
     /**
