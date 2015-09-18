@@ -256,7 +256,6 @@ define(['EaselJS'], function(createjs) {
    **/
   var _startTransform = function(event){
     if (this._activeFingers === 1 && this.recognizer.hold.time) {
-      // NOTE: memory leaks? clear timeout when removing moveclip from container
       if (this._holdTimeout) clearTimeout(this._holdTimeout);
       this._holdTimeout = setTimeout(_dispatchHold.bind(this), this.recognizer.hold.time * 1000);
     }
