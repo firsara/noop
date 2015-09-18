@@ -1,4 +1,3 @@
-
 /*
  * Scrollable.js
  * Fabian Irsara
