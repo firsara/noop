@@ -118,16 +118,7 @@ define([
    * @public
    **/
   p.getCount = function(){
-    var count = 0;
-
-    for (var k in this) {
-      // if key is numeric (assume it's an item of the collection)
-      if (this.hasOwnProperty(k) && ! isNaN(k)) {
-        count++;
-      }
-    }
-
-    return count;
+    return this.getItems().length;
   };
 
   /**
@@ -143,7 +134,9 @@ define([
     for (var k in this) {
       // if key is numeric (assume it's an item of the collection)
       if (this.hasOwnProperty(k) && ! isNaN(k)) {
-        items.push(this[k]);
+        if (! items[parseFloat(k)]) {
+          items.push(this[k]);
+        }
       }
     }
 
@@ -242,13 +235,19 @@ define([
                   result = JSON.parse(result.toString());
                 }
 
-                for (var i = 0, _len = result.length; i < _len; i++) {
-                  fs.writeFile(options.local[i], JSON.stringify(result[i]));
-                }
+                var writeItem = function(itemIndex){
+                  if (result[itemIndex]) {
+                    fs.writeFile(options.local[itemIndex], JSON.stringify(result[itemIndex]), function(){
+                      writeItem(itemIndex + 1);
+                    });
+                  } else {
+                    if (options.success) {
+                      options.success(result);
+                    }
+                  }
+                };
 
-                if (options.success) {
-                  options.success(result);
-                }
+                writeItem(0);
               }, options.error);
             }
           });
