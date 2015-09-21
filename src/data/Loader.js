@@ -1,5 +1,3 @@
-// TODO: IMPLEMENT ERRORS!
-
 /*
  * Loader.js
  * Fabian Irsara
@@ -231,6 +229,7 @@ define([
         var options = {};
 
         options.success = _receivedFilePath.bind(this);
+        options.error = _cacheDownloadError.bind(this);
 
         // if current item has an overwrite option
         if (! (this._manifest[this._loadIndex].overwrite === null || typeof this._manifest[this._loadIndex].overwrite === 'undefined')) {
@@ -332,6 +331,21 @@ define([
     } else {
       throw new Error('did not receive file path for ' + this._manifest[this._loadIndex]);
     }
+  };
+
+  var _cacheDownloadError = function(){
+    if (this._manifest[this._loadIndex].local) {
+      this._manifest[this._loadIndex].src = '';
+      this._manifest[this._loadIndex].preload = false;
+    }
+
+    this._loadIndex++;
+
+    var event = new createjs.Event('cached');
+    event.progress = this._loadIndex / this._manifest.length;
+    this.dispatchEvent(event);
+
+    _cacheNextFile.call(this);
   };
 
   /**
