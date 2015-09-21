@@ -759,6 +759,12 @@ define([
 
     this._checkAddedToStage();
     this.dispatchEvent(new createjs.Event('added', false));
+
+    if (this.parent) {
+      var addedChildEvent = new createjs.Event('addedChild', false);
+      addedChildEvent.child = this;
+      this.parent.dispatchEvent(addedChildEvent);
+    }
   };
 
   /**
@@ -774,6 +780,10 @@ define([
   p._removed = function() {
     // first dispatch removed event, then unbind parent (we could use parent in callback)
     this.dispatchEvent(new createjs.Event('removed', false));
+
+    var removedChildEvent = new createjs.Event('removedChild', false);
+    removedChildEvent.child = this;
+    this.parent.dispatchEvent(removedChildEvent);
 
     // if container had a name and a parent
     if (this.name && this.parent) {
