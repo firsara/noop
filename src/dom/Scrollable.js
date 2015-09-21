@@ -1,3 +1,5 @@
+// TODO: IMPORTANT: memory leak test!
+
 /*
  * Scrollable.js
  * Fabian Irsara
@@ -34,17 +36,15 @@ function(
     this.fraction.release.x = 0.75;
     this.fraction.release.y = 0.75;
 
-    this.fraction.updateScrollBounds = 1;
-
-    this.__scollTicks = 0;
-    this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
     this.__scrollOldSize = {width: 0, height: 0};
     this.__scrollOldParentSize = {width: 0, height: 0};
+    this.__setScrollbarTimeout = null;
     this.__unsetScrollbarTimeout = null;
-    this.autoSetScrollBounds = true;
 
     this.on('addedToStage', _render, this);
     this.on('removedFromStage', _dispose, this);
+
+    _addChildEvents.call(this, this);
   }
 
   var p = sys.extend(Scrollable, MoveClip);
@@ -109,9 +109,30 @@ function(
       this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
       this.elastic.y = offsetSize.height > 0 ? 0.1 : 0;
 
+      if (offsetSize.width <= 0 && offsetSize.height <= 0) {
+        this.lock = true;
+      } else {
+        this.lock = false;
+      }
+
       this.__scrollOldSize = scrollSize;
       this.__scrollOldParentSize = parentSize;
+
+      _hold.call(this);
     }
+  };
+
+  /**
+   * reset bounds after resizing window or adding / removing children
+   *
+   * @method resize
+   * @memberof dom.Scrollable
+   * @instance
+   * @public
+   **/
+  p.resize = function(){
+    if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
+    this.__setScrollbarTimeout = setTimeout(this.__bind(this.setScrollBounds), 100);
   };
 
   /**
@@ -125,13 +146,10 @@ function(
   var _render = function(){
     this.el.addEventListener('mousewheel', this.__bind(_scroll));
     this.addEventListener('move', this.__bind(_positionScrollbar));
-
-    if (this.autoSetScrollBounds) {
-      createjs.Ticker.removeEventListener('tick', this.__bind(_update));
-      createjs.Ticker.addEventListener('tick', this.__bind(_update));
-    }
+    $(window).bind('resize', this.__bind(this.resize));
 
     this.setScrollBounds();
+    this.resize();
   };
 
   /**
@@ -145,31 +163,10 @@ function(
   var _dispose = function(){
     this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    createjs.Ticker.removeEventListener('tick', this.__bind(_update));
+    $(window).unbind('resize', this.__bind(this.resize));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
-  };
-
-  /**
-   * update scroll bounds every 10 ticks
-   *
-   * @method _update
-   * @memberof dom.Scrollable
-   * @instance
-   * @private
-   **/
-  var _update = function(){
-    if (this.autoSetScrollBounds) {
-      this.__scollTicks++;
-
-      if (this.__scollTicks % this.__scrollTicksInterval === 0) {
-        this.setScrollBounds();
-        this.__scollTicks = 0;
-        this.__scrollTicksInterval = Math.round(createjs.Ticker.getMeasuredFPS() * this.fraction.updateScrollBounds);
-      }
-    } else {
-      createjs.Ticker.removeEventListener('tick', this.__bind(_update));
-    }
+    if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
   };
 
   /**
@@ -226,13 +223,26 @@ function(
    **/
   var _scroll = function(event){
     var options = {};
-    options.onUpdate = _positionScrollbar;
+    options.onUpdate = _scrollUpdate;
     options.onUpdateScope = this;
     options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX));
     options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY));
     options.ease = Quint.easeOut;
 
     TweenLite.to(this, 0.6, options);
+  };
+
+  /**
+   * update scrollbar and dispatch move event
+   *
+   * @method _scrollUpdate
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _scrollUpdate = function(event){
+    this.dispatchEvent('move');
+    _positionScrollbar.call(this);
   };
 
   /**
@@ -246,6 +256,37 @@ function(
   var _hold = function(){
     this._hold('x');
     this._hold('y');
+  };
+
+  var _removeChildEvents = function(child){
+    child.removeEventListener('addedChild', this.__bind(_addedChild));
+    child.removeEventListener('removedChild', this.__bind(_removedChild));
+    child.removeEventListener('removedFromStage', this.__bind(_disposeChild));
+  };
+
+  var _addChildEvents = function(child){
+    _removeChildEvents.call(this, child);
+
+    child.addEventListener('addedChild', this.__bind(_addedChild));
+    child.addEventListener('removedChild', this.__bind(_removedChild));
+    child.addEventListener('removedFromStage', this.__bind(_disposeChild));
+
+    for (var i = 0, _len = child.children.length; i < _len; i++) {
+      _addChildEvents.call(this, child.children[i]);
+    }
+  };
+
+  var _addedChild = function(event){
+    _addChildEvents.call(this, event.child);
+    this.resize();
+  };
+
+  var _removedChild = function(){
+    this.resize();
+  };
+
+  var _disposeChild = function(event){
+    _removeChildEvents.call(this, event.target);
   };
 
   return Scrollable;
