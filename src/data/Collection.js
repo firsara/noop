@@ -32,9 +32,11 @@ define([
   function Collection(model, data){
     this.model = model.toLowerCase();
 
-    Model.call(this, data);
+    Model.call(this);
 
-    if (data && Array.isArray(data)) {
+    if (data) {
+      if (! Array.isArray(data)) data = [data];
+
       var _allLoaded = true;
       var _allCached = true;
       var _allDefinedData = true;
