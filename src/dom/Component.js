@@ -61,8 +61,8 @@ define([
     this.__component._didDispose = false;
 
     // stored, old component size
-    this.__component._oldComponentWidth = 0;
-    this.__component._oldComponentHeight = 0;
+    this.__component._oldComponentWidth = null;
+    this.__component._oldComponentHeight = null;
 
     // stored, old window size
     this.__component._oldWindowWidth = 0;
@@ -274,24 +274,29 @@ define([
     var windowWidth = $(window).width();
     var windowHeight = $(window).height();
 
-    // store component sizes
-    this._componentWidth = this.$el.width();
-    this._componentHeight = this.$el.height();
+    var elWidth = this.$el.width();
+    var elHeight = this.$el.height();
 
-    // if window or component size changed -> call child resize function
-    if (! (
-      this._componentWidth === this.__component._oldComponentWidth &&
-      this._componentHeight === this.__component._oldComponentHeight &&
-      windowWidth === this.__component._oldWindowWidth &&
-      windowHeight === this.__component._oldWindowHeight
-    )) {
-      this.__component._oldComponentWidth = this._componentWidth;
-      this.__component._oldComponentHeight = this._componentHeight;
+    if ((! (elWidth === 0 && elHeight === 0) && this.$el.is(':visible')) || this.__component._oldComponentWidth === null) {
+      // store component sizes
+      this._componentWidth = elWidth;
+      this._componentHeight = elHeight;
 
-      this.__component._oldWindowWidth = windowWidth;
-      this.__component._oldWindowHeight = windowHeight;
+      // if window or component size changed -> call child resize function
+      if (! (
+        this._componentWidth === this.__component._oldComponentWidth &&
+        this._componentHeight === this.__component._oldComponentHeight &&
+        windowWidth === this.__component._oldWindowWidth &&
+        windowHeight === this.__component._oldWindowHeight
+      )) {
+        this.__component._oldComponentWidth = this._componentWidth;
+        this.__component._oldComponentHeight = this._componentHeight;
 
-      _resize.call(this);
+        this.__component._oldWindowWidth = windowWidth;
+        this.__component._oldWindowHeight = windowHeight;
+
+        _resize.call(this);
+      }
     }
   };
 
