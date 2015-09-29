@@ -288,7 +288,7 @@ define([
      **/
     var _init = function(){
       _this.container.removeEventListener('addedToStage', _init);
-      _this.container.addEventListener('removedToStage', _dispose);
+      _this.container.addEventListener('removedFromStage', _dispose);
 
       if (_this.preload.length > 0) {
         _this.data = new Loader();
@@ -311,7 +311,7 @@ define([
      * @private
      **/
     var _dispose = function(){
-      _this.container.removeEventListener('removedToStage', _dispose);
+      _this.container.removeEventListener('removedFromStage', _dispose);
       _this.dispose();
     };
 
