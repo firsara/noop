@@ -23,6 +23,8 @@ function(
   function Stage(template, data, options){
     this.isStage = true;
     Container.call(this, template, data, options);
+    this.stage = this.el;
+    this.$stage = $(this.stage);
   }
 
   sys.extend(Stage, Container);
