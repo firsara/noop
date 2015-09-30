@@ -268,6 +268,9 @@ define([
      */
     this.children = [];
 
+    this._gotParent = false;
+    this._gotStage = false;
+
 
     // CONFIGURATION PROPERTIES
     // ------------------------
@@ -505,53 +508,6 @@ define([
   };
 
   /**
-   * removes the dom container at a specific index
-   * returns removed child for future use
-   *
-   * @method removeChildAt
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Number} index of the dom element to be removed
-   **/
-  p.removeChildAt = function(index) {
-    var kids = this.children;
-
-    if (kids[index]) {
-      var child = kids[index];
-
-      if (! (child && child.$el)) {
-        throw new Error('removeChildAt expects child to be a container');
-      }
-
-      this.children.splice(index, 1);
-      child.$el.remove();
-      child._removed();
-
-      return child;
-    }
-
-    return false;
-  };
-
-  /**
-   * removes all children.
-   * **NOTE**: this is not the same than calling $el.html('');
-   * it runs through all children and dispatches appropriate events
-   *
-   * @method removeAllChildren
-   * @memberof dom.Container
-   * @public
-   * @instance
-   **/
-  p.removeAllChildren = function() {
-    var kids = this.children;
-    while (kids.length) {
-      this.removeChildAt(0);
-    }
-  };
-
-  /**
    * gets child at a specific index from children list
    *
    * @method getChildAt
@@ -605,6 +561,8 @@ define([
     }
 
     child.parent = this;
+    child.stage = this.stage;
+    child.$stage = this.$stage;
 
     if (prepend) {
       this.children.unshift(child);
@@ -661,6 +619,53 @@ define([
   };
 
   /**
+   * removes the dom container at a specific index
+   * returns removed child for future use
+   *
+   * @method removeChildAt
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Number} index of the dom element to be removed
+   **/
+  p.removeChildAt = function(index) {
+    var kids = this.children;
+
+    if (kids[index]) {
+      var child = kids[index];
+
+      if (! (child && child.$el)) {
+        throw new Error('removeChildAt expects child to be a container');
+      }
+
+      this.children.splice(index, 1);
+      child.$el.remove();
+      child._removed();
+
+      return child;
+    }
+
+    return false;
+  };
+
+  /**
+   * removes all children.
+   * **NOTE**: this is not the same than calling $el.html('');
+   * it runs through all children and dispatches appropriate events
+   *
+   * @method removeAllChildren
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.removeAllChildren = function() {
+    var kids = this.children;
+    while (kids.length) {
+      this.removeChildAt(0);
+    }
+  };
+
+  /**
    * finds stage if it's already present on child container
    *
    * @method getStage
@@ -669,8 +674,30 @@ define([
    * @instance
    **/
   p.getStage = function(){
-    var node = this.el;
+    // if already has a defined stage return it
+    if (this.stage) return this.stage;
+
+    // if otherwise has a parent
+    if (this.parent) {
+      // and parent has a defined stage or is a stage object return it
+      if (this.parent.stage) return this.parent.stage;
+      if (this.parent.isStage) return this.parent.el;
+    }
+
+    // first try to find elements most parent item that should be a stage object
+    var node = this;
     var tmpNode = node;
+
+    while (true) {
+      tmpNode = tmpNode.parent;
+      if (! tmpNode) break;
+      if (tmpNode.stage) return tmpNode.stage;
+      if (tmpNode.isStage) return tmpNode.el;
+    }
+
+    // otherwise traverse the dom and return document.body if found
+    node = this.el;
+    tmpNode = node;
 
     while (true) {
       tmpNode = tmpNode.parentNode;
@@ -686,6 +713,7 @@ define([
     //  return document.body;
     //}
 
+    // otherwise just didn't find a stage
     return false;
   };
 
@@ -758,12 +786,16 @@ define([
     }
 
     this._checkAddedToStage();
-    this.dispatchEvent(new createjs.Event('added', false));
 
-    if (this.parent) {
-      var addedChildEvent = new createjs.Event('addedChild', false);
-      addedChildEvent.child = this;
-      this.parent.dispatchEvent(addedChildEvent);
+    if (this._gotParent) {
+      this._gotParent = true;
+      this.dispatchEvent(new createjs.Event('added', false));
+
+      if (this.parent) {
+        var addedChildEvent = new createjs.Event('addedChild', false);
+        addedChildEvent.child = this;
+        this.parent.dispatchEvent(addedChildEvent);
+      }
     }
   };
 
@@ -779,11 +811,15 @@ define([
    **/
   p._removed = function() {
     // first dispatch removed event, then unbind parent (we could use parent in callback)
-    this.dispatchEvent(new createjs.Event('removed', false));
+    if (this._gotParent) {
+      this._gotParent = false;
 
-    var removedChildEvent = new createjs.Event('removedChild', false);
-    removedChildEvent.child = this;
-    this.parent.dispatchEvent(removedChildEvent);
+      this.dispatchEvent(new createjs.Event('removed', false));
+
+      var removedChildEvent = new createjs.Event('removedChild', false);
+      removedChildEvent.child = this;
+      this.parent.dispatchEvent(removedChildEvent);
+    }
 
     // if container had a name and a parent
     if (this.name && this.parent) {
@@ -855,7 +891,11 @@ define([
     }
 
     if (this.stage) {
-      this.dispatchEvent(new createjs.Event('removedFromStage', false));
+      if (this._gotStage) {
+        this._gotStage = false;
+        this.dispatchEvent(new createjs.Event('removedFromStage', false));
+      }
+
       this.stage = null;
       this.$stage = null;
     }
@@ -872,14 +912,10 @@ define([
    **/
   p._checkAddedToStage = function(){
     var stage = this.getStage();
-    var dispatchAddedToStage = false;
 
     if (stage) {
-      if (! this.stage) {
-        this.stage = stage;
-        this.$stage = $(stage);
-        dispatchAddedToStage = true;
-      }
+      this.stage = stage;
+      this.$stage = $(stage);
     }
 
     if (this.children) {
@@ -891,8 +927,11 @@ define([
       }
     }
 
-    if (dispatchAddedToStage) {
-      this.dispatchEvent(new createjs.Event('addedToStage', false));
+    if (stage) {
+      if (! this._gotStage) {
+        this._gotStage = true;
+        this.dispatchEvent(new createjs.Event('addedToStage', false));
+      }
     }
   };
 

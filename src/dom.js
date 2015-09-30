@@ -9,6 +9,7 @@ define([
   './dom/utils/touchmouse',
 
   './dom/Container',
+  './dom/Stage',
   './dom/Module',
   './dom/Component',
   './dom/TransformableComponent',
@@ -30,6 +31,7 @@ define([
   touchmouse,
 
   Container,
+  Stage,
   Module,
   Component,
   TransformableComponent,
@@ -47,6 +49,7 @@ define([
 
   return {
     Container: Container,
+    Stage: Stage,
     Module: Module,
     Component: Component,
     TransformableComponent: TransformableComponent,
