@@ -288,7 +288,7 @@ define([
         this._componentHeight === this.__component._oldComponentHeight &&
         windowWidth === this.__component._oldWindowWidth &&
         windowHeight === this.__component._oldWindowHeight
-      ) || Component.forceResize) {
+      ) || _forceResize) {
         this.__component._oldComponentWidth = this._componentWidth;
         this.__component._oldComponentHeight = this._componentHeight;
 
@@ -300,7 +300,24 @@ define([
     }
   };
 
-  Component.forceResize = false;
+
+
+  var _forceResetTimeout = null;
+  var _forceResize = false;
+
+  var _forceReset = function(){
+    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
+    _forceResetTimeout = null;
+    _forceResize = true;
+  };
+
+  Component.forceResize = function(){
+    _forceResize = true;
+    $(window).trigger('resize');
+
+    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
+    _forceResetTimeout = setTimeout(_forceReset, 2000);
+  };
 
   return Component;
 });
