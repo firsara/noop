@@ -288,7 +288,7 @@ define([
         this._componentHeight === this.__component._oldComponentHeight &&
         windowWidth === this.__component._oldWindowWidth &&
         windowHeight === this.__component._oldWindowHeight
-      )) {
+      ) || Component.forceResize) {
         this.__component._oldComponentWidth = this._componentWidth;
         this.__component._oldComponentHeight = this._componentHeight;
 
@@ -299,6 +299,8 @@ define([
       }
     }
   };
+
+  Component.forceResize = false;
 
   return Component;
 });
