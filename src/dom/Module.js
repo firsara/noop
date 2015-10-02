@@ -312,7 +312,7 @@ define([
      **/
     var _dispose = function(){
       _this.container.removeEventListener('removedFromStage', _dispose);
-      _this.dispose();
+      if (_this.dispose) _this.dispose();
     };
 
     if (! _childFunctions.hide) _childFunctions.hide = _this.hidden;
