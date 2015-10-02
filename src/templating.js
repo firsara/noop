@@ -74,6 +74,24 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
   };
 
   /*
+   * checks weather element is really hidden
+   *
+   * @plugin realHidden
+   */
+  $.expr.filters.realHidden = function(elem){
+    return ! $.expr.filters.visible(elem);
+  };
+
+  /*
+   * checks weather element is really visible
+   *
+   * @plugin realHidden
+   */
+  $.expr.filters.realVisible = function(elem) {
+    return !! (elem.getClientRects().length);
+  };
+
+  /*
    * alternative to $.fn.bind
    *
    * @plugin addEventListener

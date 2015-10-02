@@ -277,7 +277,7 @@ define([
     var elWidth = this.$el.width();
     var elHeight = this.$el.height();
 
-    if (this.$el.is(':visible') || this.__component._oldComponentWidth === null) {
+    if (this.$el.is(':realVisible') || this.__component._oldComponentWidth === null) {
       // store component sizes
       this._componentWidth = elWidth;
       this._componentHeight = elHeight;
