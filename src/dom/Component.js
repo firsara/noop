@@ -308,7 +308,7 @@ define([
   var _forceReset = function(){
     if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
     _forceResetTimeout = null;
-    _forceResize = true;
+    _forceResize = false;
   };
 
   Component.forceResize = function(){
