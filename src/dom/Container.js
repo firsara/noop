@@ -894,6 +894,8 @@ define([
     TweenLite.killTweensOf(this.$el);
     TweenLite.killTweensOf(this.el.style);
 
+    this.stopDelay();
+
     if (this.children) {
       var kids = this.children;
       for (var i = 0, _len = kids.length; i < _len; i++) {
