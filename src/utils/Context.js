@@ -64,8 +64,9 @@ define(function(){
      * @memberof utils.Context
      * @param {function} fct that should be called after the delay
      * @param {Number} timeout after which function should be called
+     * @param {Array} params that should be called on callback after invocation
      **/
-    p.delay = function(fct, timeout){
+    p.delay = function(fct, timeout, params){
       if (! this.__delays) {
         /**
          * stored delays
@@ -80,7 +81,17 @@ define(function(){
       this.stopDelay(fct);
 
       var bound = this.__bind(fct);
-      this.__delays.push({fct: bound, uid: setTimeout(bound, timeout)});
+      var _this = this;
+
+      var callback = function(){
+        _this.stopDelay(fct);
+        bound.apply(_this, params);
+      };
+
+      var timeoutId = setTimeout(callback, timeout);
+      this.__delays.push({fct: bound, uid: timeoutId});
+
+      return timeoutId;
     };
 
     /**
