@@ -139,7 +139,7 @@ define([
      * @public
      **/
     _this.hidden = function(){
-      //_this.destroy();
+      _this.destroy();
       _this.dispatchEvent(HIDDEN);
     };
 
@@ -210,6 +210,8 @@ define([
 
         _this.data.removeAll();
         _this.data.destroy();
+
+        _this.data = null;
       }
     };
 
