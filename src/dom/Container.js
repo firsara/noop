@@ -383,7 +383,7 @@ define([
     var setXYZ = function(value){
       if (this[property] !== value) {
         this[property] = value;
-        this['_c' + realProperty] = _correctUnit(value);
+        this['_c' + realProperty] = Container.correctUnit(value);
 
         if (this.autoPaint) {
           _paintContainers[this._containerID] = this;
@@ -1027,12 +1027,12 @@ define([
   /**
    * adds 'px' to a value if no unit is set
    *
-   * @method _correctUnit
+   * @method correctUnit
    * @memberof dom.Container
-   * @private
-   * @instance
+   * @param {String|Number} value of unit
+   * @static
    **/
-  var _correctUnit = function(value){
+  Container.correctUnit = function(value){
     if (parseFloat(value).toString() === value.toString()) {
       return value + 'px';
     }
