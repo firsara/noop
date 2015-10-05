@@ -546,7 +546,6 @@ define([
 
   /**
    * adds a child container to the current one
-   * calls added event and checks for stage later on
    *
    * @method addChild
    * @memberof dom.Container
@@ -556,23 +555,7 @@ define([
    * @param {Boolean} prepend or append the child?
    **/
   p.addChild = function(child, prepend){
-    if (! (child && child.$el)) {
-      throw new Error('addChild expects child to be a container');
-    }
-
-    child.parent = this;
-    child.stage = this.stage;
-    child.$stage = this.$stage;
-
-    if (prepend) {
-      this.children.unshift(child);
-      this.$el.prepend(child.$el);
-    } else {
-      this.children.push(child);
-      this.$el.append(child.$el);
-    }
-
-    child._added();
+    this.addChildAt(child, prepend ? 0 : this.children.length);
   };
 
   /**
@@ -586,6 +569,40 @@ define([
    **/
   p.prependChild = function(child){
     this.addChild(child, true);
+  };
+
+  /**
+   * adds a child container to the current one at a specific index
+   * calls added event and checks for stage later on
+   *
+   * @method addChildAt
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container that should be added
+   * @param {Number} index where child should be appended to
+   **/
+  p.addChildAt = function(child, index){
+    if (! (child && child.$el)) {
+      throw new Error('addChild expects child to be a container');
+    }
+
+    child.parent = this;
+    child.stage = this.stage;
+    child.$stage = this.$stage;
+
+    if (index < 0) index = 0;
+    else if (index > this.children.length) index = this.children.length;
+
+    if (index === 0 || this.children.length === 0) {
+      this.$el.prepend(child.$el);
+    } else {
+      this.children[index - 1].$el.after(child.$el);
+    }
+
+    this.children.splice(index, 0, child);
+
+    child._added();
   };
 
   /**
@@ -760,19 +777,15 @@ define([
         // if name was already set in parent container, but was actually not a reserved name,
         // but an already dynamically added child (i.e. if it was a child list <li> or similar)
         if (this.parent.dynamicChildren[this.name]) {
-          // convert property to an array and re-assign children correctly
-          var oldChild = this.parent.dynamicChildren[this.name];
+          this.parent[this.name] = [];
+          this.parent.dynamicChildren[this.name] = [];
 
-          if (! Array.isArray(this.parent.dynamicChildren[this.name])) {
-            this.parent.dynamicChildren[this.name] = [];
-            this.parent.dynamicChildren[this.name].push(oldChild);
-
-            this.parent[this.name] = [];
-            this.parent[this.name].push(oldChild);
+          for (var i = 0, _len = this.parent.children.length; i < _len; i++) {
+            if (this.parent.children[i].name === this.name) {
+              this.parent[this.name].push(this.parent.children[i]);
+              this.parent.dynamicChildren[this.name].push(this.parent.children[i]);
+            }
           }
-
-          this.parent.dynamicChildren[this.name].push(this);
-          this.parent[this.name].push(this);
         } else {
           // if the added child was already assigned manually to the parent container it's ok
           // i.e. via: Main.navigation = new Navigation()
