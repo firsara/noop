@@ -222,6 +222,8 @@ function(
    * @private
    **/
   var _scroll = function(event){
+    if (this.lock) return;
+
     var options = {};
     options.onUpdate = _scrollUpdate;
     options.onUpdateScope = this;
