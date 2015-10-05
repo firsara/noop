@@ -191,7 +191,7 @@ define([
       _this.container.el.style.visibility = 'hidden';
 
       // add a little timeout so components can resize and align properly
-      setTimeout(_doShow, 50);
+      _this.__doShowTimeout = setTimeout(_doShow, 50);
     };
 
     /**
@@ -212,6 +212,8 @@ define([
         _this.data.destroy();
 
         _this.data = null;
+
+        if (_this.__doShowTimeout) clearTimeout(_this.__doShowTimeout);
       }
     };
 
@@ -227,6 +229,7 @@ define([
      **/
     var _doShow = function(){
       // re-shows component
+      _this.__doShowTimeout = null;
       _this.container.el.style.visibility = '';
       _childFunctions.show();
       _this.dispatchEvent(SHOW);
