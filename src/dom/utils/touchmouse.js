@@ -58,6 +58,9 @@ define(['../../config'], function(config){
   // if touch just fired a touchend event
   var justDidTouchEnd = false;
 
+  // reset touch end timeout
+  var resetTouchEndTimeout = null;
+
   /**
    * checks event type, tracks positions, converts to touchmouse event, etc.
    *
@@ -224,7 +227,8 @@ define(['../../config'], function(config){
       if (preventDoubleClicks) {
         // prevent calling mouse events that fire right after a touchend event (i.e. fallback click)
         justDidTouchEnd = true;
-        setTimeout(_resetTouchEnd, 17);
+        if (resetTouchEndTimeout) clearTimeout(resetTouchEndTimeout);
+        resetTouchEndTimeout = setTimeout(_resetTouchEnd, 17);
       }
     }
 
@@ -235,6 +239,7 @@ define(['../../config'], function(config){
   // resets touch end to its default state
   var _resetTouchEnd = function(){
     justDidTouchEnd = false;
+    _resetTouchEndTimeout = null;
   };
 
   /**
