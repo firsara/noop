@@ -80,7 +80,7 @@ define(function(){
       this.stopDelay(fct);
 
       var bound = this.__bind(fct);
-      this.__delays.push({fct: fct, uid: setTimeout(bound, timeout)});
+      this.__delays.push({fct: bound, uid: setTimeout(bound, timeout)});
     };
 
     /**
