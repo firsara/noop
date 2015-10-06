@@ -124,6 +124,21 @@ define([
   p.resize = function(){};
 
   /**
+   * gets components size accordingly
+   * @method getComponentSize
+   * @memberof dom.Component
+   * @public
+   * @instance
+   **/
+  p.getComponentSize = function(){
+    var elWidth = this.$el.width();
+    var elHeight = this.$el.height();
+
+    this._componentWidth = elWidth;
+    this._componentHeight = elHeight;
+  };
+
+  /**
    * binds events in child class
    *
    * @method _init
