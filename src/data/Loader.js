@@ -294,7 +294,7 @@ define([
       // if there are still items left to load
       if (this._manifest.length > 0) {
         // load manifest
-        this.loadManifest(this._manifest);
+        _preloadTextFiles.call(this, 0);
       } else {
         // otherwise: dispatch complete
         this.dispatchEvent(new createjs.Event('complete'));
@@ -346,6 +346,50 @@ define([
     this.dispatchEvent(event);
 
     _cacheNextFile.call(this);
+  };
+
+  var _preloadTextFiles = function(index){
+    var _this = this;
+
+    var next = function(){
+      _preloadTextFiles.call(_this, index + 1);
+    };
+
+    if (this._manifest[index]) {
+      if (this._manifest[index].type === 'json' || this._manifest[index].type === 'xml' || this._manifest[index].type === 'text') {
+        $.get(this._manifest[index].src).done(function(data){
+          if (typeof data === 'string') {
+            if (_this._manifest[index].type === 'xml') data = createjs.DataUtils.parseXML(data, 'text/xml');
+            else if (_this._manifest[index].type === 'json') createjs.DataUtils.parseJSON(data);
+          }
+
+          var evt = {};
+          evt.item = _this._manifest[index];
+          evt.result = data;
+          _this._results.push(evt);
+          _this.items.push(evt.result);
+
+          _this._manifest.splice(index, 1);
+          index -= 1;
+          next();
+        }).fail(function(){
+          _this._manifest.splice(index, 1);
+          index -= 1;
+          next();
+        });
+      } else {
+        next();
+      }
+    } else {
+      // if there are still items left to load
+      if (this._manifest.length > 0) {
+        // load manifest
+        this.loadManifest(this._manifest);
+      } else {
+        // otherwise: dispatch complete
+        this.dispatchEvent(new createjs.Event('complete'));
+      }
+    }
   };
 
   /**
