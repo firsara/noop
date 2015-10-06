@@ -87,6 +87,8 @@ define(function(){
       var key = keyValuePair[0];
       var value = keyValuePair[1];
       if (! isNaN(value)) value = parseFloat(value);
+      if (value === 'true') value = true;
+      if (value === 'false') value = false;
       data[key] = value;
     }
 
