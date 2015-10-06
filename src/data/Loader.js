@@ -333,6 +333,14 @@ define([
     }
   };
 
+  /**
+   * when a file could not be downloaded, remove it from preload queue
+   *
+   * @method _cacheDownloadError
+   * @memberof data.Loader
+   * @instance
+   * @private
+   **/
   var _cacheDownloadError = function(){
     if (this._manifest[this._loadIndex].local) {
       this._manifest[this._loadIndex].src = '';
@@ -348,6 +356,15 @@ define([
     _cacheNextFile.call(this);
   };
 
+  /**
+   * preloads text files correctly (json, xml, txt)<br>
+   * NOTE: needs to set {type: xml|json|text} on preload element: this.load({src: 'http:...', type: 'text'})
+   *
+   * @method _preloadTextFiles
+   * @memberof data.Loader
+   * @instance
+   * @private
+   **/
   var _preloadTextFiles = function(index){
     var _this = this;
 
