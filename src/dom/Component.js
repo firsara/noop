@@ -131,11 +131,31 @@ define([
    * @instance
    **/
   p.getComponentSize = function(){
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+
     var elWidth = this.$el.width();
     var elHeight = this.$el.height();
 
     this._componentWidth = elWidth;
     this._componentHeight = elHeight;
+
+    if (! (
+      this._componentWidth === this.__component._oldComponentWidth &&
+      this._componentHeight === this.__component._oldComponentHeight &&
+      windowWidth === this.__component._oldWindowWidth &&
+      windowHeight === this.__component._oldWindowHeight
+    )) {
+      this.__component._oldComponentWidth = this._componentWidth;
+      this.__component._oldComponentHeight = this._componentHeight;
+
+      this.__component._oldWindowWidth = windowWidth;
+      this.__component._oldWindowHeight = windowHeight;
+
+      return true;
+    }
+
+    return false;
   };
 
   /**
@@ -286,30 +306,10 @@ define([
    * @instance
    **/
   var _windowResized = function(){
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-
-    var elWidth = this.$el.width();
-    var elHeight = this.$el.height();
-
     if (this.$el.is(':realVisible') || this.__component._oldComponentWidth === null) {
-      // store component sizes
-      this._componentWidth = elWidth;
-      this._componentHeight = elHeight;
+      var changed = this.getComponentSize();
 
-      // if window or component size changed -> call child resize function
-      if (! (
-        this._componentWidth === this.__component._oldComponentWidth &&
-        this._componentHeight === this.__component._oldComponentHeight &&
-        windowWidth === this.__component._oldWindowWidth &&
-        windowHeight === this.__component._oldWindowHeight
-      ) || _forceResize) {
-        this.__component._oldComponentWidth = this._componentWidth;
-        this.__component._oldComponentHeight = this._componentHeight;
-
-        this.__component._oldWindowWidth = windowWidth;
-        this.__component._oldWindowHeight = windowHeight;
-
+      if (changed || _forceResize) {
         _resize.call(this);
       }
     }
