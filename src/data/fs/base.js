@@ -206,6 +206,24 @@ define(['../../config', '../API'], function(config, API){
   };
 
   /**
+   * downloads a and reads a file
+   *
+   * @method downloadAndRead
+   * @see download
+   * @memberof data.fs
+   * @instance
+   **/
+  fs.downloadAndRead = function(options){
+    var success = options.success;
+
+    options.success = function(path){
+      fs.readFile(path, success, options.error);
+    };
+
+    fs.download(options);
+  };
+
+  /**
    * pipes a remote file to a local file<br>
    * downloads and dispatches progress
    *
