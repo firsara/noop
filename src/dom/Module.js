@@ -82,6 +82,15 @@ define([
      */
     _this.data = null;
 
+    /**
+     * if Module was preloaded
+     * @memberof dom.Module
+     * @instance
+     * @private
+     * @var {Boolean} _preloaded
+     */
+    var _preloaded = false;
+
     // empty function that get used if child class has no functions
     var _noop = function(){};
 
@@ -251,6 +260,8 @@ define([
         _this.data.removeEventListener('complete', _complete);
       }
 
+      _preloaded = true;
+
       _this.dispatchEvent(PRELOADED);
       _this.init();
     };
@@ -317,7 +328,7 @@ define([
      **/
     var _dispose = function(){
       _this.container.removeEventListener('removedFromStage', _dispose);
-      if (_this.dispose) _this.dispose();
+      if (_this.dispose && _preloaded) _this.dispose();
     };
 
     if (! _childFunctions.hide) _childFunctions.hide = _this.hidden;
