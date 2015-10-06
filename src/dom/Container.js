@@ -402,6 +402,18 @@ define([
       }
     };
 
+    var setOpacity = function(value){
+      value = Math.max(0, Math.min(1, value));
+
+      if (this[property] !== value) {
+        this[property] = value;
+
+        if (this.autoPaint) {
+          _paintContainers[this._containerID] = this;
+        }
+      }
+    };
+
     var setProperty = function(value){
       if (this[property] !== value) {
         this[property] = value;
@@ -416,6 +428,8 @@ define([
       setProperty = setXYZ;
     } else if (realProperty === 'rotation' || realProperty === 'rotationZ') {
       setProperty = setRotationZ;
+    } else if (realProperty === 'opacity') {
+      setProperty = setOpacity;
     }
 
     Object.defineProperty(p, realProperty, {
