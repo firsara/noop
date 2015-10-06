@@ -745,10 +745,13 @@ define([
       // check if model already exists in collection storage
       if (Model.collection[model] && Model.collection[model][id]) {
         var instance = Model.collection[model][id];
+        var cached = instance._cached;
         instance._loaded = true;
 
         // NOTE: when actually cached but needs to override data on model
         instance.set(data);
+
+        instance._cached = cached;
 
         return instance;
       }
