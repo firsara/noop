@@ -239,7 +239,7 @@ define(['../../config'], function(config){
   // resets touch end to its default state
   var _resetTouchEnd = function(){
     justDidTouchEnd = false;
-    _resetTouchEndTimeout = null;
+    resetTouchEndTimeout = null;
   };
 
   /**
