@@ -89,8 +89,8 @@ define([
     this.__component._didDispose = false;
 
     // stored, old component size
-    this.__component._oldComponentWidth = 0;
-    this.__component._oldComponentHeight = 0;
+    this.__component._oldComponentWidth = null;
+    this.__component._oldComponentHeight = null;
 
     // stored, old window size
     this.__component._oldWindowWidth = 0;
@@ -150,6 +150,41 @@ define([
    * @instance
    **/
   p.resize = function(){};
+
+  /**
+   * gets components size accordingly
+   * @method getComponentSize
+   * @memberof dom.Component
+   * @public
+   * @instance
+   **/
+  p.getComponentSize = function(){
+    var windowWidth = $(window).width();
+    var windowHeight = $(window).height();
+
+    var elWidth = this.$el.width();
+    var elHeight = this.$el.height();
+
+    this._componentWidth = elWidth;
+    this._componentHeight = elHeight;
+
+    if (! (
+      this._componentWidth === this.__component._oldComponentWidth &amp;&amp;
+      this._componentHeight === this.__component._oldComponentHeight &amp;&amp;
+      windowWidth === this.__component._oldWindowWidth &amp;&amp;
+      windowHeight === this.__component._oldWindowHeight
+    )) {
+      this.__component._oldComponentWidth = this._componentWidth;
+      this.__component._oldComponentHeight = this._componentHeight;
+
+      this.__component._oldWindowWidth = windowWidth;
+      this.__component._oldWindowHeight = windowHeight;
+
+      return true;
+    }
+
+    return false;
+  };
 
   /**
    * binds events in child class
@@ -299,28 +334,32 @@ define([
    * @instance
    **/
   var _windowResized = function(){
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
+    if (this.$el.is(':realVisible') || this.__component._oldComponentWidth === null) {
+      var changed = this.getComponentSize();
 
-    // store component sizes
-    this._componentWidth = this.$el.width();
-    this._componentHeight = this.$el.height();
-
-    // if window or component size changed -> call child resize function
-    if (! (
-      this._componentWidth === this.__component._oldComponentWidth &amp;&amp;
-      this._componentHeight === this.__component._oldComponentHeight &amp;&amp;
-      windowWidth === this.__component._oldWindowWidth &amp;&amp;
-      windowHeight === this.__component._oldWindowHeight
-    )) {
-      this.__component._oldComponentWidth = this._componentWidth;
-      this.__component._oldComponentHeight = this._componentHeight;
-
-      this.__component._oldWindowWidth = windowWidth;
-      this.__component._oldWindowHeight = windowHeight;
-
-      _resize.call(this);
+      if (changed || _forceResize) {
+        _resize.call(this);
+      }
     }
+  };
+
+
+
+  var _forceResetTimeout = null;
+  var _forceResize = false;
+
+  var _forceReset = function(){
+    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
+    _forceResetTimeout = null;
+    _forceResize = false;
+  };
+
+  Component.forceResize = function(){
+    _forceResize = true;
+    $(window).trigger('resize');
+
+    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
+    _forceResetTimeout = setTimeout(_forceReset, 2000);
   };
 
   return Component;
@@ -335,13 +374,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Sep 21 2015 18:55:46 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Oct 06 2015 17:35:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

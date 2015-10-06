@@ -296,6 +296,9 @@ define([
      */
     this.children = [];
 
+    this._gotParent = false;
+    this._gotStage = false;
+
 
     // CONFIGURATION PROPERTIES
     // ------------------------
@@ -408,7 +411,7 @@ define([
     var setXYZ = function(value){
       if (this[property] !== value) {
         this[property] = value;
-        this['_c' + realProperty] = _correctUnit(value);
+        this['_c' + realProperty] = Container.correctUnit(value);
 
         if (this.autoPaint) {
           _paintContainers[this._containerID] = this;
@@ -533,6 +536,134 @@ define([
   };
 
   /**
+   * gets child at a specific index from children list
+   *
+   * @method getChildAt
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Number} index of the dom element to be removed
+   **/
+  p.getChildAt = function(index) {
+    return this.children[index];
+  };
+
+  /**
+   * determines the index of a container in a child list
+   *
+   * @method getChildIndex
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container from which the index needs to be determined
+   **/
+  p.getChildIndex = function(child) {
+    return createjs.indexOf(this.children, child);
+  };
+
+  /**
+   * returns the number of children in a container
+   *
+   * @method getNumChildren
+   * @public
+   * @memberof dom.Container
+   **/
+  p.getNumChildren = function() {
+    return this.children.length;
+  };
+
+  /**
+   * adds a child container to the current one
+   *
+   * @method addChild
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container that should be added
+   * @param {Boolean} prepend or append the child?
+   **/
+  p.addChild = function(child, prepend){
+    this.addChildAt(child, prepend ? 0 : this.children.length);
+  };
+
+  /**
+   * prepends a child to the current one
+   *
+   * @method prependChild
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container that should be added
+   **/
+  p.prependChild = function(child){
+    this.addChild(child, true);
+  };
+
+  /**
+   * adds a child container to the current one at a specific index
+   * calls added event and checks for stage later on
+   *
+   * @method addChildAt
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container that should be added
+   * @param {Number} index where child should be appended to
+   **/
+  p.addChildAt = function(child, index){
+    if (! (child &amp;&amp; child.$el)) {
+      throw new Error('addChild expects child to be a container');
+    }
+
+    child.parent = this;
+    child.stage = this.stage;
+    child.$stage = this.$stage;
+
+    if (index &lt; 0) index = 0;
+    else if (index > this.children.length) index = this.children.length;
+
+    if (index === 0 || this.children.length === 0) {
+      this.$el.prepend(child.$el);
+    } else {
+      this.children[index - 1].$el.after(child.$el);
+    }
+
+    this.children.splice(index, 0, child);
+
+    child._added();
+  };
+
+  /**
+   * removes a child container from the current one
+   * calls removed and removedFromStage event and unsets stage and parent property
+   *
+   * @method removeChild
+   * @memberof dom.Container
+   * @public
+   * @instance
+   * @param {Container} child the container that should be removed
+   **/
+  p.removeChild = function(child){
+    if (! (child &amp;&amp; child.$el)) {
+      throw new Error('removeChild expects child to be a container');
+    }
+
+    var index = this.getChildIndex(child);
+
+    if (index >= 0) {
+      var removedChild = this.removeChildAt(index);
+
+      if (removedChild) {
+        return removedChild;
+      }
+    }
+
+    console.warn('child was not found');
+
+    return false;
+  };
+
+  /**
    * removes the dom container at a specific index
    * returns removed child for future use
    *
@@ -580,115 +711,6 @@ define([
   };
 
   /**
-   * gets child at a specific index from children list
-   *
-   * @method getChildAt
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Number} index of the dom element to be removed
-   **/
-  p.getChildAt = function(index) {
-    return this.children[index];
-  };
-
-  /**
-   * determines the index of a container in a child list
-   *
-   * @method getChildIndex
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Container} child the container from which the index needs to be determined
-   **/
-  p.getChildIndex = function(child) {
-    return createjs.indexOf(this.children, child);
-  };
-
-  /**
-   * returns the number of children in a container
-   *
-   * @method getNumChildren
-   * @public
-   * @memberof dom.Container
-   **/
-  p.getNumChildren = function() {
-    return this.children.length;
-  };
-
-  /**
-   * adds a child container to the current one
-   * calls added event and checks for stage later on
-   *
-   * @method addChild
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Container} child the container that should be added
-   * @param {Boolean} prepend or append the child?
-   **/
-  p.addChild = function(child, prepend){
-    if (! (child &amp;&amp; child.$el)) {
-      throw new Error('addChild expects child to be a container');
-    }
-
-    child.parent = this;
-
-    if (prepend) {
-      this.children.unshift(child);
-      this.$el.prepend(child.$el);
-    } else {
-      this.children.push(child);
-      this.$el.append(child.$el);
-    }
-
-    child._added();
-  };
-
-  /**
-   * prepends a child to the current one
-   *
-   * @method prependChild
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Container} child the container that should be added
-   **/
-  p.prependChild = function(child){
-    this.addChild(child, true);
-  };
-
-  /**
-   * removes a child container from the current one
-   * calls removed and removedFromStage event and unsets stage and parent property
-   *
-   * @method removeChild
-   * @memberof dom.Container
-   * @public
-   * @instance
-   * @param {Container} child the container that should be removed
-   **/
-  p.removeChild = function(child){
-    if (! (child &amp;&amp; child.$el)) {
-      throw new Error('removeChild expects child to be a container');
-    }
-
-    var index = this.getChildIndex(child);
-
-    if (index >= 0) {
-      var removedChild = this.removeChildAt(index);
-
-      if (removedChild) {
-        return removedChild;
-      }
-    }
-
-    console.warn('child was not found');
-
-    return false;
-  };
-
-  /**
    * finds stage if it's already present on child container
    *
    * @method getStage
@@ -697,8 +719,30 @@ define([
    * @instance
    **/
   p.getStage = function(){
-    var node = this.el;
+    // if already has a defined stage return it
+    if (this.stage) return this.stage;
+
+    // if otherwise has a parent
+    if (this.parent) {
+      // and parent has a defined stage or is a stage object return it
+      if (this.parent.stage) return this.parent.stage;
+      if (this.parent.isStage) return this.parent.el;
+    }
+
+    // first try to find elements most parent item that should be a stage object
+    var node = this;
     var tmpNode = node;
+
+    while (true) {
+      tmpNode = tmpNode.parent;
+      if (! tmpNode) break;
+      if (tmpNode.stage) return tmpNode.stage;
+      if (tmpNode.isStage) return tmpNode.el;
+    }
+
+    // otherwise traverse the dom and return document.body if found
+    node = this.el;
+    tmpNode = node;
 
     while (true) {
       tmpNode = tmpNode.parentNode;
@@ -714,6 +758,7 @@ define([
     //  return document.body;
     //}
 
+    // otherwise just didn't find a stage
     return false;
   };
 
@@ -760,19 +805,15 @@ define([
         // if name was already set in parent container, but was actually not a reserved name,
         // but an already dynamically added child (i.e. if it was a child list &lt;li> or similar)
         if (this.parent.dynamicChildren[this.name]) {
-          // convert property to an array and re-assign children correctly
-          var oldChild = this.parent.dynamicChildren[this.name];
+          this.parent[this.name] = [];
+          this.parent.dynamicChildren[this.name] = [];
 
-          if (! Array.isArray(this.parent.dynamicChildren[this.name])) {
-            this.parent.dynamicChildren[this.name] = [];
-            this.parent.dynamicChildren[this.name].push(oldChild);
-
-            this.parent[this.name] = [];
-            this.parent[this.name].push(oldChild);
+          for (var i = 0, _len = this.parent.children.length; i &lt; _len; i++) {
+            if (this.parent.children[i].name === this.name) {
+              this.parent[this.name].push(this.parent.children[i]);
+              this.parent.dynamicChildren[this.name].push(this.parent.children[i]);
+            }
           }
-
-          this.parent.dynamicChildren[this.name].push(this);
-          this.parent[this.name].push(this);
         } else {
           // if the added child was already assigned manually to the parent container it's ok
           // i.e. via: Main.navigation = new Navigation()
@@ -786,12 +827,16 @@ define([
     }
 
     this._checkAddedToStage();
-    this.dispatchEvent(new createjs.Event('added', false));
 
-    if (this.parent) {
-      var addedChildEvent = new createjs.Event('addedChild', false);
-      addedChildEvent.child = this;
-      this.parent.dispatchEvent(addedChildEvent);
+    if (this._gotParent) {
+      this._gotParent = true;
+      this.dispatchEvent(new createjs.Event('added', false));
+
+      if (this.parent) {
+        var addedChildEvent = new createjs.Event('addedChild', false);
+        addedChildEvent.child = this;
+        this.parent.dispatchEvent(addedChildEvent);
+      }
     }
   };
 
@@ -807,11 +852,15 @@ define([
    **/
   p._removed = function() {
     // first dispatch removed event, then unbind parent (we could use parent in callback)
-    this.dispatchEvent(new createjs.Event('removed', false));
+    if (this._gotParent) {
+      this._gotParent = false;
 
-    var removedChildEvent = new createjs.Event('removedChild', false);
-    removedChildEvent.child = this;
-    this.parent.dispatchEvent(removedChildEvent);
+      this.dispatchEvent(new createjs.Event('removed', false));
+
+      var removedChildEvent = new createjs.Event('removedChild', false);
+      removedChildEvent.child = this;
+      this.parent.dispatchEvent(removedChildEvent);
+    }
 
     // if container had a name and a parent
     if (this.name &amp;&amp; this.parent) {
@@ -873,6 +922,8 @@ define([
     TweenLite.killTweensOf(this.$el);
     TweenLite.killTweensOf(this.el.style);
 
+    this.stopDelay();
+
     if (this.children) {
       var kids = this.children;
       for (var i = 0, _len = kids.length; i &lt; _len; i++) {
@@ -883,7 +934,11 @@ define([
     }
 
     if (this.stage) {
-      this.dispatchEvent(new createjs.Event('removedFromStage', false));
+      if (this._gotStage) {
+        this._gotStage = false;
+        this.dispatchEvent(new createjs.Event('removedFromStage', false));
+      }
+
       this.stage = null;
       this.$stage = null;
     }
@@ -900,14 +955,10 @@ define([
    **/
   p._checkAddedToStage = function(){
     var stage = this.getStage();
-    var dispatchAddedToStage = false;
 
     if (stage) {
-      if (! this.stage) {
-        this.stage = stage;
-        this.$stage = $(stage);
-        dispatchAddedToStage = true;
-      }
+      this.stage = stage;
+      this.$stage = $(stage);
     }
 
     if (this.children) {
@@ -919,8 +970,11 @@ define([
       }
     }
 
-    if (dispatchAddedToStage) {
-      this.dispatchEvent(new createjs.Event('addedToStage', false));
+    if (stage) {
+      if (! this._gotStage) {
+        this._gotStage = true;
+        this.dispatchEvent(new createjs.Event('addedToStage', false));
+      }
     }
   };
 
@@ -1001,12 +1055,12 @@ define([
   /**
    * adds 'px' to a value if no unit is set
    *
-   * @method _correctUnit
+   * @method correctUnit
    * @memberof dom.Container
-   * @private
-   * @instance
+   * @param {String|Number} value of unit
+   * @static
    **/
-  var _correctUnit = function(value){
+  Container.correctUnit = function(value){
     if (parseFloat(value).toString() === value.toString()) {
       return value + 'px';
     }
@@ -1026,13 +1080,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Sep 21 2015 18:55:46 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Oct 06 2015 17:35:03 GMT+0200 (CEST)
 </footer>
 
 <script> prettyPrint(); </script>

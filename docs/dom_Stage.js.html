@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Mixin: BaseScaleClip</title>
+    <title>JSDoc: Source: dom/Stage.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,118 +17,51 @@
 
 <div id="main">
 
-    <h1 class="page-title">Mixin: BaseScaleClip</h1>
+    <h1 class="page-title">Source: dom/Stage.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-            <span class="ancestors"><a href="display.base.html">.base</a>.</span>
-        
-        BaseScaleClip
-        </h2>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ * Stage.js
+ * Fabian Irsara
+ * Copyright 2015, Licensed GPL &amp; MIT
+ */
+define([
+  '../sys',
+  './Container'
+],
+function(
+  sys,
+  Container
+) {
+  /**
+   * @class Stage
+   * @memberof dom
+   * @extends dom.Container
+   *
+   * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
+   * @param {object} data the data to pass through the template, optional
+   * @param {object} options optional options to overwrite container properties before inheriting
+   **/
+  function Stage(template, data, options){
+    this.isStage = true;
+    Container.call(this, template, data, options);
+    this.stage = this.el;
+    this.$stage = $(this.stage);
+  }
 
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><p>used for scaling calculations<br>
-<strong>NOTE</strong>: only calculation wrapper. gets extended in:</p></div>
-        
+  sys.extend(Stage, Container);
 
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="display_ScaleClip.js.html">display/ScaleClip.js</a>, <a href="display_ScaleClip.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="dom.ScaleClip.html">dom.ScaleClip</a></li>
-        
-            <li><a href="easeljs.ScaleClip.html">easeljs.ScaleClip</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-        
-            <h3>Example</h3>
-            
-    <pre class="prettyprint"><code>var scaler = new ScaleClip('&lt;img src="image.jpg">');
-scaler.borders.scale = [0.1, 2];
-scaler.free.scale = true; // overwrites borders</code></pre>
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+  return Stage;
+});
+</code></pre>
+        </article>
+    </section>
 
 
 
