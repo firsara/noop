@@ -337,7 +337,7 @@ define([
 
   Component.forceResize = function(){
     if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
-    _forceResetTimeout = setTimeout(_forceReset, 2000);
+    _forceResetTimeout = setTimeout(_forceReset, 150);
 
     if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
     _forceResizeTimeout = setTimeout(_doForceResize, 17);
