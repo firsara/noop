@@ -32,6 +32,8 @@ function(
 
     this.borders.x = [0, 0];
     this.borders.y = [0, 0];
+    this.snap.x = 1;
+    this.snap.y = 1;
 
     this.fraction.release.x = 0.75;
     this.fraction.release.y = 0.75;
