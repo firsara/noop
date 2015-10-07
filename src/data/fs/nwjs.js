@@ -112,6 +112,7 @@ define(['./base', '../API'], function(fileSystem, API){
 
         // track if request status is 200
         var fileWasFound = false;
+        var didThrowError = false;
 
         // store basic request response
         r.on('response', function(response){
@@ -132,7 +133,8 @@ define(['./base', '../API'], function(fileSystem, API){
         }
 
         r.on('error', function(err){
-          if (options.error) {
+          if (options.error && ! didThrowError) {
+            didThrowError = true;
             options.error(err);
           }
 
@@ -149,7 +151,8 @@ define(['./base', '../API'], function(fileSystem, API){
               // if there was an error while renaming
               if (err) {
                 // call error callback
-                if (options.error) {
+                if (options.error && ! didThrowError) {
+                  didThrowError = true;
                   options.error(err);
                 }
               } else {
@@ -161,7 +164,8 @@ define(['./base', '../API'], function(fileSystem, API){
             });
           } else {
             // if file was not found on remote: call error callback
-            if (options.error) {
+            if (options.error && ! didThrowError) {
+              didThrowError = true;
               options.error();
             }
           }
@@ -170,7 +174,8 @@ define(['./base', '../API'], function(fileSystem, API){
         // if there was an error while writing the file
         file.on('error', function(err){
           // call error callback
-          if (options.error) {
+          if (options.error && ! didThrowError) {
+            didThrowError = true;
             options.error(err);
           }
         });
