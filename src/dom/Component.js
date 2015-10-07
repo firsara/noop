@@ -318,6 +318,7 @@ define([
 
 
   var _forceResetTimeout = null;
+  var _forceResizeTimeout = null;
   var _forceResize = false;
 
   var _forceReset = function(){
@@ -326,12 +327,20 @@ define([
     _forceResize = false;
   };
 
-  Component.forceResize = function(){
+  var _doForceResize = function(){
+    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
+    _forceResizeTimeout = null;
+
     _forceResize = true;
     $(window).trigger('resize');
+  };
 
+  Component.forceResize = function(){
     if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
     _forceResetTimeout = setTimeout(_forceReset, 2000);
+
+    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
+    _forceResizeTimeout = setTimeout(_doForceResize, 17);
   };
 
   return Component;
