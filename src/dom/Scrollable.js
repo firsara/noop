@@ -61,6 +61,20 @@ function(
    **/
   p.setScrollBounds = function(){
     if (this.parent) {
+      if (this.parent.name === 'scrollMask') {
+        var storedHeight = this.parent.parent.el.style.height;
+        var storedDisplay = this.parent.el.style.display;
+        this.parent.parent.el.style.height = 'auto';
+        this.parent.el.style.display = 'none';
+
+        var contentHeight = this.parent.parent.$el.outerHeight();
+
+        this.parent.parent.el.style.height = storedHeight;
+        this.parent.el.style.display = storedDisplay;
+
+        this.parent.el.style.height = (this.parent.parent.$el.outerHeight() - contentHeight) + 'px';
+      }
+
       var parentSize = {width: this.parent.$el.outerWidth(), height: this.parent.$el.outerHeight()};
       var scrollSize = {width: this.$el.outerWidth(), height: this.$el.outerHeight()};
 
