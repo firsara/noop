@@ -224,6 +224,54 @@ define(['../../config', '../API'], function(config, API){
   };
 
   /**
+   * reads all files in a directory recursively<br>
+   * returns an array containing all filenames
+   *
+   * @method readdirRecursive
+   * @memberof data.fs
+   * @instance
+   * @param {String} path of directory
+   * @param {Function} callback when finished
+   **/
+  fs.readdirRecursive = function(path, callback){
+    var base = path;
+    var items = [];
+
+    var read = function(dir, cb){
+      fs.readdir(dir, function(entries){
+        var sub = dir.replace(base, '');
+        var index = -1;
+
+        var next = function(){
+          index++;
+
+          if (entries[index]) {
+            items.push((sub + '/' + entries[index]).substring(1));
+
+            if (entries[index].indexOf('.') === -1) {
+              read(dir + '/' + entries[index], next);
+            } else {
+              next();
+            }
+          } else {
+            if (cb) {
+              cb();
+            }
+          }
+        };
+
+        next();
+      });
+    };
+
+    read(path, function(){
+      if (callback) {
+        callback(items);
+      }
+    });
+  };
+
+  /**
    * pipes a remote file to a local file<br>
    * downloads and dispatches progress
    *
