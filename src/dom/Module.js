@@ -196,11 +196,16 @@ define([
       // disallow multiple show calls by setting show to noop when first called
       _this.show = _noop;
 
-      // hides component for a short duration before really showing element
-      _this.container.el.style.visibility = 'hidden';
+      if (_this.view) {
+        // hides component for a short duration before really showing element
+        _this.view.el.style.visibility = 'hidden';
 
-      // add a little timeout so components can resize and align properly
-      _this.__doShowTimeout = setTimeout(_doShow, 50);
+        // add a little timeout so components can resize and align properly
+        _this.__doShowTimeout = setTimeout(_doShow, 50);
+      }
+
+      _childFunctions.show();
+      _this.dispatchEvent(SHOW);
     };
 
     /**
@@ -239,9 +244,7 @@ define([
     var _doShow = function(){
       // re-shows component
       _this.__doShowTimeout = null;
-      _this.container.el.style.visibility = '';
-      _childFunctions.show();
-      _this.dispatchEvent(SHOW);
+      if (_this.view) _this.view.el.style.visibility = '';
     };
 
     /**
