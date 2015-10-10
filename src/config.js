@@ -58,6 +58,7 @@ define(['text!app.config.json'], function(configJSON){
 
   body.className = (body.className.length > 0 ? body.className + ' ' : '') + ('env-' + config.environment);
   body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.iOS ? 'ios' : 'no-ios');
+  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.android ? 'android' : 'no-android');
 
   /**
    * check if app is running on localhost
