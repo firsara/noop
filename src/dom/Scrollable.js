@@ -127,8 +127,12 @@ function(
 
       if (offsetSize.width <= 0 && offsetSize.height <= 0) {
         this.lock = true;
+        if (this.parent.hScrollbar) this.parent.hScrollbar.$el.addClass('locked');
+        if (this.parent.vScrollbar) this.parent.vScrollbar.$el.addClass('locked');
       } else {
         this.lock = false;
+        if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('locked');
+        if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('locked');
       }
 
       this.__scrollOldSize = scrollSize;
