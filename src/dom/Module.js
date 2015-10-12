@@ -83,6 +83,15 @@ define([
     _this.data = null;
 
     /**
+     * wheter module should autoshow after being preloaded
+     * @see data.Loader
+     * @memberof dom.Module
+     * @instance
+     * @var {Boolean} autoShow
+     */
+    _this.autoShow = true;
+
+    /**
      * if Module was preloaded
      * @memberof dom.Module
      * @instance
@@ -135,7 +144,7 @@ define([
     _this.init = function(){
       _childFunctions.init();
       _this.dispatchEvent(INIT);
-      _this.show();
+      if (_this.autoShow) _this.show();
     };
 
     /**
