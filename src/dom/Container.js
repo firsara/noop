@@ -472,12 +472,16 @@ define([
     this.mouseEnabled = value;
     var _this = this;
 
+    this.el.removeEventListener('touchstart', this.__bind(_preventMouseEvent), true);
+    this.el.removeEventListener('touchmove', this.__bind(_preventMouseEvent), true);
     this.el.removeEventListener('mousedown', this.__bind(_preventMouseEvent), true);
     this.el.removeEventListener('mouseup', this.__bind(_preventMouseEvent), true);
     this.el.removeEventListener('click', this.__bind(_preventMouseEvent), true);
     this.el.removeEventListener('tap', this.__bind(_preventMouseEvent), true);
 
     if (value === false) {
+      this.el.addEventListener('touchstart', this.__bind(_preventMouseEvent), true);
+      this.el.addEventListener('touchmove', this.__bind(_preventMouseEvent), true);
       this.el.addEventListener('mousedown', this.__bind(_preventMouseEvent), true);
       this.el.addEventListener('mouseup', this.__bind(_preventMouseEvent), true);
       this.el.addEventListener('click', this.__bind(_preventMouseEvent), true);
