@@ -86,7 +86,7 @@ define(['../../config'], function(config){
     // create appropriate touchmouse event based on original event
     evt = _createEvent(type, event, event.pageX, event.pageY, -1);
 
-    target = event.target;
+    var target = event.target;
 
     if (isMouseDown) {
       target = isMouseDown;
