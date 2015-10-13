@@ -229,6 +229,7 @@ define([
         var options = {};
 
         options.success = _receivedFilePath.bind(this);
+        options.progress = _downloadProgress.bind(this);
         options.error = _cacheDownloadError.bind(this);
 
         // if current item has an overwrite option
@@ -300,6 +301,20 @@ define([
         this.dispatchEvent(new createjs.Event('complete'));
       }
     }
+  };
+
+  /**
+   * dispatches progress event while downloading a file
+   *
+   * @method _downloadProgress
+   * @memberof data.Loader
+   * @instance
+   * @private
+   **/
+  var _downloadProgress = function(progress){
+    var event = new createjs.Event('cached');
+    event.progress = (this._loadIndex + 1 * progress) / this._manifest.length;
+    this.dispatchEvent(event);
   };
 
   /**
