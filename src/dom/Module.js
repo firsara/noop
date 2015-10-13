@@ -236,6 +236,8 @@ define([
 
           _this.data.removeAll();
           _this.data.destroy();
+        } else {
+          _this.data.cancel();
         }
 
         _this.data = null;
