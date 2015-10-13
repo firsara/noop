@@ -15,6 +15,8 @@ function(
   MoveClip,
   createjs
 ) {
+  var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
+
   /**
    * Scrollable Container that Auto-sets borders based on parent container
    *
@@ -172,8 +174,12 @@ function(
    * @private
    **/
   var _render = function(){
-    this.el.addEventListener('wheel', this.__bind(_wheel));
-    this.el.addEventListener('mousewheel', this.__bind(_scroll));
+    if (isFirefox) {
+      this.el.addEventListener('wheel', this.__bind(_wheel));
+    } else {
+      this.el.addEventListener('mousewheel', this.__bind(_scroll));
+    }
+
     this.addEventListener('move', this.__bind(_positionScrollbar));
     $(window).bind('resize', this.__bind(this.resize));
 
@@ -190,8 +196,12 @@ function(
    * @private
    **/
   var _dispose = function(){
-    this.el.removeEventListener('wheel', this.__bind(_wheel));
-    this.el.removeEventListener('mousewheel', this.__bind(_scroll));
+    if (isFirefox) {
+      this.el.removeEventListener('wheel', this.__bind(_wheel));
+    } else {
+      this.el.removeEventListener('mousewheel', this.__bind(_scroll));
+    }
+
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     $(window).unbind('resize', this.__bind(this.resize));
 
