@@ -6,11 +6,13 @@
 /** @namespace modules **/
 define([
   '../sys',
+  '../config',
   'EaselJS',
   './Component',
   '../data/Loader'
 ], function(
   sys,
+  config,
   createjs,
   Component,
   Loader
@@ -227,12 +229,14 @@ define([
      **/
     _this.destroy = function(){
       if (_this.data) {
-        try {
-          _this.data.reset();
-        } catch(e){}
+        if (config.environment !== 'browser') {
+          try {
+            _this.data.reset();
+          } catch(e){}
 
-        _this.data.removeAll();
-        _this.data.destroy();
+          _this.data.removeAll();
+          _this.data.destroy();
+        }
 
         _this.data = null;
 
