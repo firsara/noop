@@ -78,33 +78,38 @@ define(['../../config'], function(config){
     switch (event.type) {
       case 'mousedown': type = EVENTS.DOWN; touchmouse.activeTouches = 1; break;
       case 'mouseup':   type = EVENTS.UP;   touchmouse.activeTouches = 0; break;
-      case 'mousemove': type = EVENTS.MOVE; touchmouse.activeTouches = 1; break;
+      case 'mousemove': type = EVENTS.MOVE; break;
       default:
         return;
-    }
-
-    if (type === EVENTS.DOWN && isMouseDown) {
-      evt = _createEvent(EVENTS.DOWN, event, event.pageX, event.pageY, -1);
-      isMouseDown.dispatchEvent(evt);
     }
 
     // create appropriate touchmouse event based on original event
     evt = _createEvent(type, event, event.pageX, event.pageY, -1);
 
+    target = event.target;
+
+    if (isMouseDown) {
+      target = isMouseDown;
+    }
+
+    if (type === EVENTS.DOWN && ! isMouseDown) {
+      isMouseDown = event.target;
+    } else if (type === EVENTS.UP) {
+      isMouseDown = false;
+    }
+
     // dispatch touchmouse event on target
-    event.target.dispatchEvent(evt);
+    target.dispatchEvent(evt);
 
     if (type === EVENTS.DOWN) {
       // store start mouse position
       trackedPositions.start = {x: evt.pageX, y: evt.pageY};
-      isMouseDown = event.target;
     } else if (type === EVENTS.UP) {
       // store end mouse position
       trackedPositions.end = {x: evt.pageX, y: evt.pageY};
 
       // check if it was a tap
       checkTap(event.target, event, evt.pageX, evt.pageY, -1);
-      isMouseDown = false;
     }
 
     // reset idle status
