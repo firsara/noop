@@ -172,6 +172,7 @@ function(
    * @private
    **/
   var _render = function(){
+    this.el.addEventListener('wheel', this.__bind(_wheel));
     this.el.addEventListener('mousewheel', this.__bind(_scroll));
     this.addEventListener('move', this.__bind(_positionScrollbar));
     $(window).bind('resize', this.__bind(this.resize));
@@ -189,6 +190,7 @@ function(
    * @private
    **/
   var _dispose = function(){
+    this.el.removeEventListener('wheel', this.__bind(_wheel));
     this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     $(window).unbind('resize', this.__bind(this.resize));
@@ -257,6 +259,27 @@ function(
     options.onUpdateScope = this;
     options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX));
     options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY));
+    options.ease = Quint.easeOut;
+
+    TweenLite.to(this, 0.6, options);
+  };
+
+  /**
+   * scrolling handling in firefox
+   *
+   * @method _wheel
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _wheel = function(event){
+    if (this.lock) return;
+
+    var options = {};
+    options.onUpdate = _scrollUpdate;
+    options.onUpdateScope = this;
+    options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX * 40));
+    options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY * 40));
     options.ease = Quint.easeOut;
 
     TweenLite.to(this, 0.6, options);
