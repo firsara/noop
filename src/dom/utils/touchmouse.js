@@ -50,13 +50,13 @@ define(['../../config'], function(config){
   var wasIdle = false;
 
   // if tracking both events prevent them by default
-  var preventDoubleClicks = config.trackTouch && config.trackMouse;
+  var tracksBoth = config.trackTouch && config.trackMouse;
 
   // keep track of mouse down and up events
   var isMouseDown = false;
 
   // if touch just fired a touchend event
-  var justDidTouchEnd = false;
+  var preventMouseEvents = false;
 
   // reset touch end timeout
   var resetTouchEndTimeout = null;
@@ -71,7 +71,7 @@ define(['../../config'], function(config){
    * @param {Event} event dispatched from mouse listener
    **/
   var onMouseEvent = function(event) {
-    if (preventDoubleClicks && justDidTouchEnd) return;
+    if (preventMouseEvents) return;
 
     var type, evt;
 
@@ -208,6 +208,11 @@ define(['../../config'], function(config){
       }
     }
 
+    if (tracksBoth) {
+      // prevent calling mouse events that fire right after touch events (i.e. fallback click)
+      preventMouseEvents = true;
+    }
+
     if (type === EVENTS.DOWN) {
       // store if had multiple fingers throughout transformations before ending a touch (i.e. before tapping)
       trackedPositions.hadMultiple = touchmouse.activeTouches > 1;
@@ -224,9 +229,8 @@ define(['../../config'], function(config){
       // check if it was a tap on last found target
       checkTap(target, event, touches[0].pageX, touches[0].pageY, touches[0].identifier);
 
-      if (preventDoubleClicks) {
-        // prevent calling mouse events that fire right after a touchend event (i.e. fallback click)
-        justDidTouchEnd = true;
+      // re-track mouse events when no active touch is detected anymore
+      if (tracksBoth) {
         if (resetTouchEndTimeout) clearTimeout(resetTouchEndTimeout);
         resetTouchEndTimeout = setTimeout(_resetTouchEnd, 17);
       }
@@ -238,7 +242,7 @@ define(['../../config'], function(config){
 
   // resets touch end to its default state
   var _resetTouchEnd = function(){
-    justDidTouchEnd = false;
+    preventMouseEvents = false;
     resetTouchEndTimeout = null;
   };
 
