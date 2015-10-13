@@ -207,14 +207,6 @@ define([
       // disallow multiple show calls by setting show to noop when first called
       _this.show = _noop;
 
-      if (_this.view) {
-        // hides component for a short duration before really showing element
-        _this.view.el.style.visibility = 'hidden';
-
-        // add a little timeout so components can resize and align properly
-        _this.__doShowTimeout = setTimeout(_doShow, 50);
-      }
-
       _childFunctions.show();
       _this.dispatchEvent(SHOW);
     };
@@ -241,25 +233,7 @@ define([
         }
 
         _this.data = null;
-
-        if (_this.__doShowTimeout) clearTimeout(_this.__doShowTimeout);
       }
-    };
-
-    /**
-     * calls show on child class
-     * or simply dispatches showed event by default
-     * if show is not overriden in child class
-     *
-     * @method _doShow
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _doShow = function(){
-      // re-shows component
-      _this.__doShowTimeout = null;
-      if (_this.view) _this.view.el.style.visibility = '';
     };
 
     /**
