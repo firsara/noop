@@ -62,6 +62,34 @@ define(['../../config'], function(config){
   var resetTouchEndTimeout = null;
 
   /**
+   * creates a custom event and returns it
+   *
+   * @method touchmouse.createEvent
+   * @memberof dom.utils.touchmouse
+   * @instance
+   * @public
+   * @param {String} type of event that should be created
+   * @param {Event} originalEvent (if available) to store for later usage
+   * @param {Number} x position of event
+   * @param {Number} y position of event
+   * @param {Number} pointerID that was used (multiple fingers)
+   * @returns {Event} the created event
+   **/
+  touchmouse.createEvent = function(type, originalEvent, x, y, pointerID) {
+    var event = new Event(type, {
+      bubbles: true,
+      cancelable: true
+    });
+
+    event.originalEvent = originalEvent;
+    event.pageX = x;
+    event.pageY = y;
+    event.pointerID = pointerID;
+
+    return event;
+  };
+
+  /**
    * checks event type, tracks positions, converts to touchmouse event, etc.
    *
    * @method onMouseEvent
@@ -84,7 +112,7 @@ define(['../../config'], function(config){
     }
 
     // create appropriate touchmouse event based on original event
-    evt = _createEvent(type, event, event.pageX, event.pageY, -1);
+    evt = touchmouse.createEvent(type, event, event.pageX, event.pageY, -1);
 
     var target = event.target;
 
@@ -147,7 +175,7 @@ define(['../../config'], function(config){
       touch = touches[i];
 
       // create appropriate event
-      evt = _createEvent(type, event, touch.pageX, touch.pageY, touch.identifier);
+      evt = touchmouse.createEvent(type, event, touch.pageX, touch.pageY, touch.identifier);
 
       // if already has a tracked target for current pointerID
       // NOTE: maybe always used document.elementFromPoint as touch could move over multiple objects?
@@ -189,7 +217,7 @@ define(['../../config'], function(config){
           // (i.e. if it actually isn't actively on the screen anymore, but is still be tracked)
           if (eventFiringIdentifiers.indexOf(k) === -1) {
             // fake touchend event on that element
-            evt = _createEvent(type, event, touch.pageX, touch.pageY, k);
+            evt = touchmouse.createEvent(type, event, touch.pageX, touch.pageY, k);
             if (trackedTouches[k].target) {
               trackedTouches[k].target.dispatchEvent(evt);
             }
@@ -333,14 +361,14 @@ define(['../../config'], function(config){
       target._taps++;
 
       // if it was a valid tap: dispatch event, pass tap count to event
-      evt = _createEvent(EVENTS.TAP, originalEvent, x, y, pointerID);
+      evt = touchmouse.createEvent(EVENTS.TAP, originalEvent, x, y, pointerID);
       evt.taps = target._taps;
       target.dispatchEvent(evt);
 
       // if also was a double tap
       if (wasDoubleTap) {
         // dispatch a double tap event on target, pass tap count to event
-        evt = _createEvent(EVENTS.DOUBLE_TAP, originalEvent, x, y, pointerID);
+        evt = touchmouse.createEvent(EVENTS.DOUBLE_TAP, originalEvent, x, y, pointerID);
         evt.taps = target._taps;
         target.dispatchEvent(evt);
       }
@@ -366,34 +394,6 @@ define(['../../config'], function(config){
     ) {
       event.stopPropagation();
     }
-  };
-
-  /**
-   * creates a custom event and returns it
-   *
-   * @method _createEvent
-   * @memberof dom.utils.touchmouse
-   * @instance
-   * @private
-   * @param {String} type of event that should be created
-   * @param {Event} originalEvent (if available) to store for later usage
-   * @param {Number} x position of event
-   * @param {Number} y position of event
-   * @param {Number} pointerID that was used (multiple fingers)
-   * @returns {Event} the created event
-   **/
-  var _createEvent = function(type, originalEvent, x, y, pointerID) {
-    var event = new Event(type, {
-      bubbles: true,
-      cancelable: true
-    });
-
-    event.originalEvent = originalEvent;
-    event.pageX = x;
-    event.pageY = y;
-    event.pointerID = pointerID;
-
-    return event;
   };
 
   /**
