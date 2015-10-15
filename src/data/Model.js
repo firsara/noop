@@ -356,6 +356,7 @@ define([
     }
 
     // if data was a number: assume it was the model's id
+    // TODO: integrate string id's
     if (! isNaN(data)) {
       // if it's a collection, but only has one item: don't set the collection's id
       if (this instanceof require('noop/data/Collection') === false) {
