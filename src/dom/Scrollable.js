@@ -269,6 +269,15 @@ function(
     options.onUpdateScope = this;
     options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX));
     options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY));
+
+    if (this.snap.x && this.snap.x !== 0) {
+      options.x = (Math.round(options.x / this.snap.x) * this.snap.x);
+    }
+
+    if (this.snap.y && this.snap.y !== 0) {
+      options.y = (Math.round(options.y / this.snap.y) * this.snap.y);
+    }
+
     options.ease = Quint.easeOut;
 
     TweenLite.to(this, 0.6, options);
@@ -290,6 +299,15 @@ function(
     options.onUpdateScope = this;
     options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX * 40));
     options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY * 40));
+
+    if (this.snap.x && this.snap.x !== 0) {
+      options.x = (Math.round(options.x / this.snap.x) * this.snap.x);
+    }
+
+    if (this.snap.y && this.snap.y !== 0) {
+      options.y = (Math.round(options.y / this.snap.y) * this.snap.y);
+    }
+
     options.ease = Quint.easeOut;
 
     TweenLite.to(this, 0.6, options);
