@@ -41,6 +41,7 @@ function(
     this.fraction.release.y = 0.75;
 
     this.__scrollOldSize = {width: 0, height: 0};
+    this.__scrollsHorizontal = false;
     this.__scrollOldParentSize = {width: 0, height: 0};
     this.__setScrollbarTimeout = null;
     this.__unsetScrollbarTimeout = null;
@@ -147,6 +148,7 @@ function(
 
       this.__scrollOldSize = scrollSize;
       this.__scrollOldParentSize = parentSize;
+      this.__scrollsHorizontal = offsetSize.height === 0 && offsetSize.width !== 0;
 
       _hold.call(this);
     }
@@ -263,24 +265,7 @@ function(
    **/
   var _scroll = function(event){
     if (this.lock) return;
-
-    var options = {};
-    options.onUpdate = _scrollUpdate;
-    options.onUpdateScope = this;
-    options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX));
-    options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY));
-
-    if (this.snap.x && this.snap.x !== 0) {
-      options.x = (Math.round(options.x / this.snap.x) * this.snap.x);
-    }
-
-    if (this.snap.y && this.snap.y !== 0) {
-      options.y = (Math.round(options.y / this.snap.y) * this.snap.y);
-    }
-
-    options.ease = Quint.easeOut;
-
-    TweenLite.to(this, 0.6, options);
+    _doScroll.call(this, {x: event.deltaX, y: event.deltaY});
   };
 
   /**
@@ -293,12 +278,30 @@ function(
    **/
   var _wheel = function(event){
     if (this.lock) return;
+    _doScroll.call(this, {x: event.deltaX * 40, y: event.deltaY * 40});
+  };
+
+  /**
+   * calculates scroll position
+   *
+   * @method _doScroll
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _doScroll = function(wheel){
+    if (this.__scrollsHorizontal) {
+      if (! wheel.x || Math.abs(wheel.x) === 0) {
+        wheel.x = wheel.y;
+        wheel.y = 0;
+      }
+    }
 
     var options = {};
     options.onUpdate = _scrollUpdate;
     options.onUpdateScope = this;
-    options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - event.deltaX * 40));
-    options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - event.deltaY * 40));
+    options.x = Math.max(this.borders.x[0], Math.min(this.borders.x[1], this.x - wheel.x));
+    options.y = Math.max(this.borders.y[0], Math.min(this.borders.y[1], this.y - wheel.y));
 
     if (this.snap.x && this.snap.x !== 0) {
       options.x = (Math.round(options.x / this.snap.x) * this.snap.x);
