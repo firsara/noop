@@ -834,7 +834,10 @@ define([
     '_cached',
     '_loaded',
     '_definedData',
-    '_relationshipKeys'
+    '_relationshipKeys',
+    '__oldOverwrite',
+    '_listeners',
+    '_captureListeners'
   ];
 
   /**
