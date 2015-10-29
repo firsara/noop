@@ -179,6 +179,7 @@ define([
     this.dispatchEvent('init');
 
     this.init();
+    this.init = null;
     _windowResized.call(this);
 
     this.dispatchEvent('show');
