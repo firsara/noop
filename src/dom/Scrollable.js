@@ -32,54 +32,62 @@ function(
     // extend from base class
     MoveClip.call(this, template, data, options);
 
-    this.borders.x = [0, 0];
-    this.borders.y = [0, 0];
-    this.snap.x = 1;
-    this.snap.y = 1;
-
-    this.fraction.release.x = 0.75;
-    this.fraction.release.y = 0.75;
-
-    this.__scrollOldSize = {width: 0, height: 0};
-    this.__scrollsHorizontal = false;
-    this.__scrollOldParentSize = {width: 0, height: 0};
-    this.__setScrollbarTimeout = null;
-    this.__unsetScrollbarTimeout = null;
-
-    this.on('addedToStage', _render, this);
-    this.on('removedFromStage', _dispose, this);
-
-    _addChildEvents.call(this, this);
+    Scrollable.create(this, this);
   }
 
   var p = sys.extend(Scrollable, MoveClip);
 
+  Scrollable.create = function(container, checkContainer){
+    container.check = checkContainer;
+
+    container.borders.x = [0, 0];
+    container.borders.y = [0, 0];
+    container.snap.x = 1;
+    container.snap.y = 1;
+
+    container.fraction.release.x = 0.75;
+    container.fraction.release.y = 0.75;
+
+    container.__scrollOldSize = {width: 0, height: 0};
+    container.__scrollsHorizontal = false;
+    container.__scrollOldParentSize = {width: 0, height: 0};
+    container.__setScrollbarTimeout = null;
+    container.__unsetScrollbarTimeout = null;
+
+    container.setScrollBounds = _setScrollBounds.bind(container);
+
+    container.on('addedToStage', _render, container);
+    container.on('removedFromStage', _dispose, container);
+
+    _addChildEvents.call(container, container);
+  };
+
   /**
    * sets bounds for moveclip based on scrollable parent
    *
-   * @method _render
+   * @method setScrollBounds
    * @memberof dom.Scrollable
    * @instance
    * @public
    **/
-  p.setScrollBounds = function(){
-    if (this.parent) {
-      if (this.parent.name === 'scrollMask') {
-        var storedHeight = this.parent.parent.el.style.height;
-        var storedDisplay = this.parent.el.style.display;
-        this.parent.parent.el.style.height = 'auto';
-        this.parent.el.style.display = 'none';
+  var _setScrollBounds = function(){
+    if (this.check.parent) {
+      if (this.check.parent.name === 'scrollMask') {
+        var storedHeight = this.check.parent.parent.el.style.height;
+        var storedDisplay = this.check.parent.el.style.display;
+        this.check.parent.parent.el.style.height = 'auto';
+        this.check.parent.el.style.display = 'none';
 
-        var contentHeight = this.parent.parent.$el.outerHeight();
+        var contentHeight = this.check.parent.parent.$el.outerHeight();
 
-        this.parent.parent.el.style.height = storedHeight;
-        this.parent.el.style.display = storedDisplay;
+        this.check.parent.parent.el.style.height = storedHeight;
+        this.check.parent.el.style.display = storedDisplay;
 
-        this.parent.el.style.height = (this.parent.parent.$el.outerHeight() - contentHeight) + 'px';
+        this.check.parent.el.style.height = (this.check.parent.parent.$el.outerHeight() - contentHeight) + 'px';
       }
 
-      var parentSize = {width: this.parent.$el.outerWidth(), height: this.parent.$el.outerHeight()};
-      var scrollSize = {width: this.$el.outerWidth(), height: this.$el.outerHeight()};
+      var parentSize = {width: this.check.parent.$el.outerWidth(), height: this.check.parent.$el.outerHeight()};
+      var scrollSize = {width: this.check.$el.outerWidth(), height: this.check.$el.outerHeight()};
 
       if ((this.__scrollOldSize.width === scrollSize.width && this.__scrollOldSize.height === scrollSize.height) &&
         (this.__scrollOldParentSize.width === parentSize.width && this.__scrollOldParentSize.height === parentSize.height)) {
@@ -162,10 +170,14 @@ function(
    * @instance
    * @public
    **/
-  p.resize = function(){
+  var _resize = function(){
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
     this.__setScrollbarTimeout = setTimeout(this.__bind(this.setScrollBounds), 100);
   };
+
+  // create public functions resize + setScrollBounds
+  p.resize = _resize;
+  p.setScrollBounds = _setScrollBounds;
 
   /**
    * initializes events on Scrollable object
@@ -183,7 +195,7 @@ function(
     }
 
     this.addEventListener('move', this.__bind(_positionScrollbar));
-    $(window).bind('resize', this.__bind(this.resize));
+    $(window).bind('resize', this.__bind(_resize));
 
     this.setScrollBounds();
     this.resize();
@@ -205,7 +217,7 @@ function(
     }
 
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    $(window).unbind('resize', this.__bind(this.resize));
+    $(window).unbind('resize', this.__bind(_resize));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
@@ -225,14 +237,18 @@ function(
     if (this.parent.vScrollbar && this.borders.y[0] !== this.borders.y[1]) {
       percentage = this.y / this.borders.y[0];
 
-      this.parent.vScrollbar.el.style.top = (percentage * this.parent.vScrollbar.offset) + 'px';
+      var top = (percentage * this.parent.vScrollbar.offset);
+      if (this.parent.vScrollbar.parent === this) top -= this.y;
+      this.parent.vScrollbar.el.style.top = top + 'px';
       this.parent.vScrollbar.$el.addClass('active');
     }
 
     if (this.parent.hScrollbar && this.borders.x[0] !== this.borders.x[1]) {
       percentage = this.x / this.borders.x[0];
 
-      this.parent.hScrollbar.el.style.left = (percentage * this.parent.hScrollbar.offset) + 'px';
+      var left = (percentage * this.parent.hScrollbar.offset);
+      if (this.parent.hScrollbar.parent === this) left -= this.x;
+      this.parent.hScrollbar.el.style.left = left + 'px';
       this.parent.hScrollbar.$el.addClass('active');
     }
 
