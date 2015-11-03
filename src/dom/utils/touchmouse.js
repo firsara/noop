@@ -100,6 +100,7 @@ define(['../../config'], function(config){
    **/
   var onMouseEvent = function(event) {
     if (preventMouseEvents) return;
+    if (event.__prevented) return;
 
     var type, evt;
 
