@@ -328,13 +328,13 @@ define(['EaselJS'], function(createjs) {
     // hold border properties while taking elasticity and fractions into account
 
     if (Math.abs(this._track.current.x) >= this.recognizer.move.x) {
-      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base);
+      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * BaseMoveClip.strength);
       this.recognizer.fired.x = true;
       _dispatchesUpdate = true;
     }
 
     if (Math.abs(this._track.current.y) >= this.recognizer.move.y) {
-      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base);
+      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * BaseMoveClip.strength);
       this.recognizer.fired.y = true;
       _dispatchesUpdate = true;
     }
@@ -519,6 +519,8 @@ define(['EaselJS'], function(createjs) {
       }
     }
   };
+
+  BaseMoveClip.strength = 1;
 
   return BaseMoveClip;
 });
