@@ -94,6 +94,15 @@ define([
     _this.autoShow = true;
 
     /**
+     * wheter module should autoload data
+     * @see data.Loader
+     * @memberof dom.Module
+     * @instance
+     * @var {Boolean} autoLoad
+     */
+    _this.autoLoad = true;
+
+    /**
      * if Module was preloaded
      * @memberof dom.Module
      * @instance
@@ -304,7 +313,7 @@ define([
         _this.data.addEventListener('progress', _progress);
         _this.data.addEventListener('fileload', _fileLoad);
         _this.data.addEventListener('complete', _complete);
-        _this.data.load(_this.preload);
+        if (_this.autoLoad) _this.data.load(_this.preload);
       } else {
         _complete();
       }
