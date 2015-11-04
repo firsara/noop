@@ -307,7 +307,7 @@ define([
       _this.container.removeEventListener('addedToStage', _init);
       _this.container.addEventListener('removedFromStage', _dispose);
 
-      if (_this.preload.length > 0) {
+      if (_this.preload.length > 0 || _this.autoLoad === false) {
         _this.data = new Loader();
         _this.data.addEventListener('cached', _progress);
         _this.data.addEventListener('progress', _progress);
