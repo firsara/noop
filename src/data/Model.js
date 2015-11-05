@@ -619,7 +619,7 @@ define([
     }
 
     // if the model was already in the model's store
-    if (this._cached) {
+    if (this._cached || this.id) {
       // update model via PUT
       options.method = 'PUT';
     } else {
