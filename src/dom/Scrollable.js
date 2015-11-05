@@ -194,6 +194,7 @@ function(
       this.el.addEventListener('mousewheel', this.__bind(_scroll));
     }
 
+    this.el.addEventListener('touchmousedown', this.__bind(_mouseDown));
     this.addEventListener('move', this.__bind(_positionScrollbar));
     $(window).bind('resize', this.__bind(_resize));
 
@@ -216,6 +217,7 @@ function(
       this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     }
 
+    this.el.removeEventListener('touchmousedown', this.__bind(_mouseDown));
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     $(window).unbind('resize', this.__bind(_resize));
 
@@ -272,6 +274,19 @@ function(
   };
 
   /**
+   * prevents propagation if not locked...
+   *
+   * @method _mouseDown
+   * @memberof dom.Scrollable
+   * @instance
+   * @private
+   **/
+  var _mouseDown = function(event){
+    if (this.lock) return;
+    event.stopPropagation();
+  };
+
+  /**
    * fake moving moveclip on
    *
    * @method _scroll
@@ -281,6 +296,7 @@ function(
    **/
   var _scroll = function(event){
     if (this.lock) return;
+    event.stopPropagation();
     _doScroll.call(this, {x: event.deltaX, y: event.deltaY});
   };
 
@@ -294,6 +310,7 @@ function(
    **/
   var _wheel = function(event){
     if (this.lock) return;
+    event.stopPropagation();
     _doScroll.call(this, {x: event.deltaX * 40, y: event.deltaY * 40});
   };
 
