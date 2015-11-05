@@ -45,7 +45,7 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
    * converts a point object {x: 0, y: 0}
    * to local coordinates in a container
    *
-   * @plugin container
+   * @plugin globalToLocal
    * @param {object} global coordinates that should be converted
    */
   $.fn.globalToLocal = function(global){
@@ -61,7 +61,7 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
    * converts a point object {x: 0, y: 0} position in a local container
    * to global page coordinates
    *
-   * @plugin container
+   * @plugin localToGlobal
    * @param {object} local coordinates that should be converted
    */
   $.fn.localToGlobal = function(local){
