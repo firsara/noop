@@ -228,6 +228,7 @@ define([
    * @protected
    **/
   p.getPushURL = function(){
+    if (this.id) return API.endpoint + this.model + 's' + '/' + this.id;
     return API.endpoint + this.model + 's';
   };
 
