@@ -377,8 +377,8 @@ define(['EaselJS'], function(createjs) {
 
       // calculate throwing properties based on velocity and fractions
       var valuePair1 = {};
-      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x;
-      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y;
+      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * BaseMoveClip.strength;
+      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * BaseMoveClip.strength;
 
       // snaps properties if defined
       if (this.snap.x && this.snap.x !== 0) {
