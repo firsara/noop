@@ -194,7 +194,6 @@ function(
       this.el.addEventListener('mousewheel', this.__bind(_scroll));
     }
 
-    this.el.addEventListener('touchmousedown', this.__bind(_mouseDown));
     this.addEventListener('move', this.__bind(_positionScrollbar));
     $(window).bind('resize', this.__bind(_resize));
 
@@ -217,7 +216,6 @@ function(
       this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     }
 
-    this.el.removeEventListener('touchmousedown', this.__bind(_mouseDown));
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     $(window).unbind('resize', this.__bind(_resize));
 
@@ -271,19 +269,6 @@ function(
   var _unsetScrollbar = function(){
     if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('active');
     if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('active');
-  };
-
-  /**
-   * prevents propagation if not locked...
-   *
-   * @method _mouseDown
-   * @memberof dom.Scrollable
-   * @instance
-   * @private
-   **/
-  var _mouseDown = function(event){
-    if (this.lock) return;
-    event._preventMove = true;
   };
 
   /**
