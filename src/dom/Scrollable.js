@@ -283,7 +283,7 @@ function(
    **/
   var _mouseDown = function(event){
     if (this.lock) return;
-    event.stopPropagation();
+    event._preventMove = true;
   };
 
   /**

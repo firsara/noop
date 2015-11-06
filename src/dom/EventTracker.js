@@ -61,6 +61,8 @@ define(['../sys', 'EaselJS', './Container', './utils/touchmouse'], function(sys,
    * @private
    **/
   var _mousedown = function(event){
+    if (event._preventMove) return;
+
     this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
     this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
     createjs.Ticker.removeEventListener('tick', this.__bind(_enterFrame));
