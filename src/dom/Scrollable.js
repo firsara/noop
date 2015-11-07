@@ -195,7 +195,7 @@ function(
     }
 
     this.addEventListener('move', this.__bind(_positionScrollbar));
-    $(window).bind('resize', this.__bind(_resize));
+    window.addEventListener('resize', this.__bind(_resize));
 
     this.setScrollBounds();
     this.resize();
@@ -217,7 +217,7 @@ function(
     }
 
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    $(window).unbind('resize', this.__bind(_resize));
+    window.removeEventListener('resize', this.__bind(_resize));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);

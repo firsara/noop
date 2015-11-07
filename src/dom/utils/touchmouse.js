@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['../../config'], function(config){
+define(['../../config', '../../utils/dispatch'], function(config, dispatch){
 
   /**
    * handles mouse and touch events
@@ -290,13 +290,7 @@ define(['../../config'], function(config){
    **/
   var dispatchActive = function(){
     wasIdle = false;
-
-    var event = new Event(EVENTS.ACTIVE, {
-      bubbles: true,
-      cancelable: true
-    });
-
-    window.dispatchEvent(event);
+    dispatch(window, EVENTS.ACTIVE);
   };
 
   /**
@@ -311,13 +305,7 @@ define(['../../config'], function(config){
     // check if was not idle before (prevent internal logic bug)
     if (wasIdle) return;
     wasIdle = true;
-
-    var event = new Event(EVENTS.IDLE, {
-      bubbles: true,
-      cancelable: true
-    });
-
-    window.dispatchEvent(event);
+    dispatch(window, EVENTS.IDLE);
   };
 
   /**

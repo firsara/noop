@@ -6,10 +6,12 @@
 /** @namespace components **/
 define([
   '../sys',
-  './Container'
+  './Container',
+  '../utils/dispatch'
 ], function(
   sys,
-  Container
+  Container,
+  dispatch
 ) {
   /**
    * A component is a set of layout elements with a render and interaction logic baked in<br>
@@ -169,12 +171,8 @@ define([
   var _init = function(){
     this.__component._didDispose = false;
     this.removeEventListener('addedToStage', this.__bind(_init));
-
     this.addEventListener('removedFromStage', this.__bind(_dispose));
-
-    // NOTE: $(window).trigger('resize') does not fire addEventListener
-    //window.addEventListener('resize', this.__bind(_windowResized));
-    $(window).bind('resize', this.__bind(_windowResized));
+    window.addEventListener('resize', this.__bind(_windowResized));
 
     this.dispatchEvent('init');
 
@@ -202,8 +200,7 @@ define([
     if (this.__component._doRenderTimeout) clearTimeout(this.__component._doRenderTimeout);
     if (this.__component._doResizeTimeout) clearTimeout(this.__component._doResizeTimeout);
 
-    //window.removeEventListener('resize', this.__bind(_windowResized));
-    $(window).unbind('resize', this.__bind(_windowResized));
+    window.removeEventListener('resize', this.__bind(_windowResized));
     this.removeEventListener('removedFromStage', this.__bind(_dispose));
 
     this.dispatchEvent('dispose');
@@ -333,7 +330,7 @@ define([
     _forceResizeTimeout = null;
 
     _forceResize = true;
-    $(window).trigger('resize');
+    dispatch(window, 'resize');
   };
 
   Component.forceResize = function(){
