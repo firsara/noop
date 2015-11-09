@@ -613,6 +613,7 @@ define([
     if (typeof dataOrCallback === 'object') {
       // assign data to options
       options.data = dataOrCallback;
+      this._cached = false;
     } else {
       // otherwise: simply push all the model data to server
       options.data = this.get();
@@ -628,11 +629,17 @@ define([
     }
 
     var done = function(){
+      _this._cached = true;
+
       if (_this.pushed) _this.pushed.call(_this, _this);
       _this.dispatchEvent('pushed');
     };
 
-    fs.request(options, callback, errorCallback);
+    if (this._cached) {
+      done();
+    } else {
+      fs.request(options, callback, errorCallback);
+    }
   };
 
   /**
