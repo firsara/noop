@@ -881,7 +881,8 @@ define([
       }
 
       // if corrected array length is 0 return null
-      if (data.length === 0) return null;
+      // NOTE: this might impose bugs when empty arrays are needed
+      //if (data.length === 0) return null;
 
       // otherwise just return the corrected array data
       return data;
