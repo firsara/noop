@@ -133,8 +133,8 @@ define([
    * @instance
    **/
   p.getComponentSize = function(){
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
 
     var elWidth = this.$el.width();
     var elHeight = this.$el.height();
