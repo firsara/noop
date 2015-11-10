@@ -307,12 +307,13 @@ define([
       _this.container.removeEventListener('addedToStage', _init);
       _this.container.addEventListener('removedFromStage', _dispose);
 
-      if (_this.preload.length > 0 || _this.autoLoad === false) {
-        _this.data = new Loader();
-        _this.data.addEventListener('cached', _progress);
-        _this.data.addEventListener('progress', _progress);
-        _this.data.addEventListener('fileload', _fileLoad);
-        _this.data.addEventListener('complete', _complete);
+      _this.data = new Loader();
+      _this.data.addEventListener('cached', _progress);
+      _this.data.addEventListener('progress', _progress);
+      _this.data.addEventListener('fileload', _fileLoad);
+      _this.data.addEventListener('complete', _complete);
+
+      if (_this.preload.length > 0) {
         if (_this.autoLoad) _this.data.load(_this.preload);
       } else {
         _complete();
