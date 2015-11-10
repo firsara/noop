@@ -374,6 +374,30 @@ define([
 
   var p = sys.extend(Container, createjs.EventDispatcher);
 
+  Object.defineProperty(p, 'outerWidth', {
+    get: function(){
+      return this.el.offsetWidth;
+    }
+  });
+
+  Object.defineProperty(p, 'outerHeight', {
+    get: function(){
+      return this.el.offsetHeight;
+    }
+  });
+
+  Object.defineProperty(p, 'innerWidth', {
+    get: function(){
+      return parseFloat(window.getComputedStyle(this.el, null).width);
+    }
+  });
+
+  Object.defineProperty(p, 'innerHeight', {
+    get: function(){
+      return parseFloat(window.getComputedStyle(this.el, null).height);
+    }
+  });
+
   // define setters and gettrs for autoPainting transformations
   var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
 

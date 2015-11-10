@@ -136,8 +136,8 @@ define([
     var windowWidth = window.innerWidth;
     var windowHeight = window.innerHeight;
 
-    var elWidth = this.el.offsetWidth;
-    var elHeight = this.el.offsetHeight;
+    var elWidth = this.outerWidth;
+    var elHeight = this.outerHeight;
 
     this._componentWidth = elWidth;
     this._componentHeight = elHeight;

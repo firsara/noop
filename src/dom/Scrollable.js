@@ -78,16 +78,16 @@ function(
         this.check.parent.parent.el.style.height = 'auto';
         this.check.parent.el.style.display = 'none';
 
-        var contentHeight = this.check.parent.parent.$el.outerHeight();
+        var contentHeight = this.check.parent.parent.outerHeight;
 
         this.check.parent.parent.el.style.height = storedHeight;
         this.check.parent.el.style.display = storedDisplay;
 
-        this.check.parent.el.style.height = (this.check.parent.parent.$el.outerHeight() - contentHeight) + 'px';
+        this.check.parent.el.style.height = (this.check.parent.parent.outerHeight - contentHeight) + 'px';
       }
 
-      var parentSize = {width: this.check.parent.$el.outerWidth(), height: this.check.parent.$el.outerHeight()};
-      var scrollSize = {width: this.check.$el.outerWidth(), height: this.check.$el.outerHeight()};
+      var parentSize = {width: this.check.parent.outerWidth, height: this.check.parent.outerHeight};
+      var scrollSize = {width: this.check.outerWidth, height: this.check.outerHeight};
 
       if ((this.__scrollOldSize.width === scrollSize.width && this.__scrollOldSize.height === scrollSize.height) &&
         (this.__scrollOldParentSize.width === parentSize.width && this.__scrollOldParentSize.height === parentSize.height)) {
