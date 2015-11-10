@@ -304,7 +304,7 @@ define([
    * @instance
    **/
   var _windowResized = function(){
-    if (this.$el.is(':realVisible') || this.__component._oldComponentWidth === null) {
+    if (this.isVisible() || this.__component._oldComponentWidth === null) {
       var changed = this.getComponentSize();
 
       if (changed || _forceResize) {

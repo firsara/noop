@@ -374,6 +374,7 @@ define([
 
   var p = sys.extend(Container, createjs.EventDispatcher);
 
+  // TODO: write jsdoc
   Object.defineProperty(p, 'outerWidth', {
     get: function(){
       return this.el.offsetWidth;
@@ -395,6 +396,40 @@ define([
   Object.defineProperty(p, 'innerHeight', {
     get: function(){
       return parseFloat(window.getComputedStyle(this.el, null).height);
+    }
+  });
+
+  Object.defineProperty(p, 'elMargin', {
+    get: function(){
+      var style = window.getComputedStyle(this.el, null);
+      var margin = {
+        left: parseFloat(style.marginLeft),
+        top: parseFloat(style.marginTop),
+        right: parseFloat(style.marginRight),
+        bottom: parseFloat(style.marginBottom)
+      };
+
+      margin.width = margin.left + margin.right;
+      margin.height = margin.top + margin.bottom;
+
+      return margin;
+    }
+  });
+
+  Object.defineProperty(p, 'elPadding', {
+    get: function(){
+      var style = window.getComputedStyle(this.el, null);
+      var padding = {
+        left: parseFloat(style.paddingLeft),
+        top: parseFloat(style.paddingTop),
+        right: parseFloat(style.paddingRight),
+        bottom: parseFloat(style.paddingBottom)
+      };
+
+      padding.width = padding.left + padding.right;
+      padding.height = padding.top + padding.bottom;
+
+      return padding;
     }
   });
 
@@ -482,6 +517,30 @@ define([
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
+
+  /**
+   * checks if element is currently really visible (i.e. has at least some width + height)
+   *
+   * @method isVisible
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.isVisible = function(value){
+    return !! this.el.getClientRects().length;
+  };
+
+  /**
+   * checks if element is currently really hidden (i.e. through display none or width + height = 0)
+   *
+   * @method isHidden
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.isHidden = function(value){
+    return ! this.el.getClientRects().length;
+  };
 
   /**
    * defines if mouse is enabled on element or not
@@ -709,7 +768,7 @@ define([
 
   /**
    * removes all children.
-   * **NOTE**: this is not the same than calling $el.html('');
+   * **NOTE**: this is not the same than calling el.innerHTML = '';
    * it runs through all children and dispatches appropriate events
    *
    * @method removeAllChildren

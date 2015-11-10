@@ -35,6 +35,29 @@ define(function(){
   })();
 
   /**
+   * get transform style prefix based on defined vendor prefixes
+   *
+   * @var {String} transformOriginStylePrefix
+   * @memberof utils.css3
+   **/
+  css3.transformOriginStylePrefix = (function(){
+    var prefix = 'transformOrigin';
+
+    if (! (prefix in document.body.style)) {
+      var v = ['ms', 'Khtml', 'O', 'moz', 'Moz', 'webkit', 'Webkit'];
+
+      while (v.length) {
+        var prop = v.pop() + 'Transform';
+        if (prop in document.body.style) {
+          prefix = prop;
+        }
+      }
+    }
+
+    return prefix;
+  })();
+
+  /**
    * get css filter style property based on defined vendor prefixes
    *
    * @var {String} filterStylePrefix
