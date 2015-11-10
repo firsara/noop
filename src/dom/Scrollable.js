@@ -140,18 +140,18 @@ function(
         this.lock = true;
       } else {
         this.lock = false;
-        if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('locked');
-        if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('locked');
+        if (this.parent.hScrollbar) this.parent.hScrollbar.el.classList.remove('locked');
+        if (this.parent.vScrollbar) this.parent.vScrollbar.el.classList.remove('locked');
       }
 
       if (this.parent.hScrollbar) {
-        if (offsetSize.width <= 0) this.parent.hScrollbar.$el.addClass('locked');
-        else this.parent.hScrollbar.$el.removeClass('locked');
+        if (offsetSize.width <= 0) this.parent.hScrollbar.el.classList.add('locked');
+        else this.parent.hScrollbar.el.classList.remove('locked');
       }
 
       if (this.parent.vScrollbar) {
-        if (offsetSize.height <= 0) this.parent.vScrollbar.$el.addClass('locked');
-        else this.parent.vScrollbar.$el.removeClass('locked');
+        if (offsetSize.height <= 0) this.parent.vScrollbar.el.classList.add('locked');
+        else this.parent.vScrollbar.el.classList.remove('locked');
       }
 
       this.__scrollOldSize = scrollSize;
@@ -240,7 +240,7 @@ function(
       var top = (percentage * this.parent.vScrollbar.offset);
       if (this.parent.vScrollbar.parent === this) top -= this.y;
       this.parent.vScrollbar.el.style.top = top + 'px';
-      this.parent.vScrollbar.$el.addClass('active');
+      this.parent.vScrollbar.el.classList.add('active');
     }
 
     if (this.parent.hScrollbar && this.borders.x[0] !== this.borders.x[1]) {
@@ -249,7 +249,7 @@ function(
       var left = (percentage * this.parent.hScrollbar.offset);
       if (this.parent.hScrollbar.parent === this) left -= this.x;
       this.parent.hScrollbar.el.style.left = left + 'px';
-      this.parent.hScrollbar.$el.addClass('active');
+      this.parent.hScrollbar.el.classList.add('active');
     }
 
     if (this.parent.vScrollbar || this.parent.hScrollbar) {
@@ -267,8 +267,8 @@ function(
    * @private
    **/
   var _unsetScrollbar = function(){
-    if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('active');
-    if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('active');
+    if (this.parent.vScrollbar) this.parent.vScrollbar.el.classList.remove('active');
+    if (this.parent.hScrollbar) this.parent.hScrollbar.el.classList.remove('active');
   };
 
   /**
