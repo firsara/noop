@@ -568,6 +568,19 @@ define([
   };
 
   /**
+   * alternative for query selector
+   *
+   * @method find
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.find = function(query){
+    // TODO: include underscore and return array with functions like forEach, first, etc.
+    return this.el.querySelectorAll(query);
+  };
+
+  /**
    * defines if mouse is enabled on element or not
    *
    * @method setMouseEnabled
