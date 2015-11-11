@@ -82,7 +82,7 @@ define([
      * @instance
      * @var {object} data
      */
-    _this.data = null;
+    _this.data = new Loader();
 
     /**
      * wheter module should autoshow after being preloaded
@@ -307,7 +307,6 @@ define([
       _this.container.removeEventListener('addedToStage', _init);
       _this.container.addEventListener('removedFromStage', _dispose);
 
-      _this.data = new Loader();
       _this.data.addEventListener('cached', _progress);
       _this.data.addEventListener('progress', _progress);
       _this.data.addEventListener('fileload', _fileLoad);
