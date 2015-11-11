@@ -78,16 +78,16 @@ function(
         this.check.parent.parent.el.style.height = 'auto';
         this.check.parent.el.style.display = 'none';
 
-        var contentHeight = this.check.parent.parent.outerHeight;
+        var contentHeight = this.check.parent.parent.el.offsetHeight;
 
         this.check.parent.parent.el.style.height = storedHeight;
         this.check.parent.el.style.display = storedDisplay;
 
-        this.check.parent.el.style.height = (this.check.parent.parent.outerHeight - contentHeight) + 'px';
+        this.check.parent.el.style.height = (this.check.parent.parent.el.offsetHeight - contentHeight) + 'px';
       }
 
-      var parentSize = {width: this.check.parent.outerWidth, height: this.check.parent.outerHeight};
-      var scrollSize = {width: this.check.outerWidth, height: this.check.outerHeight};
+      var parentSize = {width: this.check.parent.el.offsetWidth, height: this.check.parent.el.offsetHeight};
+      var scrollSize = {width: this.check.el.offsetWidth, height: this.check.el.offsetHeight};
 
       if ((this.__scrollOldSize.width === scrollSize.width && this.__scrollOldSize.height === scrollSize.height) &&
         (this.__scrollOldParentSize.width === parentSize.width && this.__scrollOldParentSize.height === parentSize.height)) {
@@ -101,20 +101,20 @@ function(
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
 
+      var scrollbarMargin = null;
+
       if (this.parent.vScrollbar) {
         var scrollbarHeightOffset = scrollSize.height / parentSize.height;
         scrollbarHeightOffset = Math.sqrt(scrollbarHeightOffset);
 
         var scrollbarHeight = Math.max(75, Math.min(parentSize.height * (1 / scrollbarHeightOffset)));
 
-        var scrollbarMarginTop = this.parent.vScrollbar.elMargin.top;
-        if (isNaN(scrollbarMarginTop)) scrollbarMarginTop = 0;
-
-        var scrollbarMarginBottom = this.parent.vScrollbar.elMargin.bottom;
-        if (isNaN(scrollbarMarginBottom)) scrollbarMarginBottom = 0;
+        scrollbarMargin = this.parent.vScrollbar.getMargin();
+        if (isNaN(scrollbarMargin.top)) scrollbarMargin.top = 0;
+        if (isNaN(scrollbarMargin.bottom)) scrollbarMargin.bottom = 0;
 
         this.parent.vScrollbar.el.style.height = scrollbarHeight + 'px';
-        this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMarginTop - scrollbarMarginBottom;
+        this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMargin.top - scrollbarMargin.bottom;
       }
 
       if (this.parent.hScrollbar) {
@@ -123,14 +123,12 @@ function(
 
         var scrollbarWidth = Math.max(75, Math.min(parentSize.width * (1 / scrollbarWidthOffset)));
 
-        var scrollbarMarginLeft = this.parent.hScrollbar.elMargin.left;
-        if (isNaN(scrollbarMarginLeft)) scrollbarMarginLeft = 0;
-
-        var scrollbarMarginRight = this.parent.hScrollbar.elMargin.right;
-        if (isNaN(scrollbarMarginRight)) scrollbarMarginRight = 0;
+        scrollbarMargin = this.parent.hScrollbar.getMargin();
+        if (isNaN(scrollbarMargin.left)) scrollbarMargin.left = 0;
+        if (isNaN(scrollbarMargin.right)) scrollbarMargin.right = 0;
 
         this.parent.hScrollbar.el.style.width = scrollbarWidth + 'px';
-        this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMarginLeft - scrollbarMarginRight;
+        this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMargin.left - scrollbarMargin.right;
       }
 
       this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;

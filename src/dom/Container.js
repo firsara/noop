@@ -374,65 +374,6 @@ define([
 
   var p = sys.extend(Container, createjs.EventDispatcher);
 
-  // TODO: write jsdoc
-  Object.defineProperty(p, 'outerWidth', {
-    get: function(){
-      return this.el.offsetWidth;
-    }
-  });
-
-  Object.defineProperty(p, 'outerHeight', {
-    get: function(){
-      return this.el.offsetHeight;
-    }
-  });
-
-  Object.defineProperty(p, 'innerWidth', {
-    get: function(){
-      return parseFloat(window.getComputedStyle(this.el, null).width);
-    }
-  });
-
-  Object.defineProperty(p, 'innerHeight', {
-    get: function(){
-      return parseFloat(window.getComputedStyle(this.el, null).height);
-    }
-  });
-
-  Object.defineProperty(p, 'elMargin', {
-    get: function(){
-      var style = window.getComputedStyle(this.el, null);
-      var margin = {
-        left: parseFloat(style.marginLeft),
-        top: parseFloat(style.marginTop),
-        right: parseFloat(style.marginRight),
-        bottom: parseFloat(style.marginBottom)
-      };
-
-      margin.width = margin.left + margin.right;
-      margin.height = margin.top + margin.bottom;
-
-      return margin;
-    }
-  });
-
-  Object.defineProperty(p, 'elPadding', {
-    get: function(){
-      var style = window.getComputedStyle(this.el, null);
-      var padding = {
-        left: parseFloat(style.paddingLeft),
-        top: parseFloat(style.paddingTop),
-        right: parseFloat(style.paddingRight),
-        bottom: parseFloat(style.paddingBottom)
-      };
-
-      padding.width = padding.left + padding.right;
-      padding.height = padding.top + padding.bottom;
-
-      return padding;
-    }
-  });
-
   // define setters and gettrs for autoPainting transformations
   var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
 
@@ -540,6 +481,90 @@ define([
    **/
   p.isHidden = function(value){
     return ! this.el.getClientRects().length;
+  };
+
+  /**
+   * gets computed css style of element
+   *
+   * @method getStyle
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.getStyle = function(){
+    return window.getComputedStyle(this.el, null);
+  };
+
+  /**
+   * gets the elements margin (top left right bottom width height)
+   *
+   * @method getMargin
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.getMargin = function(){
+    var style = this.getStyle();
+
+    var margin = {
+      left: parseFloat(style.marginLeft),
+      top: parseFloat(style.marginTop),
+      right: parseFloat(style.marginRight),
+      bottom: parseFloat(style.marginBottom)
+    };
+
+    margin.width = margin.left + margin.right;
+    margin.height = margin.top + margin.bottom;
+
+    return margin;
+  };
+
+  /**
+   * gets the elements padding (top left right bottom width height)
+   *
+   * @method getPadding
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.getPadding = function(){
+    var style = this.getStyle();
+
+    var padding = {
+      left: parseFloat(style.paddingLeft),
+      top: parseFloat(style.paddingTop),
+      right: parseFloat(style.paddingRight),
+      bottom: parseFloat(style.paddingBottom)
+    };
+
+    padding.width = padding.left + padding.right;
+    padding.height = padding.top + padding.bottom;
+
+    return padding;
+  };
+
+  /**
+   * gets the elements inner width
+   *
+   * @method getWidth
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.getWidth = function(){
+    return parseFloat(this.getStyle().width);
+  };
+
+  /**
+   * gets the elements inner width
+   *
+   * @method getWidth
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.getHeight = function(){
+    return parseFloat(this.getStyle().width);
   };
 
   /**
