@@ -299,6 +299,14 @@ define(['EaselJS'], function(createjs) {
       if (this._fingers[pointerID].start) {
         this._calc.x += (this._fingers[pointerID].current.x - this._fingers[pointerID].old.x);
         this._calc.y += (this._fingers[pointerID].current.y - this._fingers[pointerID].old.y);
+
+        if (this._shiftKey) {
+          if (Math.abs(this._calc.x) > Math.abs(this._calc.y)) {
+            this._calc.y = this._calc.x;
+          } else {
+            this._calc.x = this._calc.y;
+          }
+        }
       }
     }
 

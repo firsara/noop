@@ -154,6 +154,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
     // finger positions
     this._fingers = [];
     this._hadMultipleFingers = false;
+    this._shiftKey = false;
 
     // tracked calculations
     this._track = {};
@@ -331,6 +332,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
 
     // security check. finger with event's pointerID sould be defined anyways
     if (this._fingers[event.pointerID]) {
+      this._shiftKey = event.originalEvent.shiftKey;
       this._fingers[event.pointerID].current.x = event.pageX;
       this._fingers[event.pointerID].current.y = event.pageY;
 
