@@ -357,8 +357,7 @@ define([
     }
 
     // if data was a number: assume it was the model's id
-    // TODO: integrate string id's
-    if (! isNaN(data)) {
+    if (! isNaN(data) || typeof data === 'string') {
       // if it's a collection, but only has one item: don't set the collection's id
       if (this instanceof require('noop/data/Collection') === false) {
         this.id = data;
@@ -378,7 +377,12 @@ define([
           throw new Error('data key  > ' + k + ' <  is a reserved name in  > Model <');
         } else {
           if (k === 'id') {
-            this[k] = parseFloat(data[k]);
+            if (! isNaN(data[k])) {
+              this[k] = parseFloat(data[k]);
+            } else {
+              this[k] = data[k];
+            }
+
             _didSetId = true;
           } else {
             // if it's an already assigned collection
@@ -750,7 +754,7 @@ define([
     var id = data;
     if (typeof data === 'object' && data.id) id = data.id;
 
-    if (! isNaN(id)) {
+    if (! isNaN(id) || typeof id === 'string') {
       // check if model already exists in collection storage
       if (Model.collection[model] && Model.collection[model][id]) {
         var instance = Model.collection[model][id];
