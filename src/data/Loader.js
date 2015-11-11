@@ -263,7 +263,6 @@ define([
       }
     } else {
       // if all files have been cached: preload cached files
-
       var _removedItem = false;
 
       // exclude items that should not be preloaded
