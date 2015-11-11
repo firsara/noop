@@ -57,8 +57,6 @@ define([
    * @param {object} options optional options to overwrite container properties before inheriting
    **/
   function Container(template, data, options){
-    createjs.EventDispatcher.call(this);
-
     // generates ids from 0 to MAX_VALUE
     // then setps up one character and generates again (A0, A1, A2, etc.)
     storedContainerID++;
@@ -1084,6 +1082,7 @@ define([
     if (stage) {
       if (! this._gotStage) {
         this._gotStage = true;
+        if (this.testclass) console.log('ADDED');
         this.dispatchEvent(new createjs.Event('addedToStage', false));
       }
     }
