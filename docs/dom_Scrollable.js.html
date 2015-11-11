@@ -106,16 +106,16 @@ function(
         this.check.parent.parent.el.style.height = 'auto';
         this.check.parent.el.style.display = 'none';
 
-        var contentHeight = this.check.parent.parent.$el.outerHeight();
+        var contentHeight = this.check.parent.parent.el.offsetHeight;
 
         this.check.parent.parent.el.style.height = storedHeight;
         this.check.parent.el.style.display = storedDisplay;
 
-        this.check.parent.el.style.height = (this.check.parent.parent.$el.outerHeight() - contentHeight) + 'px';
+        this.check.parent.el.style.height = (this.check.parent.parent.el.offsetHeight - contentHeight) + 'px';
       }
 
-      var parentSize = {width: this.check.parent.$el.outerWidth(), height: this.check.parent.$el.outerHeight()};
-      var scrollSize = {width: this.check.$el.outerWidth(), height: this.check.$el.outerHeight()};
+      var parentSize = {width: this.check.parent.el.offsetWidth, height: this.check.parent.el.offsetHeight};
+      var scrollSize = {width: this.check.el.offsetWidth, height: this.check.el.offsetHeight};
 
       if ((this.__scrollOldSize.width === scrollSize.width &amp;&amp; this.__scrollOldSize.height === scrollSize.height) &amp;&amp;
         (this.__scrollOldParentSize.width === parentSize.width &amp;&amp; this.__scrollOldParentSize.height === parentSize.height)) {
@@ -129,20 +129,20 @@ function(
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
 
+      var scrollbarMargin = null;
+
       if (this.parent.vScrollbar) {
         var scrollbarHeightOffset = scrollSize.height / parentSize.height;
         scrollbarHeightOffset = Math.sqrt(scrollbarHeightOffset);
 
         var scrollbarHeight = Math.max(75, Math.min(parentSize.height * (1 / scrollbarHeightOffset)));
 
-        var scrollbarMarginTop = parseFloat(this.parent.vScrollbar.$el.css('margin-top').replace('px', ''));
-        if (isNaN(scrollbarMarginTop)) scrollbarMarginTop = 0;
-
-        var scrollbarMarginBottom = parseFloat(this.parent.vScrollbar.$el.css('margin-bottom').replace('px', ''));
-        if (isNaN(scrollbarMarginBottom)) scrollbarMarginBottom = 0;
+        scrollbarMargin = this.parent.vScrollbar.getMargin();
+        if (isNaN(scrollbarMargin.top)) scrollbarMargin.top = 0;
+        if (isNaN(scrollbarMargin.bottom)) scrollbarMargin.bottom = 0;
 
         this.parent.vScrollbar.el.style.height = scrollbarHeight + 'px';
-        this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMarginTop - scrollbarMarginBottom;
+        this.parent.vScrollbar.offset = parentSize.height - scrollbarHeight - scrollbarMargin.top - scrollbarMargin.bottom;
       }
 
       if (this.parent.hScrollbar) {
@@ -151,14 +151,12 @@ function(
 
         var scrollbarWidth = Math.max(75, Math.min(parentSize.width * (1 / scrollbarWidthOffset)));
 
-        var scrollbarMarginLeft = parseFloat(this.parent.hScrollbar.$el.css('margin-left').replace('px', ''));
-        if (isNaN(scrollbarMarginLeft)) scrollbarMarginLeft = 0;
-
-        var scrollbarMarginRight = parseFloat(this.parent.hScrollbar.$el.css('margin-right').replace('px', ''));
-        if (isNaN(scrollbarMarginRight)) scrollbarMarginRight = 0;
+        scrollbarMargin = this.parent.hScrollbar.getMargin();
+        if (isNaN(scrollbarMargin.left)) scrollbarMargin.left = 0;
+        if (isNaN(scrollbarMargin.right)) scrollbarMargin.right = 0;
 
         this.parent.hScrollbar.el.style.width = scrollbarWidth + 'px';
-        this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMarginLeft - scrollbarMarginRight;
+        this.parent.hScrollbar.offset = parentSize.width - scrollbarWidth - scrollbarMargin.left - scrollbarMargin.right;
       }
 
       this.elastic.x = offsetSize.width > 0 ? 0.1 : 0;
@@ -168,18 +166,18 @@ function(
         this.lock = true;
       } else {
         this.lock = false;
-        if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('locked');
-        if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('locked');
+        if (this.parent.hScrollbar) this.parent.hScrollbar.el.classList.remove('locked');
+        if (this.parent.vScrollbar) this.parent.vScrollbar.el.classList.remove('locked');
       }
 
       if (this.parent.hScrollbar) {
-        if (offsetSize.width &lt;= 0) this.parent.hScrollbar.$el.addClass('locked');
-        else this.parent.hScrollbar.$el.removeClass('locked');
+        if (offsetSize.width &lt;= 0) this.parent.hScrollbar.el.classList.add('locked');
+        else this.parent.hScrollbar.el.classList.remove('locked');
       }
 
       if (this.parent.vScrollbar) {
-        if (offsetSize.height &lt;= 0) this.parent.vScrollbar.$el.addClass('locked');
-        else this.parent.vScrollbar.$el.removeClass('locked');
+        if (offsetSize.height &lt;= 0) this.parent.vScrollbar.el.classList.add('locked');
+        else this.parent.vScrollbar.el.classList.remove('locked');
       }
 
       this.__scrollOldSize = scrollSize;
@@ -268,7 +266,7 @@ function(
       var top = (percentage * this.parent.vScrollbar.offset);
       if (this.parent.vScrollbar.parent === this) top -= this.y;
       this.parent.vScrollbar.el.style.top = top + 'px';
-      this.parent.vScrollbar.$el.addClass('active');
+      this.parent.vScrollbar.el.classList.add('active');
     }
 
     if (this.parent.hScrollbar &amp;&amp; this.borders.x[0] !== this.borders.x[1]) {
@@ -277,7 +275,7 @@ function(
       var left = (percentage * this.parent.hScrollbar.offset);
       if (this.parent.hScrollbar.parent === this) left -= this.x;
       this.parent.hScrollbar.el.style.left = left + 'px';
-      this.parent.hScrollbar.$el.addClass('active');
+      this.parent.hScrollbar.el.classList.add('active');
     }
 
     if (this.parent.vScrollbar || this.parent.hScrollbar) {
@@ -295,8 +293,8 @@ function(
    * @private
    **/
   var _unsetScrollbar = function(){
-    if (this.parent.vScrollbar) this.parent.vScrollbar.$el.removeClass('active');
-    if (this.parent.hScrollbar) this.parent.hScrollbar.$el.removeClass('active');
+    if (this.parent.vScrollbar) this.parent.vScrollbar.el.classList.remove('active');
+    if (this.parent.hScrollbar) this.parent.hScrollbar.el.classList.remove('active');
   };
 
   /**
@@ -437,7 +435,7 @@ function(
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sat Nov 07 2015 08:47:46 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -268,7 +268,7 @@ model.pull(successCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line704">line 704</a>
+        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line711">line 711</a>
     </li></ul></dd>
     
 
@@ -340,7 +340,7 @@ model.pull(successCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line714">line 714</a>
+        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line721">line 721</a>
     </li></ul></dd>
     
 
@@ -992,7 +992,7 @@ model.pull(successCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line765">line 765</a>
+        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line772">line 772</a>
     </li></ul></dd>
     
 
@@ -1155,7 +1155,7 @@ model.pull(successCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line724">line 724</a>
+        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line731">line 731</a>
     </li></ul></dd>
     
 
@@ -1315,7 +1315,138 @@ Model.factory('User').set({name: 'Username'}).push();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line638">line 638</a>
+        <a href="data_Model.js.html">data/Model.js</a>, <a href="data_Model.js.html#line645">line 645</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(key)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>overwrite get method. only call individual item's get function</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(optional)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_Collection.js.html">data/Collection.js</a>, <a href="data_Collection.js.html#line146">line 146</a>
     </li></ul></dd>
     
 
@@ -1476,137 +1607,6 @@ Model.factory('User').set({name: 'Username'}).push();</code></pre>
     <pre class="prettyprint"><code>var model = new Model({name: 'User', version: '1.2'});
 model.get('name'); // 'User'
 model.get(); // {name: 'User', version: '1.2'}</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(key)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>overwrite get method. only call individual item's get function</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>(optional)</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Collection.js.html">data/Collection.js</a>, <a href="data_Collection.js.html#line146">line 146</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2539,7 +2539,7 @@ model.set(10); // assumes it's the model's id</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sat Nov 07 2015 08:47:46 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
