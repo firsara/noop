@@ -44,7 +44,7 @@ define([
      * @instance
      * @var {Array} filter
      */
-    this.filter = sys.setDefaultValue([], false);
+    this.filter = sys.setDefaultValue(this.filter, []);
 
     /**
      * wheter model should be overwritten when pulling data
