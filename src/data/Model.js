@@ -844,6 +844,7 @@ define([
    * @var {String} _reservedWords
    */
   var _reservedWords = [
+    'filter',
     'hasMany',
     'hasOne',
     'belongsTo',
