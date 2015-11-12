@@ -100,6 +100,8 @@ function(
 
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
+      this._hold('x');
+      this._hold('y');
 
       var scrollbarMargin = null;
 
