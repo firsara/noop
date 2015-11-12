@@ -39,6 +39,14 @@ define([
     createjs.EventDispatcher.call(this);
 
     /**
+     * filter of properties that should not be returned when fetching data
+     * @memberof data.Model
+     * @instance
+     * @var {Array} filter
+     */
+    this.filter = sys.setDefaultValue([], false);
+
+    /**
      * wheter model should be overwritten when pulling data
      * @memberof data.Model
      * @instance
@@ -297,7 +305,7 @@ define([
 
     for (var k in this) {
       // security check and exclude reserved names
-      if (this.hasOwnProperty(k) && ! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0)) {
+      if (this.hasOwnProperty(k) && ! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0)) {
         // exclude belongsTo relations as they should be used by getting back like
         // user.apps.user.get(true)
         if (this._relationshipKeys.belongsTo.indexOf(k) === -1) {
@@ -373,7 +381,7 @@ define([
     // otherwise assign all properties to model if they're not reserved words
     for (var k in data) {
       if (data.hasOwnProperty(k)) {
-        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0) {
+        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0) {
           throw new Error('data key  > ' + k + ' <  is a reserved name in  > Model <');
         } else {
           if (k === 'id') {
