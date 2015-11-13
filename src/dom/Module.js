@@ -80,9 +80,9 @@ define([
      * @see data.Loader
      * @memberof dom.Module
      * @instance
-     * @var {object} data
+     * @var {object} loader
      */
-    _this.data = new Loader();
+    _this.loader = new Loader();
 
     /**
      * wheter module should autoshow after being preloaded
@@ -141,10 +141,10 @@ define([
       _this.container.controller = _this;
       _this.container.addEventListener('addedToStage', _init);
 
-      _this.data.addEventListener('cached', _progress);
-      _this.data.addEventListener('progress', _progress);
-      _this.data.addEventListener('fileload', _fileLoad);
-      _this.data.addEventListener('complete', _complete);
+      _this.loader.addEventListener('cached', _progress);
+      _this.loader.addEventListener('progress', _progress);
+      _this.loader.addEventListener('fileload', _fileLoad);
+      _this.loader.addEventListener('complete', _complete);
     };
 
     /**
@@ -234,19 +234,19 @@ define([
      * @protected
      **/
     _this.destroy = function(){
-      if (_this.data) {
+      if (_this.loader) {
         if (config.environment !== 'browser') {
           try {
-            _this.data.reset();
+            _this.loader.reset();
           } catch(e){}
 
-          _this.data.removeAll();
-          _this.data.destroy();
+          _this.loader.removeAll();
+          _this.loader.destroy();
         } else {
-          _this.data.cancel();
+          _this.loader.cancel();
         }
 
-        _this.data = null;
+        _this.loader = null;
       }
     };
 
@@ -259,11 +259,11 @@ define([
      * @private
      **/
     var _complete = function(){
-      if (_this.data) {
-        _this.data.removeEventListener('cached', _progress);
-        _this.data.removeEventListener('progress', _progress);
-        _this.data.removeEventListener('fileload', _fileLoad);
-        _this.data.removeEventListener('complete', _complete);
+      if (_this.loader) {
+        _this.loader.removeEventListener('cached', _progress);
+        _this.loader.removeEventListener('progress', _progress);
+        _this.loader.removeEventListener('fileload', _fileLoad);
+        _this.loader.removeEventListener('complete', _complete);
       }
 
       _preloaded = true;
@@ -316,7 +316,7 @@ define([
         if (_this.preload.length === 0) {
           _complete();
         } else {
-          _this.data.load(_this.preload);
+          _this.loader.load(_this.preload);
         }
       }
     };
