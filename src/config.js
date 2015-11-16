@@ -39,8 +39,7 @@ define(['text!app.config.json'], function(configJSON){
   config.android = (window.device && window.device.platform.toString().toLowerCase() === 'android');
 
   // add class to body depending on touch support
-  var body = document.getElementsByTagName('body')[0];
-  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.isTouch ? 'touch' : 'no-touch');
+  document.body.classList.add(config.isTouch ? 'touch' : 'no-touch');
 
   /**
    * checks current environment (nwjs, phonegap, browser)
@@ -56,9 +55,9 @@ define(['text!app.config.json'], function(configJSON){
     config.environment = 'browser';
   }
 
-  body.className = (body.className.length > 0 ? body.className + ' ' : '') + ('env-' + config.environment);
-  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.iOS ? 'ios' : 'no-ios');
-  body.className = (body.className.length > 0 ? body.className + ' ' : '') + (config.android ? 'android' : 'no-android');
+  document.body.classList.add('env-' + config.environment);
+  document.body.classList.add(config.iOS ? 'ios' : 'no-ios');
+  document.body.classList.add(config.android ? 'android' : 'no-android');
 
   /**
    * check if app is running on localhost
