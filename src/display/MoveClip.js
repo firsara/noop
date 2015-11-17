@@ -53,6 +53,14 @@ define(['EaselJS'], function(createjs) {
      */
     this.level = false;
 
+    /**
+     * strength of current item's transforms
+     * @memberof display.base.BaseMoveClip
+     * @instance
+     * @var {Boolean} level
+     */
+    this.strength = 1;
+
     // borders: element can not be moved beyond set borders
     // i.e. borders.x = [-10, 10]  means that the element can only be moved between x = -10 and x = 10
     this.borders.x = [];
@@ -145,6 +153,7 @@ define(['EaselJS'], function(createjs) {
     this._holdTimeout = null;
 
     // listen to all the events dispatched by parent class Transformable
+    this.on('addedToStage', _added);
     this.on('start', _startTransform);
     this.on('calc', _calc);
     this.on('update', _update);
@@ -336,13 +345,13 @@ define(['EaselJS'], function(createjs) {
     // hold border properties while taking elasticity and fractions into account
 
     if (Math.abs(this._track.current.x) >= this.recognizer.move.x) {
-      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * BaseMoveClip.strength);
+      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * Math.max(1, BaseMoveClip.strength * this.strength));
       this.recognizer.fired.x = true;
       _dispatchesUpdate = true;
     }
 
     if (Math.abs(this._track.current.y) >= this.recognizer.move.y) {
-      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * BaseMoveClip.strength);
+      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * Math.max(1, BaseMoveClip.strength * this.strength));
       this.recognizer.fired.y = true;
       _dispatchesUpdate = true;
     }
@@ -385,8 +394,8 @@ define(['EaselJS'], function(createjs) {
 
       // calculate throwing properties based on velocity and fractions
       var valuePair1 = {};
-      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * BaseMoveClip.strength;
-      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * BaseMoveClip.strength;
+      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * Math.max(1, BaseMoveClip.strength * this.strength);
+      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * Math.max(1, BaseMoveClip.strength * this.strength);
 
       // snaps properties if defined
       if (this.snap.x && this.snap.x !== 0) {
@@ -528,7 +537,14 @@ define(['EaselJS'], function(createjs) {
     }
   };
 
+  var _added = function(){
+    if (BaseMoveClip.onAdd) {
+      BaseMoveClip.onAdd.call(this, this);
+    }
+  };
+
   BaseMoveClip.strength = 1;
+  BaseMoveClip.onAdd = null;
 
   return BaseMoveClip;
 });
