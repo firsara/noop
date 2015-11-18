@@ -6,13 +6,11 @@
 /** @namespace models **/
 define([
   '../sys',
-  'EaselJS',
   '../utils/EventDispatcher',
   './fs',
   './API'
 ], function(
   sys,
-  createjs,
   EventDispatcher,
   fs,
   API
@@ -275,11 +273,11 @@ define([
    * @param {String} key (optional)
    **/
   p.get = function(key, caller){
-    if (createjs.indexOf(_getCallers, this) >= 0) {
+    if (sys.indexOf(_getCallers, this) >= 0) {
       return null;
     }
 
-    if (caller && createjs.indexOf(_getCallers, this) === -1) {
+    if (caller && sys.indexOf(_getCallers, this) === -1) {
       _getCallers.push(this);
     }
 
@@ -883,7 +881,7 @@ define([
       // loop through array
       for (var i = 0, _len = value.length; i < _len; i++) {
         // if the value is a reference back to the parent model caller itself
-        if (createjs.indexOf(_getCallers, value[i]) >= 0) {
+        if (sys.indexOf(_getCallers, value[i]) >= 0) {
           // return null
           return null;
         }
@@ -911,7 +909,7 @@ define([
     } else {
       // if it's not an array:
       // if the value is a reference back to the parent model caller itself
-      if (createjs.indexOf(_getCallers, value) >= 0) {
+      if (sys.indexOf(_getCallers, value) >= 0) {
         // return null
         return null;
       }

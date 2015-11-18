@@ -8,13 +8,13 @@ define([
   '../sys',
   '../utils/css3',
   '../utils/EventDispatcher',
-  'EaselJS',
+  '../utils/fps',
   '../utils/Context'
 ], function(
   sys,
   css3,
   EventDispatcher,
-  createjs,
+  fps,
   Context
 ) {
   // incremental container prefix id. generates a character like "A", "B", etc.
@@ -454,7 +454,7 @@ define([
     }
   };
 
-  createjs.Ticker.addEventListener('tick', _paintAll);
+  fps.addEventListener('tick', _paintAll);
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
@@ -669,7 +669,7 @@ define([
    * @param {Container} child the container from which the index needs to be determined
    **/
   p.getChildIndex = function(child) {
-    return createjs.indexOf(this.children, child);
+    return sys.indexOf(this.children, child);
   };
 
   /**
@@ -895,6 +895,65 @@ define([
   };
 
   /**
+   * dispatches event on target and all container children
+   *
+   * @method bubbleDispatch
+   * @memberof dom.Container
+   * @param {Object|String} event object
+   * @public
+   * @instance
+   **/
+  p.bubbleDispatch = function(event, reverse){
+    if (typeof event === 'string') {
+      event = {type: event};
+    }
+
+    if (reverse) {
+      this._reverseBubbleDispatch(event);
+    } else {
+      this._bubbleDispatch(event);
+    }
+  };
+
+  /**
+   * dispatches event on children and all subchildren (starting with most nested element first)
+   *
+   * @method _bubbleDispatch
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  p._bubbleDispatch = function(event){
+    var kids = this.children;
+
+    for (var i = 0, _len = kids.length; i < _len; i++) {
+      kids[i]._bubbleDispatch(event);
+    }
+
+    if (event.stopped) return;
+    if (this._listeners[event.type]) this.dispatchEvent(event);
+  };
+
+  /**
+   * dispatches event on children and all subchildren (starting with most nested element first)
+   *
+   * @method _reverseBubbleDispatch
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  p._reverseBubbleDispatch = function(event){
+    if (event.stopped) return;
+    if (this._listeners[event.type]) this.dispatchEvent(event);
+
+    var kids = this.children;
+
+    for (var i = 0, _len = kids.length; i < _len; i++) {
+      kids[i]._reverseBubbleDispatch(event);
+    }
+  };
+
+  /**
    * automatically assigns name of child to parent container
    * automatically creates a list of childs if there was more than one child with the same name (i.e. <li> elements)
    * dispatches added event and checks for stage
@@ -1032,12 +1091,10 @@ define([
 
     this.stopDelay();
 
-    if (this.children) {
-      var kids = this.children;
-      for (var i = 0, _len = kids.length; i < _len; i++) {
-        if (kids[i]._childrenRemovedStage) {
-          kids[i]._childrenRemovedStage();
-        }
+    var kids = this.children;
+    for (var i = 0, _len = kids.length; i < _len; i++) {
+      if (kids[i]._childrenRemovedStage) {
+        kids[i]._childrenRemovedStage();
       }
     }
 
@@ -1069,12 +1126,10 @@ define([
       this.$stage = $(stage);
     }
 
-    if (this.children) {
-      var kids = this.children;
-      for (var i = 0, _len = kids.length; i < _len; i++) {
-        if (kids[i]._checkAddedToStage) {
-          kids[i]._checkAddedToStage();
-        }
+    var kids = this.children;
+    for (var i = 0, _len = kids.length; i < _len; i++) {
+      if (kids[i]._checkAddedToStage) {
+        kids[i]._checkAddedToStage();
       }
     }
 

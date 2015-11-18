@@ -4,7 +4,7 @@
  * Copyright 2015, Licensed GPL & MIT
  */
 /** @namespace display.base **/
-define(['../sys', 'EaselJS'], function(sys, createjs) {
+define(['../utils/fps'], function(fps){
 
   var CALC_VELOCITY = 10;
 
@@ -33,7 +33,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
    * @memberof display.base
    **/
   function BaseTransformable(){
-    CALC_VELOCITY = Math.max(5, createjs.Ticker.getMeasuredFPS() * 0.125);
+    CALC_VELOCITY = Math.max(5, fps.measured * 0.125);
 
     /**
      * fractions get used for increasing or decreasing calculated offsets<br>
@@ -205,7 +205,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
    * @protected
    **/
   p._hold = function(prop, obj, keepElastic, changeBy){
-    obj = sys.setDefaultValue(obj, this);
+    obj = obj === null || typeof obj === 'undefined' ? this : obj;
 
     // set elasticity based on keepElastic
     var elasticity = keepElastic ? this.elastic[prop] : 0;
@@ -275,7 +275,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
    * @protected
    **/
   p._onMousedown = function(event){
-    CALC_VELOCITY = Math.max(5, createjs.Ticker.getMeasuredFPS() * 0.125);
+    CALC_VELOCITY = Math.max(5, fps.measured * 0.125);
 
     // prevent event propagation if it should do
     if (this._stoppedPropagation) {

@@ -195,7 +195,7 @@ function(
     }
 
     this.addEventListener('move', this.__bind(_positionScrollbar));
-    window.addEventListener('resize', this.__bind(_resize));
+    this.addEventListener('resize', this.__bind(_resize));
 
     this.setScrollBounds();
     this.resize();
@@ -216,9 +216,8 @@ function(
       this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     }
 
-    console.log('MOVE');
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    window.removeEventListener('resize', this.__bind(_resize));
+    this.removeEventListener('resize', this.__bind(_resize));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);

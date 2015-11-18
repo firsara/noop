@@ -25,9 +25,22 @@ function(
     Container.call(this, template, data, options);
     this.stage = this.el;
     this.$stage = $(this.stage);
+
+    this._resizeTimeout = null;
+    this._doResize = this.__bind(_doResize);
+    window.addEventListener('resize', this.__bind(_resize));
   }
 
   sys.extend(Stage, Container);
+
+  var _resize = function(event){
+    if (this._resizeTimeout) clearTimeout(this._resizeTimeout);
+    this._resizeTimeout = setTimeout(this._doResize, 170);
+  };
+
+  var _doResize = function(){
+    this.bubbleDispatch('resize', true);
+  };
 
   return Stage;
 });

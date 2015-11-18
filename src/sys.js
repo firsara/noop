@@ -11,6 +11,8 @@ define(['EaselJS'], function(createjs){
    */
   var sys = {};
 
+  sys.indexOf = createjs.indexOf;
+
   /**
    * Sets up the prototype chain and constructor property for a new class.
    *

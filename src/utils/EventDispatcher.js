@@ -15,8 +15,7 @@ define(function() {
     this._listeners = this._listeners || {};
 
     if (type) {
-      this._listeners[type] = this._listeners[type] || [];
-      return this._listeners[type];
+      return this._listeners[type] || [];
     }
 
     return this._listeners;
@@ -44,7 +43,7 @@ define(function() {
       return false;
     }
 
-    return listeners.length !== -1;
+    return listeners.length !== 0;
   };
 
   p.removeEventListener = function(type, listener){
@@ -60,6 +59,9 @@ define(function() {
         break;
       }
     }
+
+    this._listeners[type] = this._listeners[type] || [];
+    if (this._listeners[type].length === 0) delete this._listeners[type];
   };
 
   p.on = function(type, listener, scope){
@@ -71,6 +73,7 @@ define(function() {
     event.listener = listener;
     event.scope = scope || this;
 
+    this._listeners[type] = this._listeners[type] || [];
     this._listeners[type].push(event);
   };
 

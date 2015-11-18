@@ -169,10 +169,9 @@ define([
    * @instance
    **/
   var _init = function(){
-    this.__component._didDispose = false;
     this.removeEventListener('addedToStage', this.__bind(_init));
     this.addEventListener('removedFromStage', this.__bind(_dispose));
-    window.addEventListener('resize', this.__bind(_windowResized));
+    this.addEventListener('resize', this.__bind(_windowResized));
 
     this.dispatchEvent('init');
 
@@ -200,7 +199,7 @@ define([
     if (this.__component._doRenderTimeout) clearTimeout(this.__component._doRenderTimeout);
     if (this.__component._doResizeTimeout) clearTimeout(this.__component._doResizeTimeout);
 
-    window.removeEventListener('resize', this.__bind(_windowResized));
+    this.removeEventListener('resize', this.__bind(_windowResized));
     this.removeEventListener('removedFromStage', this.__bind(_dispose));
 
     this.dispatchEvent('dispose');
@@ -284,7 +283,7 @@ define([
     this.resize();
 
     // dispatch resize event
-    this.dispatchEvent('resize');
+    //this.bubbleDispatch('resize');
 
     // render component
     _render.call(this);
@@ -303,7 +302,21 @@ define([
    * @private
    * @instance
    **/
-  var _windowResized = function(){
+  var _windowResized = function(event){
+    if (event) {
+      event.stop = true;
+    }
+
+    this._componentWidth = this.el.offsetWidth;
+    this._componentHeight = this.el.offsetHeight;
+    _doResize.call(this);
+
+    return;
+
+    var changed = this.getComponentSize();
+    _resize.call(this);
+    return;
+
     if (this.isVisible() || this.__component._oldComponentWidth === null) {
       var changed = this.getComponentSize();
 
@@ -330,10 +343,11 @@ define([
     _forceResizeTimeout = null;
 
     _forceResize = true;
-    dispatch(window, 'resize');
+    //dispatch(window, 'resize');
   };
 
   Component.forceResize = function(){
+    return;
     if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
     _forceResetTimeout = setTimeout(_forceReset, 150);
 

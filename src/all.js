@@ -4,7 +4,6 @@ define([
   './uri',
   './data',
   './dom',
-  './easeljs',
   './utils'
 ], function(
   config,
@@ -12,7 +11,6 @@ define([
   uri,
   data,
   dom,
-  easeljs,
   utils
 ){
   return {
@@ -21,7 +19,6 @@ define([
     uri: uri,
     data: data,
     dom: dom,
-    easeljs: easeljs,
     utils: utils
   };
 });
