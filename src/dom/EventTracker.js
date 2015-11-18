@@ -18,8 +18,8 @@ define(['../sys', 'EaselJS', './Container', './utils/touchmouse'], function(sys,
   function EventTracker(template, data, options){
     Container.call(this, template, data, options);
 
-    this.on('addedToStage', _render, this);
-    this.on('removedFromStage', _dispose, this);
+    this.on('addedToStage', _render);
+    this.on('removedFromStage', _dispose);
   }
 
   var p = sys.extend(EventTracker, Container);

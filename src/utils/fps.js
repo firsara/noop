@@ -3,17 +3,17 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['../sys', 'EaselJS'], function(sys, createjs) {
+define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher, createjs) {
 
   /**
    * helper class to handle fps ticking based on EaselJS Ticker
    *
    * @class FPSHandler
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof utils
    **/
   function FPSHandler(){
-    createjs.EventDispatcher.call(this);
+    EventDispatcher.call(this);
 
     // properties to calculate average fps
     this._startTime = Date.now();
@@ -81,7 +81,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
     //window.addEventListener('blur', this._windowBlur.bind(this));
   }
 
-  var p = sys.extend(FPSHandler, createjs.EventDispatcher);
+  var p = sys.extend(FPSHandler, EventDispatcher);
 
   /**
    * delegate application rendering

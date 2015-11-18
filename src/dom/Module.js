@@ -7,17 +7,17 @@
 define([
   '../sys',
   '../config',
-  'EaselJS',
+  '../utils/EventDispatcher',
   './Component',
   '../data/Loader'
 ], function(
   sys,
   config,
-  createjs,
+  EventDispatcher,
   Component,
   Loader
 ) {
-  var Parent = createjs.EventDispatcher;
+  var Parent = EventDispatcher;
 
   // Event constants
 
@@ -49,7 +49,7 @@ define([
    * * _this.show: shows module by animating elements in (optional)
    *
    * @class Module
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof dom
    * @param {Class} ContainerClass class reference of a container or component that the module uses
    * @param {object} options to override in component
@@ -281,9 +281,7 @@ define([
      * @private
      **/
     var _progress = function(event){
-      var tmp = new createjs.Event(event.type);
-      tmp.progress = event.progress;
-      _this.dispatchEvent(tmp);
+      _this.dispatchEvent({type: event.type, progress: event.progress});
     };
 
     /**

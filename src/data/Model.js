@@ -7,11 +7,13 @@
 define([
   '../sys',
   'EaselJS',
+  '../utils/EventDispatcher',
   './fs',
   './API'
 ], function(
   sys,
   createjs,
+  EventDispatcher,
   fs,
   API
 ) {
@@ -31,12 +33,12 @@ define([
    * model.push({data}, callback);
    *
    * @class Model
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof data
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Model(data){
-    createjs.EventDispatcher.call(this);
+    EventDispatcher.call(this);
 
     /**
      * filter of properties that should not be returned when fetching data
@@ -193,7 +195,7 @@ define([
     this._definedData = this.set(data);
   }
 
-  var p = sys.extend(Model, createjs.EventDispatcher);
+  var p = sys.extend(Model, EventDispatcher);
 
   /**
    * gets the model's query arguments

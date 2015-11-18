@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['EaselJS'], function(createjs) {
+define(function() {
 
   // Event constants
 
@@ -239,7 +239,7 @@ define(['EaselJS'], function(createjs) {
     if (this._hadMultipleFingers) return;
 
     if (! (Math.abs(this._track.current.x) > this.recognizer.hold.max.move || Math.abs(this._track.current.y) > this.recognizer.hold.max.move)) {
-      var event = new createjs.Event(HOLD);
+      var event = {type: HOLD};
 
       for (var pointerID in this._fingers) {
         if (this._fingers[pointerID].start) {
@@ -526,7 +526,7 @@ define(['EaselJS'], function(createjs) {
       // if a swipe direction was found:
       // dispatch swipe event for use in child classes
       if (swipe) {
-        event = new createjs.Event(SWIPE);
+        event = {type: SWIPE};
         event.orientation = orientation;
         event.direction = SWIPE_PROPERTIES.directions[swipe];
         event.swipe = swipe;

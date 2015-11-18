@@ -7,11 +7,13 @@
 define([
   '../sys',
   '../utils/css3',
+  '../utils/EventDispatcher',
   'EaselJS',
   '../utils/Context'
 ], function(
   sys,
   css3,
+  EventDispatcher,
   createjs,
   Context
 ) {
@@ -50,7 +52,7 @@ define([
    * container.mover.el.innerHTML; // outputs -> "DATA"
    *
    * @class Container
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof dom
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
    * @param {object} data the data to pass through the template, optional
@@ -370,7 +372,7 @@ define([
     }
   }
 
-  var p = sys.extend(Container, createjs.EventDispatcher);
+  var p = sys.extend(Container, EventDispatcher);
 
   // define setters and gettrs for autoPainting transformations
   var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
@@ -939,12 +941,10 @@ define([
 
     if (! this._gotParent) {
       this._gotParent = true;
-      this.dispatchEvent(new createjs.Event('added', false));
+      this.dispatchEvent('added');
 
       if (this.parent) {
-        var addedChildEvent = new createjs.Event('addedChild', false);
-        addedChildEvent.child = this;
-        this.parent.dispatchEvent(addedChildEvent);
+        this.parent.dispatchEvent({type: 'addedChild', child: this});
       }
     }
   };
@@ -964,11 +964,8 @@ define([
     if (this._gotParent) {
       this._gotParent = false;
 
-      this.dispatchEvent(new createjs.Event('removed', false));
-
-      var removedChildEvent = new createjs.Event('removedChild', false);
-      removedChildEvent.child = this;
-      this.parent.dispatchEvent(removedChildEvent);
+      this.dispatchEvent('removed');
+      this.parent.dispatchEvent({type: 'removedChild', child: this});
     }
 
     // if container had a name and a parent
@@ -1031,6 +1028,8 @@ define([
     TweenLite.killTweensOf(this.$el);
     TweenLite.killTweensOf(this.el.style);
 
+    this.removeAllEventListeners();
+
     this.stopDelay();
 
     if (this.children) {
@@ -1045,7 +1044,7 @@ define([
     if (this.stage) {
       if (this._gotStage) {
         this._gotStage = false;
-        this.dispatchEvent(new createjs.Event('removedFromStage', false));
+        this.dispatchEvent('removedFromStage');
       }
 
       this.stage = null;
@@ -1082,7 +1081,7 @@ define([
     if (stage) {
       if (! this._gotStage) {
         this._gotStage = true;
-        this.dispatchEvent(new createjs.Event('addedToStage', false));
+        this.dispatchEvent('addedToStage');
       }
     }
   };

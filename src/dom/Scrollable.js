@@ -216,6 +216,7 @@ function(
       this.el.removeEventListener('mousewheel', this.__bind(_scroll));
     }
 
+    console.log('MOVE');
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     window.removeEventListener('resize', this.__bind(_resize));
 

@@ -5,11 +5,11 @@
  */
 define([
   '../sys',
-  'EaselJS',
+  '../utils/EventDispatcher',
   './fs'
 ], function(
   sys,
-  createjs,
+  EventDispatcher,
   fs
 ) {
   var LIST_PROGRESS = 'listProgress';
@@ -35,10 +35,11 @@ define([
    * _syncer.start();
    *
    * @class Synchronizer
+   * @extends EventDispatcher
    * @memberof data
    **/
   function Synchronizer(){
-    createjs.EventDispatcher.call(this);
+    EventDispatcher.call(this);
 
     /**
      * Wheter items that should be synced should be overwritten if already existing on local fs
@@ -129,7 +130,7 @@ define([
     this._overallSize = 0;
   }
 
-  var p = sys.extend(Synchronizer, createjs.EventDispatcher);
+  var p = sys.extend(Synchronizer, EventDispatcher);
 
   /**
    * initializes syncing
@@ -382,9 +383,7 @@ define([
       this.listProgress(p);
     }
 
-    var event = new createjs.Event(LIST_PROGRESS);
-    event.progress = p;
-    this.dispatchEvent(event);
+    this.dispatchEvent({type: LIST_PROGRESS, progress: p});
   };
 
   var _progress = function(p) {
@@ -392,9 +391,7 @@ define([
       this.progress(p);
     }
 
-    var event = new createjs.Event(PROGRESS);
-    event.progress = p;
-    this.dispatchEvent(event);
+    this.dispatchEvent({type: PROGRESS, progress: p});
   };
 
   var _error = function(err) {
@@ -402,9 +399,7 @@ define([
       this.error(err);
     }
 
-    var event = new createjs.Event(ERROR);
-    event.error = err;
-    this.dispatchEvent(event);
+    this.dispatchEvent({type: ERROR, error: err});
   };
 
   var _success = function(){
@@ -412,8 +407,7 @@ define([
       this.success();
     }
 
-    var event = new createjs.Event(SUCCESS);
-    this.dispatchEvent(event);
+    this.dispatchEvent(SUCCESS);
   };
 
   return Synchronizer;
