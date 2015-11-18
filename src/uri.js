@@ -14,6 +14,8 @@ define(function(){
    * @class URI
    **/
   function URI(url){
+    if (! url) url = window.location.href.toString();
+
     // store url that needs to be parsed
     this.url = url;
 
