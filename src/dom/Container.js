@@ -937,7 +937,7 @@ define([
 
     this._checkAddedToStage();
 
-    if (this._gotParent) {
+    if (! this._gotParent) {
       this._gotParent = true;
       this.dispatchEvent(new createjs.Event('added', false));
 
@@ -1082,7 +1082,6 @@ define([
     if (stage) {
       if (! this._gotStage) {
         this._gotStage = true;
-        if (this.testclass) console.log('ADDED');
         this.dispatchEvent(new createjs.Event('addedToStage', false));
       }
     }

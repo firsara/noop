@@ -153,7 +153,6 @@ define(['EaselJS'], function(createjs) {
     this._holdTimeout = null;
 
     // listen to all the events dispatched by parent class Transformable
-    this.on('addedToStage', _added);
     this.on('start', _startTransform);
     this.on('calc', _calc);
     this.on('update', _update);
@@ -537,14 +536,7 @@ define(['EaselJS'], function(createjs) {
     }
   };
 
-  var _added = function(){
-    if (BaseMoveClip.onAdd) {
-      BaseMoveClip.onAdd.call(this, this);
-    }
-  };
-
   BaseMoveClip.strength = 1;
-  BaseMoveClip.onAdd = null;
 
   return BaseMoveClip;
 });
