@@ -903,15 +903,21 @@ define([
    * @public
    * @instance
    **/
-  p.bubbleDispatch = function(event, reverse){
+  p.bubbleDispatch = function(event, reverse, dispatchOnSelf){
     if (typeof event === 'string') {
       event = {type: event};
     }
 
+    //console.log(event.type);
+
     if (reverse) {
+      // captures event from outer most element to inner most
+      if (! event.stopped && dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
       this._reverseBubbleDispatch(event);
     } else {
+      // bubbles event from inner most element to outer most
       this._bubbleDispatch(event);
+      if (! event.stopped && dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
     }
   };
 
@@ -924,10 +930,8 @@ define([
    * @instance
    **/
   p._bubbleDispatch = function(event){
-    var kids = this.children;
-
-    for (var i = 0, _len = kids.length; i < _len; i++) {
-      kids[i]._bubbleDispatch(event);
+    for (var i = 0, _len = this.children.length; i < _len; i++) {
+      this.children[i]._bubbleDispatch(event);
     }
 
     if (event.stopped) return;
@@ -946,10 +950,8 @@ define([
     if (event.stopped) return;
     if (this._listeners[event.type]) this.dispatchEvent(event);
 
-    var kids = this.children;
-
-    for (var i = 0, _len = kids.length; i < _len; i++) {
-      kids[i]._reverseBubbleDispatch(event);
+    for (var i = 0, _len = this.children.length; i < _len; i++) {
+      this.children[i]._reverseBubbleDispatch(event);
     }
   };
 
@@ -1087,8 +1089,6 @@ define([
     TweenLite.killTweensOf(this.$el);
     TweenLite.killTweensOf(this.el.style);
 
-    this.removeAllEventListeners();
-
     this.stopDelay();
 
     var kids = this.children;
@@ -1107,6 +1107,8 @@ define([
       this.stage = null;
       this.$stage = null;
     }
+
+    this.removeAllEventListeners();
   };
 
   /**

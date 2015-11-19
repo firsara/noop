@@ -51,24 +51,7 @@ define([
      */
     this._componentHeight = 0;
 
-    this.__component = {};
-
-    // store timeouts
-    this.__component._doRenderTimeout = null;
-    this.__component._doResizeTimeout = null;
-
-    // store first render and resize calls
-    this.__component._didRender = false;
-    this.__component._didResize = false;
-    this.__component._didDispose = false;
-
-    // stored, old component size
-    this.__component._oldComponentWidth = null;
-    this.__component._oldComponentHeight = null;
-
-    // stored, old window size
-    this.__component._oldWindowWidth = 0;
-    this.__component._oldWindowHeight = 0;
+    this._unlockResize = this.__bind(_unlockResize);
 
     // call super constructor if not already done by some other mixin function
     if (! this._initializedContainer) Container.call(this, template, data, options);
@@ -126,41 +109,6 @@ define([
   p.resize = function(){};
 
   /**
-   * gets components size accordingly
-   * @method getComponentSize
-   * @memberof dom.Component
-   * @public
-   * @instance
-   **/
-  p.getComponentSize = function(){
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-
-    var elWidth = this.el.offsetWidth;
-    var elHeight = this.el.offsetHeight;
-
-    this._componentWidth = elWidth;
-    this._componentHeight = elHeight;
-
-    if (! (
-      this._componentWidth === this.__component._oldComponentWidth &&
-      this._componentHeight === this.__component._oldComponentHeight &&
-      windowWidth === this.__component._oldWindowWidth &&
-      windowHeight === this.__component._oldWindowHeight
-    )) {
-      this.__component._oldComponentWidth = this._componentWidth;
-      this.__component._oldComponentHeight = this._componentHeight;
-
-      this.__component._oldWindowWidth = windowWidth;
-      this.__component._oldWindowHeight = windowHeight;
-
-      return true;
-    }
-
-    return false;
-  };
-
-  /**
    * binds events in child class
    *
    * @method _init
@@ -177,7 +125,7 @@ define([
 
     this.init();
     this.init = null;
-    _windowResized.call(this);
+    _resize.call(this);
 
     this.dispatchEvent('show');
 
@@ -193,11 +141,8 @@ define([
    * @instance
    **/
   var _dispose = function(){
-    if (this.__component._didDispose) return;
-    this.__component._didDispose = true;
-
-    if (this.__component._doRenderTimeout) clearTimeout(this.__component._doRenderTimeout);
-    if (this.__component._doResizeTimeout) clearTimeout(this.__component._doResizeTimeout);
+    if (this.__componentDidDispose) return;
+    this.__componentDidDispose = true;
 
     this.removeEventListener('resize', this.__bind(_windowResized));
     this.removeEventListener('removedFromStage', this.__bind(_dispose));
@@ -205,26 +150,6 @@ define([
     this.dispatchEvent('dispose');
 
     this.dispose();
-  };
-
-  /**
-   * renders child component
-   *
-   * @method _render
-   * @memberof dom.Component
-   * @protected
-   * @instance
-   **/
-  var _render = function(){
-    // catch possible multiple calls of render
-    // allow first render to happen immediately
-    if (this.__component._doRenderTimeout || this.__component._didRender) {
-      clearTimeout(this.__component._doRenderTimeout);
-      this.__component._doRenderTimeout = setTimeout(this.__bind(_doRender), 17);
-    } else {
-      _doRender.call(this);
-      this.__component._didRender = true;
-    }
   };
 
   /**
@@ -236,94 +161,31 @@ define([
    * @instance
    **/
   var _resize = function(){
-    // catch possible multiple calls of _resize
-    // allow first resizing to happen immediately
-    if (this.__component._doResizeTimeout || this.__component._didResize) {
-      clearTimeout(this.__component._doResizeTimeout);
-      this.__component._doResizeTimeout = setTimeout(this.__bind(_doResize), 17);
-    } else {
-      _doResize.call(this);
-      this.__component._didResize = true;
-    }
-  };
-
-  /**
-   * executes rendering
-   *
-   * @method _doRender
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
-  var _doRender = function(){
-    // unset timeout
-    this.__component._doRenderTimeout = null;
-    this.__component._didRender = false;
-
-    this.dispatchEvent('render');
-
-    // resize component
-    this.render();
-  };
-
-  /**
-   * executes resizing
-   *
-   * @method _doResize
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
-  var _doResize = function(){
-    // unset timeout
-    this.__component._doResizeTimeout = null;
-    this.__component._didResize = false;
+    this._componentWidth = this.el.offsetWidth;
+    this._componentHeight = this.el.offsetHeight;
 
     // resize component
     this.resize();
 
     // dispatch resize event
-    //this.bubbleDispatch('resize');
+    //this.bubbleDispatch('resize', true, false);
 
     // render component
-    _render.call(this);
+    this.render();
   };
 
-  /**
-   * checks window size and if it changed when resizing window
-   * splitting this function and the resize function up means that we can call them individually
-   * and explicitly in child components to resize a component no matter what
-   *
-   * this allows to call .resize anytime (for example when children or anything else changed in component that needs to be resized),
-   * after adding a small timeout delay so resize won't be called a million times in a row
-   *
-   * @method _windowResized
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
   var _windowResized = function(event){
-    if (event) {
-      event.stop = true;
+    event.stopped = true;
+
+    if (! this.__lockedResize) {
+      this.__lockedResize = true;
+      this.__unlockResize = setTimeout(this._unlockResize, 85);
     }
+  };
 
-    this._componentWidth = this.el.offsetWidth;
-    this._componentHeight = this.el.offsetHeight;
-    _doResize.call(this);
-
-    return;
-
-    var changed = this.getComponentSize();
+  var _unlockResize = function(){
+    this.__lockedResize = false;
     _resize.call(this);
-    return;
-
-    if (this.isVisible() || this.__component._oldComponentWidth === null) {
-      var changed = this.getComponentSize();
-
-      if (changed || _forceResize) {
-        _resize.call(this);
-      }
-    }
   };
 
 
