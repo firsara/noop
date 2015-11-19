@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: display/MoveClip.js</title>
+    <title>JSDoc: Source: display/Moveable.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: display/MoveClip.js</h1>
+    <h1 class="page-title">Source: display/Moveable.js</h1>
 
     
 
@@ -27,11 +27,11 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/*
- * MoveClip.js
+ * Moveable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL &amp; MIT
  */
-define(['EaselJS'], function(createjs) {
+define(['../config'], function(config) {
 
   // Event constants
 
@@ -57,11 +57,11 @@ define(['EaselJS'], function(createjs) {
   /**
    * used for move calculations, swipe detections etc.&lt;br>
    * **NOTE**: only calculation wrapper. gets extended in&lt;br>
-   * @see dom.MoveClip
-   * @see easeljs.MoveClip
+   * @see dom.Moveable
+   * @see easeljs.Moveable
    *
    * @example
-   * var mover = new MoveClip('&lt;img src="image.jpg">');
+   * var mover = new Moveable('&lt;img src="image.jpg">');
    * mover.borders.x = [-10, 10];
    * mover.scrolls('y');
    * mover.free.x = true; // overwrites borders
@@ -69,17 +69,25 @@ define(['EaselJS'], function(createjs) {
    * dispatches events:&lt;br>
    * move, moveComplete, swipe
    *
-   * @mixin BaseMoveClip
+   * @mixin BaseMoveable
    * @memberof display.base
    **/
-  function BaseMoveClip(){
+  function BaseMoveable(){
     /**
      * layer active moveclip to the top of the index list
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @var {Boolean} level
      */
     this.level = false;
+
+    /**
+     * strength of current item's transforms
+     * @memberof display.base.BaseMoveable
+     * @instance
+     * @var {Boolean} level
+     */
+    this.strength = 1;
 
     // borders: element can not be moved beyond set borders
     // i.e. borders.x = [-10, 10]  means that the element can only be moved between x = -10 and x = 10
@@ -156,7 +164,7 @@ define(['EaselJS'], function(createjs) {
 
     /**
      * tween to throw properties when finished moving
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @private
      * @var {TweenLite} _moveTween
@@ -165,7 +173,7 @@ define(['EaselJS'], function(createjs) {
 
     /**
      * hold timeout id when trying to detect a hold
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @private
      * @var {Number} _holdTimeout
@@ -179,14 +187,14 @@ define(['EaselJS'], function(createjs) {
     this.on('complete', _stopTransform);
   }
 
-  var p = BaseMoveClip.prototype;
+  var p = BaseMoveable.prototype;
 
   /**
    * defines the scrolling direction used for elements that are intended to scroll in a specific direction
    * automatically stops events on parent containers and sets up all the needed settings
    *
    * @method scrolls
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @param {String} direction defines the scroll direction. allowed values:&lt;br>
    * "x" or "horizontal"&lt;br>
@@ -222,7 +230,7 @@ define(['EaselJS'], function(createjs) {
    * dispatches move event
    *
    * @method _dispatchTweenUpdate
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -238,7 +246,7 @@ define(['EaselJS'], function(createjs) {
    * dispatches moveComplete event
    *
    * @method _dispatchComplete
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -251,7 +259,7 @@ define(['EaselJS'], function(createjs) {
    * checks first if it was a valid hold movement
    *
    * @method _dispatchHold
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -259,7 +267,7 @@ define(['EaselJS'], function(createjs) {
     if (this._hadMultipleFingers) return;
 
     if (! (Math.abs(this._track.current.x) > this.recognizer.hold.max.move || Math.abs(this._track.current.y) > this.recognizer.hold.max.move)) {
-      var event = new createjs.Event(HOLD);
+      var event = {type: HOLD};
 
       for (var pointerID in this._fingers) {
         if (this._fingers[pointerID].start) {
@@ -278,7 +286,7 @@ define(['EaselJS'], function(createjs) {
    * sets leveling if needed
    *
    * @method _startTransform
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -296,7 +304,7 @@ define(['EaselJS'], function(createjs) {
    * calculates distance between two points
    *
    * @method _getDistance
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -312,7 +320,7 @@ define(['EaselJS'], function(createjs) {
    * for current frame only. Only calculates. Does not set properties on element
    *
    * @method _calc
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -328,7 +336,7 @@ define(['EaselJS'], function(createjs) {
         this._calc.x += (this._fingers[pointerID].current.x - this._fingers[pointerID].old.x);
         this._calc.y += (this._fingers[pointerID].current.y - this._fingers[pointerID].old.y);
 
-        if (this._shiftKey) {
+        if (this._shiftKey &amp;&amp; ! config.isTouch) {
           if (Math.abs(this._calc.x) > Math.abs(this._calc.y)) {
             this._calc.y = this._calc.x;
           } else {
@@ -350,7 +358,7 @@ define(['EaselJS'], function(createjs) {
    * only called when finger positions changed to save performance.
    *
    * @method _update
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -364,13 +372,13 @@ define(['EaselJS'], function(createjs) {
     // hold border properties while taking elasticity and fractions into account
 
     if (Math.abs(this._track.current.x) >= this.recognizer.move.x) {
-      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * BaseMoveClip.strength);
+      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
       this.recognizer.fired.x = true;
       _dispatchesUpdate = true;
     }
 
     if (Math.abs(this._track.current.y) >= this.recognizer.move.y) {
-      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * BaseMoveClip.strength);
+      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
       this.recognizer.fired.y = true;
       _dispatchesUpdate = true;
     }
@@ -386,7 +394,7 @@ define(['EaselJS'], function(createjs) {
    * snaps properties if set
    *
    * @method _stopTransform
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -413,8 +421,8 @@ define(['EaselJS'], function(createjs) {
 
       // calculate throwing properties based on velocity and fractions
       var valuePair1 = {};
-      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * BaseMoveClip.strength;
-      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * BaseMoveClip.strength;
+      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * Math.max(1, BaseMoveable.strength * this.strength);
+      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * Math.max(1, BaseMoveable.strength * this.strength);
 
       // snaps properties if defined
       if (this.snap.x &amp;&amp; this.snap.x !== 0) {
@@ -497,7 +505,7 @@ define(['EaselJS'], function(createjs) {
    * if a swipe was detected dispatches appropriate event.
    *
    * @method _detectSwipes
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -546,7 +554,7 @@ define(['EaselJS'], function(createjs) {
       // if a swipe direction was found:
       // dispatch swipe event for use in child classes
       if (swipe) {
-        event = new createjs.Event(SWIPE);
+        event = {type: SWIPE};
         event.orientation = orientation;
         event.direction = SWIPE_PROPERTIES.directions[swipe];
         event.swipe = swipe;
@@ -556,9 +564,9 @@ define(['EaselJS'], function(createjs) {
     }
   };
 
-  BaseMoveClip.strength = 1;
+  BaseMoveable.strength = 1;
 
-  return BaseMoveClip;
+  return BaseMoveable;
 });
 </code></pre>
         </article>
@@ -570,13 +578,13 @@ define(['EaselJS'], function(createjs) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.Moveable.html">Moveable</a></li><li><a href="dom.Rotateable.html">Rotateable</a></li><li><a href="dom.Scaleable.html">Scaleable</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.Transformable.html">Transformable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.Moveable.html">Moveable</a></li><li><a href="easeljs.Rotateable.html">Rotateable</a></li><li><a href="easeljs.Scaleable.html">Scaleable</a></li><li><a href="easeljs.Transformable.html">Transformable</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveable.html">BaseMoveable</a></li><li><a href="display.base.BaseRotateable.html">BaseRotateable</a></li><li><a href="display.base.BaseScaleable.html">BaseScaleable</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Nov 19 2015 17:44:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

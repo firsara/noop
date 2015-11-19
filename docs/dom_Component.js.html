@@ -67,36 +67,22 @@ define([
      * stored component width
      * @memberof dom.Component
      * @instance
-     * @var {object} _componentWidth
+     * @var {object} domWidth
      */
-    this._componentWidth = 0;
+    this.domWidth = 0;
 
     /**
      * stored component height
      * @memberof dom.Component
      * @instance
-     * @var {object} _componentHeight
+     * @var {object} domHeight
      */
-    this._componentHeight = 0;
+    this.domHeight = 0;
 
-    this.__component = {};
-
-    // store timeouts
-    this.__component._doRenderTimeout = null;
-    this.__component._doResizeTimeout = null;
-
-    // store first render and resize calls
-    this.__component._didRender = false;
-    this.__component._didResize = false;
-    this.__component._didDispose = false;
-
-    // stored, old component size
-    this.__component._oldComponentWidth = null;
-    this.__component._oldComponentHeight = null;
-
-    // stored, old window size
-    this.__component._oldWindowWidth = 0;
-    this.__component._oldWindowHeight = 0;
+    this._unlockResize = this.__bind(_unlockResize);
+    this._oldDomWidth = -1;
+    this._oldDomHeight = -1;
+    this._oldDomEvent = null;
 
     // call super constructor if not already done by some other mixin function
     if (! this._initializedContainer) Container.call(this, template, data, options);
@@ -154,41 +140,6 @@ define([
   p.resize = function(){};
 
   /**
-   * gets components size accordingly
-   * @method getComponentSize
-   * @memberof dom.Component
-   * @public
-   * @instance
-   **/
-  p.getComponentSize = function(){
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-
-    var elWidth = this.el.offsetWidth;
-    var elHeight = this.el.offsetHeight;
-
-    this._componentWidth = elWidth;
-    this._componentHeight = elHeight;
-
-    if (! (
-      this._componentWidth === this.__component._oldComponentWidth &amp;&amp;
-      this._componentHeight === this.__component._oldComponentHeight &amp;&amp;
-      windowWidth === this.__component._oldWindowWidth &amp;&amp;
-      windowHeight === this.__component._oldWindowHeight
-    )) {
-      this.__component._oldComponentWidth = this._componentWidth;
-      this.__component._oldComponentHeight = this._componentHeight;
-
-      this.__component._oldWindowWidth = windowWidth;
-      this.__component._oldWindowHeight = windowHeight;
-
-      return true;
-    }
-
-    return false;
-  };
-
-  /**
    * binds events in child class
    *
    * @method _init
@@ -197,16 +148,15 @@ define([
    * @instance
    **/
   var _init = function(){
-    this.__component._didDispose = false;
     this.removeEventListener('addedToStage', this.__bind(_init));
     this.addEventListener('removedFromStage', this.__bind(_dispose));
-    window.addEventListener('resize', this.__bind(_windowResized));
+    this.addEventListener('resize', this.__bind(_windowResized));
 
     this.dispatchEvent('init');
 
     this.init();
     this.init = null;
-    _windowResized.call(this);
+    _resize.call(this, false);
 
     this.dispatchEvent('show');
 
@@ -222,38 +172,15 @@ define([
    * @instance
    **/
   var _dispose = function(){
-    if (this.__component._didDispose) return;
-    this.__component._didDispose = true;
+    if (this.__componentDidDispose) return;
+    this.__componentDidDispose = true;
 
-    if (this.__component._doRenderTimeout) clearTimeout(this.__component._doRenderTimeout);
-    if (this.__component._doResizeTimeout) clearTimeout(this.__component._doResizeTimeout);
-
-    window.removeEventListener('resize', this.__bind(_windowResized));
+    this.removeEventListener('resize', this.__bind(_windowResized));
     this.removeEventListener('removedFromStage', this.__bind(_dispose));
 
     this.dispatchEvent('dispose');
 
     this.dispose();
-  };
-
-  /**
-   * renders child component
-   *
-   * @method _render
-   * @memberof dom.Component
-   * @protected
-   * @instance
-   **/
-  var _render = function(){
-    // catch possible multiple calls of render
-    // allow first render to happen immediately
-    if (this.__component._doRenderTimeout || this.__component._didRender) {
-      clearTimeout(this.__component._doRenderTimeout);
-      this.__component._doRenderTimeout = setTimeout(this.__bind(_doRender), 17);
-    } else {
-      _doRender.call(this);
-      this.__component._didRender = true;
-    }
   };
 
   /**
@@ -264,109 +191,47 @@ define([
    * @protected
    * @instance
    **/
-  var _resize = function(){
-    // catch possible multiple calls of _resize
-    // allow first resizing to happen immediately
-    if (this.__component._doResizeTimeout || this.__component._didResize) {
-      clearTimeout(this.__component._doResizeTimeout);
-      this.__component._doResizeTimeout = setTimeout(this.__bind(_doResize), 17);
-    } else {
-      _doResize.call(this);
-      this.__component._didResize = true;
+  var _resize = function(bubble){
+    if (! this.isVisible()) return;
+
+    this.domWidth = this.el.offsetWidth;
+    this.domHeight = this.el.offsetHeight;
+
+    if (! (this._oldDomEvent &amp;&amp; this._oldDomEvent.force)) {
+      if (this.domWidth === this._oldDomWidth &amp;&amp; this.domHeight === this._oldDomHeight) {
+        return;
+      }
     }
-  };
 
-  /**
-   * executes rendering
-   *
-   * @method _doRender
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
-  var _doRender = function(){
-    // unset timeout
-    this.__component._doRenderTimeout = null;
-    this.__component._didRender = false;
-
-    this.dispatchEvent('render');
-
-    // resize component
-    this.render();
-  };
-
-  /**
-   * executes resizing
-   *
-   * @method _doResize
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
-  var _doResize = function(){
-    // unset timeout
-    this.__component._doResizeTimeout = null;
-    this.__component._didResize = false;
+    this._oldDomWidth = this.domWidth;
+    this._oldDomHeight = this.domHeight;
+    this._oldDomEvent = null;
 
     // resize component
     this.resize();
 
     // dispatch resize event
-    this.dispatchEvent('resize');
+    if (bubble) {
+      this.bubbleDispatch(this._oldDomEvent || 'resize', true, false);
+    }
 
     // render component
-    _render.call(this);
+    this.render();
   };
 
-  /**
-   * checks window size and if it changed when resizing window
-   * splitting this function and the resize function up means that we can call them individually
-   * and explicitly in child components to resize a component no matter what
-   *
-   * this allows to call .resize anytime (for example when children or anything else changed in component that needs to be resized),
-   * after adding a small timeout delay so resize won't be called a million times in a row
-   *
-   * @method _windowResized
-   * @memberof dom.Component
-   * @private
-   * @instance
-   **/
-  var _windowResized = function(){
-    if (this.isVisible() || this.__component._oldComponentWidth === null) {
-      var changed = this.getComponentSize();
+  var _windowResized = function(event){
+    event.stopped = true;
+    this._oldDomEvent = event;
 
-      if (changed || _forceResize) {
-        _resize.call(this);
-      }
+    if (! this.__lockedResize) {
+      this.__lockedResize = true;
+      this.__unlockResize = setTimeout(this._unlockResize, 170);
     }
   };
 
-
-
-  var _forceResetTimeout = null;
-  var _forceResizeTimeout = null;
-  var _forceResize = false;
-
-  var _forceReset = function(){
-    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
-    _forceResetTimeout = null;
-    _forceResize = false;
-  };
-
-  var _doForceResize = function(){
-    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
-    _forceResizeTimeout = null;
-
-    _forceResize = true;
-    dispatch(window, 'resize');
-  };
-
-  Component.forceResize = function(){
-    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
-    _forceResetTimeout = setTimeout(_forceReset, 150);
-
-    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
-    _forceResizeTimeout = setTimeout(_doForceResize, 17);
+  var _unlockResize = function(){
+    this.__lockedResize = false;
+    _resize.call(this, true);
   };
 
   return Component;
@@ -381,13 +246,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.Moveable.html">Moveable</a></li><li><a href="dom.Rotateable.html">Rotateable</a></li><li><a href="dom.Scaleable.html">Scaleable</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.Transformable.html">Transformable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.Moveable.html">Moveable</a></li><li><a href="easeljs.Rotateable.html">Rotateable</a></li><li><a href="easeljs.Scaleable.html">Scaleable</a></li><li><a href="easeljs.Transformable.html">Transformable</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveable.html">BaseMoveable</a></li><li><a href="display.base.BaseRotateable.html">BaseRotateable</a></li><li><a href="display.base.BaseScaleable.html">BaseScaleable</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Nov 19 2015 17:44:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

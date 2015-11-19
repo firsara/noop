@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: utils/fps.js</title>
+    <title>JSDoc: Source: dom/Rotateable.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: utils/fps.js</h1>
+    <h1 class="page-title">Source: dom/Rotateable.js</h1>
 
     
 
@@ -27,100 +27,46 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/*
- * fps.js
+ * Rotateable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL &amp; MIT
  */
-define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher, createjs) {
-
+define([
+  '../sys',
+  './EventTracker',
+  '../display/Transformable',
+  '../display/Rotateable'
+],
+function(
+  sys,
+  EventTracker,
+  Transformable,
+  BaseRotateable
+) {
   /**
-   * helper class to handle fps ticking based on EaselJS Ticker
+   * @see display.base.BaseRotateable
    *
-   * @class FPSHandler
-   * @extends EventDispatcher
-   * @memberof utils
+   * @class Rotateable
+   * @memberof dom
+   * @extends dom.EventTracker
+   * @mixes display.base.BaseTransformable
+   * @mixes display.base.BaseRotateable
+   *
+   * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
+   * @param {object} data the data to pass through the template, optional
+   * @param {object} options optional options to overwrite container properties before inheriting
    **/
-  function FPSHandler(){
-    EventDispatcher.call(this);
-
-    this.measured = 60;
-
-    // properties to calculate average fps
-    this._startTime = Date.now();
-    this._currentTime = this._startTime;
-    this._ticked = 0;
-
-    this._update = _update.bind(this);
-    this._updateStats = _updateStats.bind(this);
-    this._calc = _calc.bind(this);
-
-    // if stats.js is included run a different function updater
-    if (window.stats) {
-      this._updateStats();
-    } else {
-      this._update();
-    }
+  function Rotateable(template, data, options){
+    EventTracker.call(this, template, data, options);
+    Transformable.call(this);
+    BaseRotateable.call(this);
   }
 
-  var p = sys.extend(FPSHandler, EventDispatcher);
+  sys.extend(Rotateable, EventTracker);
+  sys.mixin(Rotateable, Transformable);
+  sys.mixin(Rotateable, BaseRotateable);
 
-  /**
-   * delegate application rendering
-   * calculates fps through stats.js
-   *
-   * @method _updateStats
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _updateStats = function(){
-    requestAnimationFrame(this._updateStats);
-
-    window.stats.begin();
-    this.dispatchEvent('tick');
-    window.stats.end();
-    this._calc();
-  };
-
-
-  /**
-   * delegate application rendering
-   * tracks fps for further potential adjustments if lags were detected
-   *
-   * @method _update
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _update = function(){
-    requestAnimationFrame(this._update);
-
-    this.dispatchEvent('tick');
-    this._calc();
-  };
-
-  /**
-   * stop tracking fps
-   *
-   * @method _calc
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _calc = function(){
-    this._currentTime = Date.now();
-    this._ticked++;
-
-    var offset = this._currentTime - this._startTime;
-
-    if (offset > 1000) {
-      this.measured = this._ticked;
-      this._startTime = this._currentTime;
-      this._ticked = 0;
-    }
-  };
-
-  return new FPSHandler();
+  return Rotateable;
 });
 </code></pre>
         </article>

@@ -35,12 +35,12 @@
  */
 define([
   '../sys',
-  './MoveClip',
+  './Moveable',
   'EaselJS'
 ],
 function(
   sys,
-  MoveClip,
+  Moveable,
   createjs
 ) {
   var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
@@ -50,7 +50,7 @@ function(
    *
    * @class Scrollable
    * @memberof dom
-   * @extends dom.MoveClip
+   * @extends dom.Moveable
    *
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
    * @param {object} data the data to pass through the template, optional
@@ -58,12 +58,12 @@ function(
    **/
   function Scrollable(template, data, options){
     // extend from base class
-    MoveClip.call(this, template, data, options);
+    Moveable.call(this, template, data, options);
 
     Scrollable.create(this, this);
   }
 
-  var p = sys.extend(Scrollable, MoveClip);
+  var p = sys.extend(Scrollable, Moveable);
 
   Scrollable.create = function(container, checkContainer){
     container.check = checkContainer;
@@ -128,6 +128,8 @@ function(
 
       this.borders.x = [0 - offsetSize.width, 0];
       this.borders.y = [0 - offsetSize.height, 0];
+      this._hold('x');
+      this._hold('y');
 
       var scrollbarMargin = null;
 
@@ -221,7 +223,7 @@ function(
     }
 
     this.addEventListener('move', this.__bind(_positionScrollbar));
-    window.addEventListener('resize', this.__bind(_resize));
+    this.addEventListener('resize', this.__bind(_resize));
 
     this.setScrollBounds();
     this.resize();
@@ -243,7 +245,7 @@ function(
     }
 
     this.removeEventListener('move', this.__bind(_positionScrollbar));
-    window.removeEventListener('resize', this.__bind(_resize));
+    this.removeEventListener('resize', this.__bind(_resize));
 
     if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
@@ -374,7 +376,7 @@ function(
   };
 
   /**
-   * holds MoveClip bounds while animating via scrolling
+   * holds Moveable bounds while animating via scrolling
    *
    * @method _hold
    * @memberof dom.Scrollable
@@ -429,13 +431,13 @@ function(
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.Moveable.html">Moveable</a></li><li><a href="dom.Rotateable.html">Rotateable</a></li><li><a href="dom.Scaleable.html">Scaleable</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.Transformable.html">Transformable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.Moveable.html">Moveable</a></li><li><a href="easeljs.Rotateable.html">Rotateable</a></li><li><a href="easeljs.Scaleable.html">Scaleable</a></li><li><a href="easeljs.Transformable.html">Transformable</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveable.html">BaseMoveable</a></li><li><a href="display.base.BaseRotateable.html">BaseRotateable</a></li><li><a href="display.base.BaseScaleable.html">BaseScaleable</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Nov 19 2015 17:44:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

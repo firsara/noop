@@ -34,12 +34,12 @@
 /** @namespace models **/
 define([
   '../sys',
-  'EaselJS',
+  '../utils/EventDispatcher',
   './fs',
   './API'
 ], function(
   sys,
-  createjs,
+  EventDispatcher,
   fs,
   API
 ) {
@@ -59,12 +59,20 @@ define([
    * model.push({data}, callback);
    *
    * @class Model
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof data
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Model(data){
-    createjs.EventDispatcher.call(this);
+    EventDispatcher.call(this);
+
+    /**
+     * filter of properties that should not be returned when fetching data
+     * @memberof data.Model
+     * @instance
+     * @var {Array} filter
+     */
+    this.filter = sys.setDefaultValue(this.filter, []);
 
     /**
      * wheter model should be overwritten when pulling data
@@ -213,7 +221,7 @@ define([
     this._definedData = this.set(data);
   }
 
-  var p = sys.extend(Model, createjs.EventDispatcher);
+  var p = sys.extend(Model, EventDispatcher);
 
   /**
    * gets the model's query arguments
@@ -293,11 +301,11 @@ define([
    * @param {String} key (optional)
    **/
   p.get = function(key, caller){
-    if (createjs.indexOf(_getCallers, this) >= 0) {
+    if (sys.indexOf(_getCallers, this) >= 0) {
       return null;
     }
 
-    if (caller &amp;&amp; createjs.indexOf(_getCallers, this) === -1) {
+    if (caller &amp;&amp; sys.indexOf(_getCallers, this) === -1) {
       _getCallers.push(this);
     }
 
@@ -325,7 +333,7 @@ define([
 
     for (var k in this) {
       // security check and exclude reserved names
-      if (this.hasOwnProperty(k) &amp;&amp; ! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0)) {
+      if (this.hasOwnProperty(k) &amp;&amp; ! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0)) {
         // exclude belongsTo relations as they should be used by getting back like
         // user.apps.user.get(true)
         if (this._relationshipKeys.belongsTo.indexOf(k) === -1) {
@@ -385,8 +393,7 @@ define([
     }
 
     // if data was a number: assume it was the model's id
-    // TODO: integrate string id's
-    if (! isNaN(data)) {
+    if (! isNaN(data) || typeof data === 'string') {
       // if it's a collection, but only has one item: don't set the collection's id
       if (this instanceof require('noop/data/Collection') === false) {
         this.id = data;
@@ -402,11 +409,16 @@ define([
     // otherwise assign all properties to model if they're not reserved words
     for (var k in data) {
       if (data.hasOwnProperty(k)) {
-        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0) {
+        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0) {
           throw new Error('data key  > ' + k + ' &lt;  is a reserved name in  > Model &lt;');
         } else {
           if (k === 'id') {
-            this[k] = parseFloat(data[k]);
+            if (! isNaN(data[k])) {
+              this[k] = parseFloat(data[k]);
+            } else {
+              this[k] = data[k];
+            }
+
             _didSetId = true;
           } else {
             // if it's an already assigned collection
@@ -778,7 +790,7 @@ define([
     var id = data;
     if (typeof data === 'object' &amp;&amp; data.id) id = data.id;
 
-    if (! isNaN(id)) {
+    if (! isNaN(id) || typeof id === 'string') {
       // check if model already exists in collection storage
       if (Model.collection[model] &amp;&amp; Model.collection[model][id]) {
         var instance = Model.collection[model][id];
@@ -860,6 +872,7 @@ define([
    * @var {String} _reservedWords
    */
   var _reservedWords = [
+    'filter',
     'hasMany',
     'hasOne',
     'belongsTo',
@@ -896,7 +909,7 @@ define([
       // loop through array
       for (var i = 0, _len = value.length; i &lt; _len; i++) {
         // if the value is a reference back to the parent model caller itself
-        if (createjs.indexOf(_getCallers, value[i]) >= 0) {
+        if (sys.indexOf(_getCallers, value[i]) >= 0) {
           // return null
           return null;
         }
@@ -924,7 +937,7 @@ define([
     } else {
       // if it's not an array:
       // if the value is a reference back to the parent model caller itself
-      if (createjs.indexOf(_getCallers, value) >= 0) {
+      if (sys.indexOf(_getCallers, value) >= 0) {
         // return null
         return null;
       }
@@ -976,13 +989,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.Moveable.html">Moveable</a></li><li><a href="dom.Rotateable.html">Rotateable</a></li><li><a href="dom.Scaleable.html">Scaleable</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.Transformable.html">Transformable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.Moveable.html">Moveable</a></li><li><a href="easeljs.Rotateable.html">Rotateable</a></li><li><a href="easeljs.Scaleable.html">Scaleable</a></li><li><a href="easeljs.Transformable.html">Transformable</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveable.html">BaseMoveable</a></li><li><a href="display.base.BaseRotateable.html">BaseRotateable</a></li><li><a href="display.base.BaseScaleable.html">BaseScaleable</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Nov 19 2015 17:44:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

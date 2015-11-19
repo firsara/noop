@@ -35,12 +35,14 @@
 define([
   '../sys',
   '../utils/css3',
-  'EaselJS',
+  '../utils/EventDispatcher',
+  '../utils/fps',
   '../utils/Context'
 ], function(
   sys,
   css3,
-  createjs,
+  EventDispatcher,
+  fps,
   Context
 ) {
   // incremental container prefix id. generates a character like "A", "B", etc.
@@ -57,7 +59,7 @@ define([
 
   /**
    * Base class of all other dom classes&lt;br>
-   * gets extended by MoveClip, Component, etc.
+   * gets extended by Moveable, Component, etc.
    *
    * handles child dom containers&lt;br>
    * keeps transformation properties stored (i.e. x, y, rotation, etc.)&lt;br>
@@ -68,7 +70,7 @@ define([
    *
    * @example
    * &lt;div class="wrapper" data-name="wrapper">
-   *   &lt;div data-name="mover" data-class="dom/MoveClip"> &lt;!-- mover will be a MoveClip instance -->
+   *   &lt;div data-name="mover" data-class="dom/Moveable"> &lt;!-- mover will be a Moveable instance -->
    *     DATA
    *   &lt;/div>
    * &lt;/div>
@@ -78,15 +80,13 @@ define([
    * container.mover.el.innerHTML; // outputs -> "DATA"
    *
    * @class Container
-   * @extends createjs.EventDispatcher
+   * @extends EventDispatcher
    * @memberof dom
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
    * @param {object} data the data to pass through the template, optional
    * @param {object} options optional options to overwrite container properties before inheriting
    **/
   function Container(template, data, options){
-    createjs.EventDispatcher.call(this);
-
     // generates ids from 0 to MAX_VALUE
     // then setps up one character and generates again (A0, A1, A2, etc.)
     storedContainerID++;
@@ -400,7 +400,7 @@ define([
     }
   }
 
-  var p = sys.extend(Container, createjs.EventDispatcher);
+  var p = sys.extend(Container, EventDispatcher);
 
   // define setters and gettrs for autoPainting transformations
   var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
@@ -482,7 +482,7 @@ define([
     }
   };
 
-  createjs.Ticker.addEventListener('tick', _paintAll);
+  fps.addEventListener('tick', _paintAll);
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
@@ -596,6 +596,19 @@ define([
   };
 
   /**
+   * alternative for query selector
+   *
+   * @method find
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.find = function(query){
+    // TODO: include underscore and return array with functions like forEach, first, etc.
+    return this.el.querySelectorAll(query);
+  };
+
+  /**
    * defines if mouse is enabled on element or not
    *
    * @method setMouseEnabled
@@ -684,7 +697,7 @@ define([
    * @param {Container} child the container from which the index needs to be determined
    **/
   p.getChildIndex = function(child) {
-    return createjs.indexOf(this.children, child);
+    return sys.indexOf(this.children, child);
   };
 
   /**
@@ -910,6 +923,63 @@ define([
   };
 
   /**
+   * dispatches event on target and all container children
+   *
+   * @method bubbleDispatch
+   * @memberof dom.Container
+   * @param {Object|String} event object
+   * @public
+   * @instance
+   **/
+  p.bubbleDispatch = function(event, reverse, dispatchOnSelf){
+    if (typeof event === 'string') {
+      event = {type: event};
+    }
+
+    if (reverse) {
+      // captures event from outer most element to inner most
+      this._reverseBubbleDispatch(event, dispatchOnSelf);
+    } else {
+      // bubbles event from inner most element to outer most
+      this._bubbleDispatch(event, dispatchOnSelf);
+    }
+  };
+
+  /**
+   * dispatches event on children and all subchildren (starting with most nested element first)
+   *
+   * @method _bubbleDispatch
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  p._bubbleDispatch = function(event, dispatchOnSelf){
+    for (var i = 0, _len = this.children.length; i &lt; _len; i++) {
+      this.children[i]._bubbleDispatch(event, true);
+    }
+
+    if (event.stopped) return;
+    if (dispatchOnSelf &amp;&amp; this._listeners[event.type]) this.dispatchEvent(event);
+  };
+
+  /**
+   * dispatches event on children and all subchildren (starting with most nested element first)
+   *
+   * @method _reverseBubbleDispatch
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  p._reverseBubbleDispatch = function(event, dispatchOnSelf){
+    if (event.stopped) return;
+    if (dispatchOnSelf &amp;&amp; this._listeners[event.type]) this.dispatchEvent(event);
+
+    for (var i = 0, _len = this.children.length; i &lt; _len; i++) {
+      this.children[i]._reverseBubbleDispatch(event, true);
+    }
+  };
+
+  /**
    * automatically assigns name of child to parent container
    * automatically creates a list of childs if there was more than one child with the same name (i.e. &lt;li> elements)
    * dispatches added event and checks for stage
@@ -954,14 +1024,12 @@ define([
 
     this._checkAddedToStage();
 
-    if (this._gotParent) {
+    if (! this._gotParent) {
       this._gotParent = true;
-      this.dispatchEvent(new createjs.Event('added', false));
+      this.dispatchEvent('added');
 
       if (this.parent) {
-        var addedChildEvent = new createjs.Event('addedChild', false);
-        addedChildEvent.child = this;
-        this.parent.dispatchEvent(addedChildEvent);
+        this.parent.dispatchEvent({type: 'addedChild', child: this});
       }
     }
   };
@@ -981,11 +1049,8 @@ define([
     if (this._gotParent) {
       this._gotParent = false;
 
-      this.dispatchEvent(new createjs.Event('removed', false));
-
-      var removedChildEvent = new createjs.Event('removedChild', false);
-      removedChildEvent.child = this;
-      this.parent.dispatchEvent(removedChildEvent);
+      this.dispatchEvent('removed');
+      this.parent.dispatchEvent({type: 'removedChild', child: this});
     }
 
     // if container had a name and a parent
@@ -1050,24 +1115,24 @@ define([
 
     this.stopDelay();
 
-    if (this.children) {
-      var kids = this.children;
-      for (var i = 0, _len = kids.length; i &lt; _len; i++) {
-        if (kids[i]._childrenRemovedStage) {
-          kids[i]._childrenRemovedStage();
-        }
+    var kids = this.children;
+    for (var i = 0, _len = kids.length; i &lt; _len; i++) {
+      if (kids[i]._childrenRemovedStage) {
+        kids[i]._childrenRemovedStage();
       }
     }
 
     if (this.stage) {
       if (this._gotStage) {
         this._gotStage = false;
-        this.dispatchEvent(new createjs.Event('removedFromStage', false));
+        this.dispatchEvent('removedFromStage');
       }
 
       this.stage = null;
       this.$stage = null;
     }
+
+    this.removeAllEventListeners();
   };
 
   /**
@@ -1087,19 +1152,17 @@ define([
       this.$stage = $(stage);
     }
 
-    if (this.children) {
-      var kids = this.children;
-      for (var i = 0, _len = kids.length; i &lt; _len; i++) {
-        if (kids[i]._checkAddedToStage) {
-          kids[i]._checkAddedToStage();
-        }
+    var kids = this.children;
+    for (var i = 0, _len = kids.length; i &lt; _len; i++) {
+      if (kids[i]._checkAddedToStage) {
+        kids[i]._checkAddedToStage();
       }
     }
 
     if (stage) {
       if (! this._gotStage) {
         this._gotStage = true;
-        this.dispatchEvent(new createjs.Event('addedToStage', false));
+        this.dispatchEvent('addedToStage');
       }
     }
   };
@@ -1129,7 +1192,7 @@ define([
    *
    * automatically creates a new class instance based on data-class
    *
-   * @example Container.fetch('&lt;div name="mover" data-class="dom/MoveClip">&lt;/div>');
+   * @example Container.fetch('&lt;div name="mover" data-class="dom/Moveable">&lt;/div>');
    *
    * @method fetch
    * @memberof dom.Container
@@ -1206,13 +1269,13 @@ define([
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.MoveClip.html">MoveClip</a></li><li><a href="dom.RotateClip.html">RotateClip</a></li><li><a href="dom.ScaleClip.html">ScaleClip</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="dom.TransformClip.html">TransformClip</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.MoveClip.html">MoveClip</a></li><li><a href="easeljs.RotateClip.html">RotateClip</a></li><li><a href="easeljs.ScaleClip.html">ScaleClip</a></li><li><a href="easeljs.TransformClip.html">TransformClip</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveClip.html">BaseMoveClip</a></li><li><a href="display.base.BaseRotateClip.html">BaseRotateClip</a></li><li><a href="display.base.BaseScaleClip.html">BaseScaleClip</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="data.Collection.html">Collection</a></li><li><a href="data.Loader.html">Loader</a></li><li><a href="data.Model.html">Model</a></li><li><a href="data.Synchronizer.html">Synchronizer</a></li><li><a href="dom.Component.html">Component</a></li><li><a href="dom.Container.html">Container</a></li><li><a href="dom.EventTracker.html">EventTracker</a></li><li><a href="dom.Module.html">Module</a></li><li><a href="dom.Moveable.html">Moveable</a></li><li><a href="dom.Rotateable.html">Rotateable</a></li><li><a href="dom.Scaleable.html">Scaleable</a></li><li><a href="dom.Scrollable.html">Scrollable</a></li><li><a href="dom.Stage.html">Stage</a></li><li><a href="dom.Transformable.html">Transformable</a></li><li><a href="dom.TransformableComponent.html">TransformableComponent</a></li><li><a href="easeljs.EventTracker.html">EventTracker</a></li><li><a href="easeljs.Moveable.html">Moveable</a></li><li><a href="easeljs.Rotateable.html">Rotateable</a></li><li><a href="easeljs.Scaleable.html">Scaleable</a></li><li><a href="easeljs.Transformable.html">Transformable</a></li><li><a href="URI.html">URI</a></li><li><a href="utils.FPSHandler.html">FPSHandler</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="components.html">components</a></li><li><a href="config.html">config</a></li><li><a href="data.html">data</a></li><li><a href="data.fs.html">fs</a></li><li><a href="display.base.html">base</a></li><li><a href="dom.html">dom</a></li><li><a href="dom.utils.touchmouse.html">touchmouse</a></li><li><a href="models.html">models</a></li><li><a href="modules.html">modules</a></li><li><a href="sys.html">sys</a></li><li><a href="utils.Context.html">Context</a></li><li><a href="utils.css3.html">css3</a></li></ul><h3>Mixins</h3><ul><li><a href="display.base.BaseMoveable.html">BaseMoveable</a></li><li><a href="display.base.BaseRotateable.html">BaseRotateable</a></li><li><a href="display.base.BaseScaleable.html">BaseScaleable</a></li><li><a href="display.base.BaseTransformable.html">BaseTransformable</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Nov 11 2015 10:32:10 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Nov 19 2015 17:44:58 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

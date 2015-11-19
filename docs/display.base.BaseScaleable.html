@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: utils/fps.js</title>
+    <title>JSDoc: Mixin: BaseScaleable</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,114 +17,118 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: utils/fps.js</h1>
+    <h1 class="page-title">Mixin: BaseScaleable</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/*
- * fps.js
- * Fabian Irsara
- * Copyright 2015, Licensed GPL &amp; MIT
- */
-define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher, createjs) {
+        <h2>
+            <span class="ancestors"><a href="display.base.html">.base</a>.</span>
+        
+        BaseScaleable
+        </h2>
+        
+    
+</header>
 
-  /**
-   * helper class to handle fps ticking based on EaselJS Ticker
-   *
-   * @class FPSHandler
-   * @extends EventDispatcher
-   * @memberof utils
-   **/
-  function FPSHandler(){
-    EventDispatcher.call(this);
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>used for scaling calculations<br>
+<strong>NOTE</strong>: only calculation wrapper. gets extended in:</p></div>
+        
 
-    this.measured = 60;
-
-    // properties to calculate average fps
-    this._startTime = Date.now();
-    this._currentTime = this._startTime;
-    this._ticked = 0;
-
-    this._update = _update.bind(this);
-    this._updateStats = _updateStats.bind(this);
-    this._calc = _calc.bind(this);
-
-    // if stats.js is included run a different function updater
-    if (window.stats) {
-      this._updateStats();
-    } else {
-      this._update();
-    }
-  }
-
-  var p = sys.extend(FPSHandler, EventDispatcher);
-
-  /**
-   * delegate application rendering
-   * calculates fps through stats.js
-   *
-   * @method _updateStats
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _updateStats = function(){
-    requestAnimationFrame(this._updateStats);
-
-    window.stats.begin();
-    this.dispatchEvent('tick');
-    window.stats.end();
-    this._calc();
-  };
+        
 
 
-  /**
-   * delegate application rendering
-   * tracks fps for further potential adjustments if lags were detected
-   *
-   * @method _update
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _update = function(){
-    requestAnimationFrame(this._update);
+<dl class="details">
 
-    this.dispatchEvent('tick');
-    this._calc();
-  };
+    
 
-  /**
-   * stop tracking fps
-   *
-   * @method _calc
-   * @memberof utils.FPSHandler
-   * @instance
-   * @private
-   **/
-  var _calc = function(){
-    this._currentTime = Date.now();
-    this._ticked++;
+    
 
-    var offset = this._currentTime - this._startTime;
+    
 
-    if (offset > 1000) {
-      this.measured = this._ticked;
-      this._startTime = this._currentTime;
-      this._ticked = 0;
-    }
-  };
+    
 
-  return new FPSHandler();
-});
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_Scaleable.js.html">display/Scaleable.js</a>, <a href="display_Scaleable.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="dom.Scaleable.html">dom.Scaleable</a></li>
+        
+            <li><a href="easeljs.Scaleable.html">easeljs.Scaleable</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+        
+            <h3>Example</h3>
+            
+    <pre class="prettyprint"><code>var scaler = new Scaleable('&lt;img src="image.jpg">');
+scaler.borders.scale = [0.1, 2];
+scaler.free.scale = true; // overwrites borders</code></pre>
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
