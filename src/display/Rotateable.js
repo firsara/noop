@@ -1,9 +1,9 @@
 /*
- * RotateClip.js
+ * Rotateable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['EaselJS'], function(sys, createjs) {
+define(function(sys) {
 
   // Event constants
 
@@ -16,18 +16,18 @@ define(['EaselJS'], function(sys, createjs) {
   /**
    * used for rotation calculations<br>
    * **NOTE**: only calculation wrapper. gets extended in:
-   * @see dom.RotateClip
-   * @see easeljs.RotateClip
+   * @see dom.Rotateable
+   * @see easeljs.Rotateable
    *
    * @example
-   * var rotater = new RotateClip('<img src="image.jpg">');
+   * var rotater = new Rotateable('<img src="image.jpg">');
    * rotater.borders.rotation = [-10, 10];
    * rotater.free.rotation = true; // overwrites borders
    *
-   * @mixin BaseRotateClip
+   * @mixin BaseRotateable
    * @memberof display.base
    **/
-  function BaseRotateClip(){
+  function BaseRotateable(){
 
     // borders: element can not be rotated beyond set borders
     // i.e. borders.rotation = [-10, 10]  means that the element can only be rotated between -10 and 10
@@ -65,7 +65,7 @@ define(['EaselJS'], function(sys, createjs) {
 
     /**
      * tween to throw properties when finished moving
-     * @memberof display.base.BaseRotateClip
+     * @memberof display.base.BaseRotateable
      * @instance
      * @private
      * @var {TweenLite} _rotateTween
@@ -81,13 +81,13 @@ define(['EaselJS'], function(sys, createjs) {
     this.on('complete', _stopTransform);
   }
 
-  var p = BaseRotateClip.prototype;
+  var p = BaseRotateable.prototype;
 
   /**
    * dispatches rotate event
    *
    * @method _dispatchTweenUpdate
-   * @memberof display.base.BaseRotateClip
+   * @memberof display.base.BaseRotateable
    * @instance
    * @private
    **/
@@ -113,7 +113,7 @@ define(['EaselJS'], function(sys, createjs) {
    * stops previous tween if detected more than one finger
    *
    * @method _startTransform
-   * @memberof display.base.BaseRotateClip
+   * @memberof display.base.BaseRotateable
    * @instance
    * @private
    **/
@@ -128,7 +128,7 @@ define(['EaselJS'], function(sys, createjs) {
    * for current frame only. Only calculates. Does not set properties on element
    *
    * @method _calc
-   * @memberof display.base.BaseRotateClip
+   * @memberof display.base.BaseRotateable
    * @instance
    * @private
    **/
@@ -171,7 +171,7 @@ define(['EaselJS'], function(sys, createjs) {
    * only called when finger positions changed to save performance.
    *
    * @method _update
-   * @memberof display.base.BaseRotateClip
+   * @memberof display.base.BaseRotateable
    * @instance
    * @private
    **/
@@ -198,7 +198,7 @@ define(['EaselJS'], function(sys, createjs) {
    * snaps properties if set
    *
    * @method _stopTransform
-   * @memberof display.base.BaseRotateClip
+   * @memberof display.base.BaseRotateable
    * @instance
    * @private
    **/
@@ -282,5 +282,5 @@ define(['EaselJS'], function(sys, createjs) {
     }
   };
 
-  return BaseRotateClip;
+  return BaseRotateable;
 });

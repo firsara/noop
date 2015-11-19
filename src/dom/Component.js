@@ -52,6 +52,9 @@ define([
     this.domHeight = 0;
 
     this._unlockResize = this.__bind(_unlockResize);
+    this._oldDomWidth = -1;
+    this._oldDomHeight = -1;
+    this._oldDomEvent = null;
 
     // call super constructor if not already done by some other mixin function
     if (! this._initializedContainer) Container.call(this, template, data, options);
@@ -166,12 +169,22 @@ define([
     this.domWidth = this.el.offsetWidth;
     this.domHeight = this.el.offsetHeight;
 
+    if (! (this._oldDomEvent && this._oldDomEvent.force)) {
+      if (this.domWidth === this._oldDomWidth && this.domHeight === this._oldDomHeight) {
+        return;
+      }
+    }
+
+    this._oldDomWidth = this.domWidth;
+    this._oldDomHeight = this.domHeight;
+    this._oldDomEvent = null;
+
     // resize component
     this.resize();
 
     // dispatch resize event
     if (bubble) {
-      this.bubbleDispatch('resize', true, false);
+      this.bubbleDispatch(this._oldDomEvent || 'resize', true, false);
     }
 
     // render component
@@ -180,10 +193,11 @@ define([
 
   var _windowResized = function(event){
     event.stopped = true;
+    this._oldDomEvent = event;
 
     if (! this.__lockedResize) {
       this.__lockedResize = true;
-      this.__unlockResize = setTimeout(this._unlockResize, 85);
+      this.__unlockResize = setTimeout(this._unlockResize, 170);
     }
   };
 

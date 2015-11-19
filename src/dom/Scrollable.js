@@ -7,12 +7,12 @@
  */
 define([
   '../sys',
-  './MoveClip',
+  './Moveable',
   'EaselJS'
 ],
 function(
   sys,
-  MoveClip,
+  Moveable,
   createjs
 ) {
   var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
@@ -22,7 +22,7 @@ function(
    *
    * @class Scrollable
    * @memberof dom
-   * @extends dom.MoveClip
+   * @extends dom.Moveable
    *
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
    * @param {object} data the data to pass through the template, optional
@@ -30,12 +30,12 @@ function(
    **/
   function Scrollable(template, data, options){
     // extend from base class
-    MoveClip.call(this, template, data, options);
+    Moveable.call(this, template, data, options);
 
     Scrollable.create(this, this);
   }
 
-  var p = sys.extend(Scrollable, MoveClip);
+  var p = sys.extend(Scrollable, Moveable);
 
   Scrollable.create = function(container, checkContainer){
     container.check = checkContainer;
@@ -348,7 +348,7 @@ function(
   };
 
   /**
-   * holds MoveClip bounds while animating via scrolling
+   * holds Moveable bounds while animating via scrolling
    *
    * @method _hold
    * @memberof dom.Scrollable

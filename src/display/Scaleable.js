@@ -1,9 +1,9 @@
 /*
- * ScaleClip.js
+ * Scaleable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['EaselJS'], function(sys, createjs) {
+define(function(sys) {
 
   // Event constants
 
@@ -16,18 +16,18 @@ define(['EaselJS'], function(sys, createjs) {
   /**
    * used for scaling calculations<br>
    * **NOTE**: only calculation wrapper. gets extended in:
-   * @see dom.ScaleClip
-   * @see easeljs.ScaleClip
+   * @see dom.Scaleable
+   * @see easeljs.Scaleable
    *
    * @example
-   * var scaler = new ScaleClip('<img src="image.jpg">');
+   * var scaler = new Scaleable('<img src="image.jpg">');
    * scaler.borders.scale = [0.1, 2];
    * scaler.free.scale = true; // overwrites borders
    *
-   * @mixin BaseScaleClip
+   * @mixin BaseScaleable
    * @memberof display.base
    **/
-  function BaseScaleClip(){
+  function BaseScaleable(){
     // borders: element can not be scaled beyond set borders
     // i.e. borders.scale = [-10, 10]  means that the element can only be scaled between -10 and 10
     this.borders.scale = [];
@@ -64,7 +64,7 @@ define(['EaselJS'], function(sys, createjs) {
 
     /**
      * tween to throw properties when finished moving
-     * @memberof display.base.BaseRotateClip
+     * @memberof display.base.BaseRotateable
      * @instance
      * @private
      * @var {TweenLite} _scaleTween
@@ -82,7 +82,7 @@ define(['EaselJS'], function(sys, createjs) {
    * dispatches scale event
    *
    * @method _dispatchTweenUpdate
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -98,7 +98,7 @@ define(['EaselJS'], function(sys, createjs) {
    * dispatches scaleComplete event
    *
    * @method _dispatchComplete
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -110,7 +110,7 @@ define(['EaselJS'], function(sys, createjs) {
    * stops previous tween if detected more than one finger
    *
    * @method _startTransform
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -124,7 +124,7 @@ define(['EaselJS'], function(sys, createjs) {
    * calculates distance between two points
    *
    * @method _getDistance
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -140,7 +140,7 @@ define(['EaselJS'], function(sys, createjs) {
    * for current frame only. Only calculates. Does not set properties on element
    *
    * @method _calc
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -172,7 +172,7 @@ define(['EaselJS'], function(sys, createjs) {
    * only called when finger positions changed to save performance.
    *
    * @method _update
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -199,7 +199,7 @@ define(['EaselJS'], function(sys, createjs) {
    * snaps properties if set
    *
    * @method _stopTransform
-   * @memberof display.base.BaseScaleClip
+   * @memberof display.base.BaseScaleable
    * @instance
    * @private
    **/
@@ -287,5 +287,5 @@ define(['EaselJS'], function(sys, createjs) {
     }
   };
 
-  return BaseScaleClip;
+  return BaseScaleable;
 });

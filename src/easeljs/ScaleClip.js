@@ -1,5 +1,5 @@
 /*
- * ScaleClip.js
+ * Scaleable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
@@ -7,32 +7,32 @@ define([
   '../sys',
   './EventTracker',
   '../display/Transformable',
-  '../display/ScaleClip'
+  '../display/Scaleable'
 ],
 function(
   sys,
   EventTracker,
   Transformable,
-  BaseScaleClip
+  BaseScaleable
 ) {
   /**
-   * @see display.base.BaseScaleClip
+   * @see display.base.BaseScaleable
    *
-   * @class ScaleClip
+   * @class Scaleable
    * @memberof easeljs
    * @extends easeljs.EventTracker
    * @mixes display.base.BaseTransformable
-   * @mixes display.base.BaseScaleClip
+   * @mixes display.base.BaseScaleable
    **/
-  function ScaleClip(){
+  function Scaleable(){
     EventTracker.call(this);
     Transformable.call(this);
-    BaseScaleClip.call(this);
+    BaseScaleable.call(this);
   }
 
-  sys.extend(ScaleClip, EventTracker);
-  sys.mixin(ScaleClip, Transformable);
-  sys.mixin(ScaleClip, BaseScaleClip);
+  sys.extend(Scaleable, EventTracker);
+  sys.mixin(Scaleable, Transformable);
+  sys.mixin(Scaleable, BaseScaleable);
 
-  return ScaleClip;
+  return Scaleable;
 });

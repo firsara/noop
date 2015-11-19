@@ -1,5 +1,5 @@
 /*
- * TransformClip.js
+ * Transformable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
@@ -7,17 +7,17 @@ define([
   '../sys',
   './EventTracker',
   '../display/Transformable',
-  '../display/MoveClip',
-  '../display/ScaleClip',
-  '../display/RotateClip'
+  '../display/Moveable',
+  '../display/Scaleable',
+  '../display/Rotateable'
 ],
 function(
   sys,
   EventTracker,
-  Transformable,
-  BaseMoveClip,
-  BaseScaleClip,
-  BaseRotateClip
+  BaseTransformable,
+  BaseMoveable,
+  BaseScaleable,
+  BaseRotateable
 ) {
   /**
    * implements all transformations (move, scale, rotate)<br>
@@ -31,15 +31,15 @@ function(
    *
    * * Parent.call(this);
    *
-   * @class TransformClip
+   * @class Transformable
    * @memberof easeljs
    * @extends easeljs.EventTracker
    * @mixes display.base.BaseTransformable
-   * @mixes display.base.BaseMoveClip
-   * @mixes display.base.BaseScaleClip
-   * @mixes display.base.BaseRotateClip
+   * @mixes display.base.BaseMoveable
+   * @mixes display.base.BaseScaleable
+   * @mixes display.base.BaseRotateable
    **/
-  function TransformClip(){
+  function Transformable(){
     // set all transformations to be default = true
     // can be overriden in child classes by setting desired property to true before calling parent constructor
     this._moves = sys.setDefaultValue(this._moves, true);
@@ -48,21 +48,21 @@ function(
 
     // extend from base class
     EventTracker.call(this);
-    Transformable.call(this);
+    BaseTransformable.call(this);
 
     // mix in other transformables
-    if (this._moves) BaseMoveClip.call(this);
-    if (this._scales) BaseScaleClip.call(this);
-    if (this._rotates) BaseRotateClip.call(this);
+    if (this._moves) BaseMoveable.call(this);
+    if (this._scales) BaseScaleable.call(this);
+    if (this._rotates) BaseRotateable.call(this);
   }
 
-  sys.extend(TransformClip, EventTracker);
+  sys.extend(Transformable, EventTracker);
 
-  sys.mixin(TransformClip, Transformable);
+  sys.mixin(Transformable, BaseTransformable);
 
-  sys.mixin(TransformClip, BaseMoveClip);
-  sys.mixin(TransformClip, BaseScaleClip);
-  sys.mixin(TransformClip, BaseRotateClip);
+  sys.mixin(Transformable, BaseMoveable);
+  sys.mixin(Transformable, BaseScaleable);
+  sys.mixin(Transformable, BaseRotateable);
 
-  return TransformClip;
+  return Transformable;
 });

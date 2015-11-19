@@ -1,18 +1,18 @@
 define([
-  './easeljs/MoveClip',
-  './easeljs/RotateClip',
-  './easeljs/ScaleClip',
-  './easeljs/TransformClip'
+  './easeljs/Moveable',
+  './easeljs/Rotateable',
+  './easeljs/Scaleable',
+  './easeljs/Transformable'
 ], function(
-  MoveClip,
-  RotateClip,
-  ScaleClip,
-  TransformClip
+  Moveable,
+  Rotateable,
+  Scaleable,
+  Transformable
 ){
   return {
-    MoveClip: MoveClip,
-    RotateClip: RotateClip,
-    ScaleClip: ScaleClip,
-    TransformClip: TransformClip
+    Moveable: Moveable,
+    Rotateable: Rotateable,
+    Scaleable: Scaleable,
+    Transformable: Transformable
   };
 });

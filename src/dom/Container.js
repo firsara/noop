@@ -31,7 +31,7 @@ define([
 
   /**
    * Base class of all other dom classes<br>
-   * gets extended by MoveClip, Component, etc.
+   * gets extended by Moveable, Component, etc.
    *
    * handles child dom containers<br>
    * keeps transformation properties stored (i.e. x, y, rotation, etc.)<br>
@@ -42,7 +42,7 @@ define([
    *
    * @example
    * <div class="wrapper" data-name="wrapper">
-   *   <div data-name="mover" data-class="dom/MoveClip"> <!-- mover will be a MoveClip instance -->
+   *   <div data-name="mover" data-class="dom/Moveable"> <!-- mover will be a Moveable instance -->
    *     DATA
    *   </div>
    * </div>
@@ -1164,7 +1164,7 @@ define([
    *
    * automatically creates a new class instance based on data-class
    *
-   * @example Container.fetch('<div name="mover" data-class="dom/MoveClip"></div>');
+   * @example Container.fetch('<div name="mover" data-class="dom/Moveable"></div>');
    *
    * @method fetch
    * @memberof dom.Container

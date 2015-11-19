@@ -1,9 +1,9 @@
 /*
- * MoveClip.js
+ * Moveable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(function() {
+define(['../config'], function(config) {
 
   // Event constants
 
@@ -29,11 +29,11 @@ define(function() {
   /**
    * used for move calculations, swipe detections etc.<br>
    * **NOTE**: only calculation wrapper. gets extended in<br>
-   * @see dom.MoveClip
-   * @see easeljs.MoveClip
+   * @see dom.Moveable
+   * @see easeljs.Moveable
    *
    * @example
-   * var mover = new MoveClip('<img src="image.jpg">');
+   * var mover = new Moveable('<img src="image.jpg">');
    * mover.borders.x = [-10, 10];
    * mover.scrolls('y');
    * mover.free.x = true; // overwrites borders
@@ -41,13 +41,13 @@ define(function() {
    * dispatches events:<br>
    * move, moveComplete, swipe
    *
-   * @mixin BaseMoveClip
+   * @mixin BaseMoveable
    * @memberof display.base
    **/
-  function BaseMoveClip(){
+  function BaseMoveable(){
     /**
      * layer active moveclip to the top of the index list
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @var {Boolean} level
      */
@@ -55,7 +55,7 @@ define(function() {
 
     /**
      * strength of current item's transforms
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @var {Boolean} level
      */
@@ -136,7 +136,7 @@ define(function() {
 
     /**
      * tween to throw properties when finished moving
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @private
      * @var {TweenLite} _moveTween
@@ -145,7 +145,7 @@ define(function() {
 
     /**
      * hold timeout id when trying to detect a hold
-     * @memberof display.base.BaseMoveClip
+     * @memberof display.base.BaseMoveable
      * @instance
      * @private
      * @var {Number} _holdTimeout
@@ -159,14 +159,14 @@ define(function() {
     this.on('complete', _stopTransform);
   }
 
-  var p = BaseMoveClip.prototype;
+  var p = BaseMoveable.prototype;
 
   /**
    * defines the scrolling direction used for elements that are intended to scroll in a specific direction
    * automatically stops events on parent containers and sets up all the needed settings
    *
    * @method scrolls
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @param {String} direction defines the scroll direction. allowed values:<br>
    * "x" or "horizontal"<br>
@@ -202,7 +202,7 @@ define(function() {
    * dispatches move event
    *
    * @method _dispatchTweenUpdate
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -218,7 +218,7 @@ define(function() {
    * dispatches moveComplete event
    *
    * @method _dispatchComplete
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -231,7 +231,7 @@ define(function() {
    * checks first if it was a valid hold movement
    *
    * @method _dispatchHold
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -258,7 +258,7 @@ define(function() {
    * sets leveling if needed
    *
    * @method _startTransform
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @static
    * @private
    **/
@@ -276,7 +276,7 @@ define(function() {
    * calculates distance between two points
    *
    * @method _getDistance
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -292,7 +292,7 @@ define(function() {
    * for current frame only. Only calculates. Does not set properties on element
    *
    * @method _calc
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -308,7 +308,7 @@ define(function() {
         this._calc.x += (this._fingers[pointerID].current.x - this._fingers[pointerID].old.x);
         this._calc.y += (this._fingers[pointerID].current.y - this._fingers[pointerID].old.y);
 
-        if (this._shiftKey) {
+        if (this._shiftKey && ! config.isTouch) {
           if (Math.abs(this._calc.x) > Math.abs(this._calc.y)) {
             this._calc.y = this._calc.x;
           } else {
@@ -330,7 +330,7 @@ define(function() {
    * only called when finger positions changed to save performance.
    *
    * @method _update
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -344,13 +344,13 @@ define(function() {
     // hold border properties while taking elasticity and fractions into account
 
     if (Math.abs(this._track.current.x) >= this.recognizer.move.x) {
-      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * Math.max(1, BaseMoveClip.strength * this.strength));
+      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
       this.recognizer.fired.x = true;
       _dispatchesUpdate = true;
     }
 
     if (Math.abs(this._track.current.y) >= this.recognizer.move.y) {
-      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * Math.max(1, BaseMoveClip.strength * this.strength));
+      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
       this.recognizer.fired.y = true;
       _dispatchesUpdate = true;
     }
@@ -366,7 +366,7 @@ define(function() {
    * snaps properties if set
    *
    * @method _stopTransform
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -393,8 +393,8 @@ define(function() {
 
       // calculate throwing properties based on velocity and fractions
       var valuePair1 = {};
-      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * Math.max(1, BaseMoveClip.strength * this.strength);
-      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * Math.max(1, BaseMoveClip.strength * this.strength);
+      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * Math.max(1, BaseMoveable.strength * this.strength);
+      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * Math.max(1, BaseMoveable.strength * this.strength);
 
       // snaps properties if defined
       if (this.snap.x && this.snap.x !== 0) {
@@ -477,7 +477,7 @@ define(function() {
    * if a swipe was detected dispatches appropriate event.
    *
    * @method _detectSwipes
-   * @memberof display.base.BaseMoveClip
+   * @memberof display.base.BaseMoveable
    * @instance
    * @private
    **/
@@ -536,7 +536,7 @@ define(function() {
     }
   };
 
-  BaseMoveClip.strength = 1;
+  BaseMoveable.strength = 1;
 
-  return BaseMoveClip;
+  return BaseMoveable;
 });

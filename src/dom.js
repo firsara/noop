@@ -14,10 +14,10 @@ define([
   './dom/Component',
   './dom/TransformableComponent',
 
-  './dom/MoveClip',
-  './dom/RotateClip',
-  './dom/ScaleClip',
-  './dom/TransformClip',
+  './dom/Moveable',
+  './dom/Rotateable',
+  './dom/Scaleable',
+  './dom/Transformable',
   './dom/Scrollable',
 
   './vendor/fastclick'
@@ -36,10 +36,10 @@ define([
   Component,
   TransformableComponent,
 
-  MoveClip,
-  RotateClip,
-  ScaleClip,
-  TransformClip,
+  Moveable,
+  Rotateable,
+  Scaleable,
+  Transformable,
   Scrollable,
 
   fastclick
@@ -54,10 +54,10 @@ define([
     Component: Component,
     TransformableComponent: TransformableComponent,
 
-    MoveClip: MoveClip,
-    RotateClip: RotateClip,
-    ScaleClip: ScaleClip,
-    TransformClip: TransformClip,
+    Moveable: Moveable,
+    Rotateable: Rotateable,
+    Scaleable: Scaleable,
+    Transformable: Transformable,
     Scrollable: Scrollable
   };
 });

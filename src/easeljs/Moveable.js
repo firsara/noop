@@ -1,5 +1,5 @@
 /*
- * RotateClip.js
+ * Moveable.js
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
@@ -7,32 +7,32 @@ define([
   '../sys',
   './EventTracker',
   '../display/Transformable',
-  '../display/RotateClip'
+  '../display/Moveable'
 ],
 function(
   sys,
   EventTracker,
   Transformable,
-  BaseRotateClip
+  BaseMoveable
 ) {
   /**
-   * @see display.base.BaseRotateClip
+   * @see display.base.BaseMoveable
    *
-   * @class RotateClip
+   * @class Moveable
    * @memberof easeljs
    * @extends easeljs.EventTracker
    * @mixes display.base.BaseTransformable
-   * @mixes display.base.BaseRotateClip
+   * @mixes display.base.BaseMoveable
    **/
-  function RotateClip(){
+  function Moveable(){
     EventTracker.call(this);
     Transformable.call(this);
-    BaseRotateClip.call(this);
+    BaseMoveable.call(this);
   }
 
-  sys.extend(RotateClip, EventTracker);
-  sys.mixin(RotateClip, Transformable);
-  sys.mixin(RotateClip, BaseRotateClip);
+  sys.extend(Moveable, EventTracker);
+  sys.mixin(Moveable, Transformable);
+  sys.mixin(Moveable, BaseMoveable);
 
-  return RotateClip;
+  return Moveable;
 });

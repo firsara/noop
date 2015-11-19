@@ -5,12 +5,12 @@
  */
 define([
   '../sys',
-  './TransformClip',
+  './Transformable',
   './Component'
 ],
 function(
   sys,
-  TransformClip,
+  Transformable,
   Component
 ) {
   /**
@@ -27,7 +27,7 @@ function(
    *
    * @class TransformableComponent
    * @memberof dom
-   * @extends dom.TransformClip
+   * @extends dom.Transformable
    * @mixes dom.Component
    *
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
@@ -36,13 +36,13 @@ function(
    **/
   function TransformableComponent(template, data, options){
     // call super constructor
-    TransformClip.call(this, template, data, options);
+    Transformable.call(this, template, data, options);
 
     // mix in component class
     Component.call(this);
   }
 
-  sys.extend(TransformableComponent, TransformClip);
+  sys.extend(TransformableComponent, Transformable);
   sys.mixin(TransformableComponent, Component);
 
   return TransformableComponent;
