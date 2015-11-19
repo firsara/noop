@@ -58,6 +58,29 @@ define(function(){
   })();
 
   /**
+   * get transform style prefix based on defined vendor prefixes
+   *
+   * @var {String} transformOriginStylePrefix
+   * @memberof utils.css3
+   **/
+  css3.columnCountStylePrefix = (function(){
+    var prefix = 'columnCount';
+
+    if (! (prefix in document.body.style)) {
+      var v = ['ms', 'Khtml', 'O', 'moz', 'Moz', 'webkit', 'Webkit'];
+
+      while (v.length) {
+        var prop = v.pop() + 'ColumnCount';
+        if (prop in document.body.style) {
+          prefix = prop;
+        }
+      }
+    }
+
+    return prefix;
+  })();
+
+  /**
    * get css filter style property based on defined vendor prefixes
    *
    * @var {String} filterStylePrefix

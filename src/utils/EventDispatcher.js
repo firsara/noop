@@ -53,15 +53,19 @@ define(function() {
   p.off = function(type, listener){
     var listeners = this.getListeners(type);
 
-    for (var i = 0, _len = listeners.length; i < _len; i++) {
-      if (listeners[i].listener === listener) {
-        listeners.splice(i, 1);
-        break;
+    if (listener) {
+      for (var i = 0, _len = listeners.length; i < _len; i++) {
+        if (listeners[i].listener === listener) {
+          listeners.splice(i, 1);
+          break;
+        }
       }
-    }
 
-    this._listeners[type] = this._listeners[type] || [];
-    if (this._listeners[type].length === 0) delete this._listeners[type];
+      this._listeners[type] = this._listeners[type] || [];
+      if (this._listeners[type].length === 0) delete this._listeners[type];
+    } else {
+      delete this._listeners[type]
+    }
   };
 
   p.on = function(type, listener, scope){

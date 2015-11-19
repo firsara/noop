@@ -910,12 +910,10 @@ define([
 
     if (reverse) {
       // captures event from outer most element to inner most
-      if (! event.stopped && dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
-      this._reverseBubbleDispatch(event);
+      this._reverseBubbleDispatch(event, dispatchOnSelf);
     } else {
       // bubbles event from inner most element to outer most
-      this._bubbleDispatch(event);
-      if (! event.stopped && dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
+      this._bubbleDispatch(event, dispatchOnSelf);
     }
   };
 
@@ -927,13 +925,13 @@ define([
    * @private
    * @instance
    **/
-  p._bubbleDispatch = function(event){
+  p._bubbleDispatch = function(event, dispatchOnSelf){
     for (var i = 0, _len = this.children.length; i < _len; i++) {
-      this.children[i]._bubbleDispatch(event);
+      this.children[i]._bubbleDispatch(event, true);
     }
 
     if (event.stopped) return;
-    if (this._listeners[event.type]) this.dispatchEvent(event);
+    if (dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
   };
 
   /**
@@ -944,12 +942,12 @@ define([
    * @private
    * @instance
    **/
-  p._reverseBubbleDispatch = function(event){
+  p._reverseBubbleDispatch = function(event, dispatchOnSelf){
     if (event.stopped) return;
-    if (this._listeners[event.type]) this.dispatchEvent(event);
+    if (dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
 
     for (var i = 0, _len = this.children.length; i < _len; i++) {
-      this.children[i]._reverseBubbleDispatch(event);
+      this.children[i]._reverseBubbleDispatch(event, true);
     }
   };
 

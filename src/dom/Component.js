@@ -39,17 +39,17 @@ define([
      * stored component width
      * @memberof dom.Component
      * @instance
-     * @var {object} _componentWidth
+     * @var {object} domWidth
      */
-    this._componentWidth = 0;
+    this.domWidth = 0;
 
     /**
      * stored component height
      * @memberof dom.Component
      * @instance
-     * @var {object} _componentHeight
+     * @var {object} domHeight
      */
-    this._componentHeight = 0;
+    this.domHeight = 0;
 
     this._unlockResize = this.__bind(_unlockResize);
 
@@ -125,7 +125,7 @@ define([
 
     this.init();
     this.init = null;
-    _resize.call(this);
+    _resize.call(this, false);
 
     this.dispatchEvent('show');
 
@@ -160,15 +160,19 @@ define([
    * @protected
    * @instance
    **/
-  var _resize = function(){
-    this._componentWidth = this.el.offsetWidth;
-    this._componentHeight = this.el.offsetHeight;
+  var _resize = function(bubble){
+    if (! this.isVisible()) return;
+
+    this.domWidth = this.el.offsetWidth;
+    this.domHeight = this.el.offsetHeight;
 
     // resize component
     this.resize();
 
     // dispatch resize event
-    //this.bubbleDispatch('resize', true, false);
+    if (bubble) {
+      this.bubbleDispatch('resize', true, false);
+    }
 
     // render component
     this.render();
@@ -185,36 +189,7 @@ define([
 
   var _unlockResize = function(){
     this.__lockedResize = false;
-    _resize.call(this);
-  };
-
-
-
-  var _forceResetTimeout = null;
-  var _forceResizeTimeout = null;
-  var _forceResize = false;
-
-  var _forceReset = function(){
-    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
-    _forceResetTimeout = null;
-    _forceResize = false;
-  };
-
-  var _doForceResize = function(){
-    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
-    _forceResizeTimeout = null;
-
-    _forceResize = true;
-    //dispatch(window, 'resize');
-  };
-
-  Component.forceResize = function(){
-    return;
-    if (_forceResetTimeout) clearTimeout(_forceResetTimeout);
-    _forceResetTimeout = setTimeout(_forceReset, 150);
-
-    if (_forceResizeTimeout) clearTimeout(_forceResizeTimeout);
-    _forceResizeTimeout = setTimeout(_doForceResize, 17);
+    _resize.call(this, true);
   };
 
   return Component;
