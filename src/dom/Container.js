@@ -908,8 +908,6 @@ define([
       event = {type: event};
     }
 
-    //console.log(event.type);
-
     if (reverse) {
       // captures event from outer most element to inner most
       if (! event.stopped && dispatchOnSelf && this._listeners[event.type]) this.dispatchEvent(event);
