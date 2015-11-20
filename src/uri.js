@@ -121,7 +121,7 @@ define(function(){
   /**
    * extracts the domain of a specific url
    *
-   * @exmaple
+   * @example
    *
    * uri.extractProtocol('http://www.youtube.com/?v=12345') // http://
    * uri.extractProtocol('https://youtube.com/?v=12345') // https://
@@ -141,7 +141,7 @@ define(function(){
   /**
    * extracts the domain of a specific url
    *
-   * @exmaple
+   * @example
    *
    * uri.extractDomain('http://www.youtube.com/?v=12345') // www.youtube.com
    * uri.extractDomain('https://youtube.com/?v=12345') // youtube.com
@@ -167,7 +167,7 @@ define(function(){
   /**
    * extracts the domain of a specific url
    *
-   * @exmaple
+   * @example
    *
    * uri.extractPort('http://www.youtube.com:1337/?v=12345') // 1337
    * uri.extractPort('https://youtube.com/?v=12345') // ''
@@ -198,7 +198,7 @@ define(function(){
   /**
    * extracts the domain of a specific url
    *
-   * @exmaple
+   * @example
    *
    * uri.extractPath('http://www.youtube.com:1337/?v=12345') // '/'
    * uri.extractPath('http://youtube.com/users/1/') // '/users/1/'
@@ -227,7 +227,7 @@ define(function(){
   /**
    * parses a query string and returns a key-value object
    *
-   * @exmaple
+   * @example
    *
    * uri.parseQuery('username=me&password=secret') // {username: 'me', password: 'secret'}
    * uri.parseQuery('http://www.site.com/?username=me&password=secret') // {username: 'me', password: 'secret'}
@@ -269,7 +269,7 @@ define(function(){
   /**
    * extracts the domain of a specific url
    *
-   * @exmaple
+   * @example
    *
    * uri.extractHash('http://www.youtube.com:1337/?v=12345') // ''
    * uri.extractHash('http://youtube.com/users/1/#test') // '#test'
