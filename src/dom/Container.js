@@ -92,30 +92,12 @@ define([
     this.data = null;
 
     /**
-     * cached jquery stage instance (for dom containers should always be <body>)
-     * @memberof dom.Container
-     * @instance
-     * @var {jQuery} $el
-     */
-    this.$el = null;
-
-    /**
      * cached dom element
      * @memberof dom.Container
      * @instance
      * @var {DomElement} el
      */
     this.el = null;
-
-    /**
-     * shortcut function for finding items inside this elements container
-     * @example
-     * container.$('.child').html('found that child');
-     * @memberof dom.Container
-     * @instance
-     * @var {jQuery} $
-     */
-    this.$ = null;
 
     // TRANSFORMATIONS
     // ---------------
@@ -237,14 +219,6 @@ define([
     // --------------------
 
     /**
-     * cached jquery stage instance (for dom containers should always be <body>)
-     * @memberof dom.Container
-     * @instance
-     * @var {jQuery} $stage
-     */
-    this.$stage = null;
-
-    /**
      * cached stage instance (for dom containers should always be <body>)
      * @memberof dom.Container
      * @instance
@@ -315,19 +289,13 @@ define([
         html = template(data);
       }
 
-      // cache dom element as jquery object
-      this.$el = $(html);
+      this.el = html;
 
-      // check if only one main node was passed
-      if (this.$el.size() > 1) {
-        throw new Error('Container must only contain 1 target html element, not a list of dom elements');
+      if (typeof this.el === 'string') {
+        this.el = _createDomElement(this.el);
+      } else {
+        this.el._children = _correctDomChildren(this.el);
       }
-
-      // reference $ in this container element to find items inside the element
-      this.$ = this.$el.find;
-
-      // cache plain html dom element
-      this.el = this.$el[0];
 
       // reference container instance in html element
       this.el.container = this;
@@ -343,29 +311,26 @@ define([
           elName = elName.replace(/\s/g, '').replace(/\-/g, '');
           this.name = elName;
         } else {
-          elName = this.$el.tagName;
+          elName = this.el.tagName.toLowerCase();
           if (elName) {
             this.name = elName;
           }
         }
       }
 
-      var _this = this;
-
       // traverse all dom children and auto-fetch containers, set parent etc.
-      var childContainers = _this.el.getAttribute('data-children');
+      var childContainers = this.el.getAttribute('data-children');
       childContainers = ! (childContainers && childContainers.toString().toLowerCase() === 'false');
 
       if (childContainers) {
-        this.$el.children().each(function(){
-          var child = Container.fetch($(this));
-
-          child.parent = _this;
-          child.stage = _this.stage;
-          child.$stage = _this.$stage;
-          _this.children.push(child);
+        var children = this.el._children;
+        for (var i = 0, _len = children.length; i < _len; i++) {
+          var child = Container.fetch(children[i]);
+          child.parent = this;
+          child.stage = this.stage;
+          this.children.push(child);
           child._added();
-        });
+        }
       }
     } else {
       throw new Error('Container needs a template (Handlebars, html string, jquery element)');
@@ -373,6 +338,32 @@ define([
   }
 
   var p = sys.extend(Container, EventDispatcher);
+
+  /**
+   * cached jquery stage instance (for dom containers should always be <body>)
+   * @memberof dom.Container
+   * @instance
+   * @var {jQuery} $el
+   */
+  Object.defineProperty(p, '$el', {
+    get: function(){
+      return this._$el || (this._$el = $(this.el));
+    }
+  });
+
+  /**
+   * shortcut function for finding items inside this elements container
+   * @example
+   * container.$('.child').html('found that child');
+   * @memberof dom.Container
+   * @instance
+   * @var {jQuery} $
+   */
+  Object.defineProperty(p, '$', {
+    get: function(){
+      return this._$el.find;
+    }
+  });
 
   // define setters and gettrs for autoPainting transformations
   var props = ['_x', '_y', '_z', '_rotation', '_rotationX', '_rotationY', '_rotationZ', '_scaleX', '_scaleY', '_opacity'];
@@ -591,7 +582,6 @@ define([
    **/
   p.setMouseEnabled = function(value){
     this.mouseEnabled = value;
-    var _this = this;
 
     this.el.removeEventListener('touchstart', this.__bind(_preventMouseEvent), true);
     this.el.removeEventListener('touchmove', this.__bind(_preventMouseEvent), true);
@@ -722,21 +712,22 @@ define([
    * @param {Number} index where child should be appended to
    **/
   p.addChildAt = function(child, index){
-    if (! (child && child.$el)) {
+    if (! (child && child.el)) {
       throw new Error('addChild expects child to be a container');
     }
 
     child.parent = this;
     child.stage = this.stage;
-    child.$stage = this.$stage;
 
     if (index < 0) index = 0;
     else if (index > this.children.length) index = this.children.length;
 
-    if (index === 0 || this.children.length === 0) {
-      this.$el.prepend(child.$el);
+    if (this.children.length === 0) {
+      this.el.appendChild(child.el);
+    } else if (index === 0) {
+      this.el.insertBefore(child.el, this.children[0].el);
     } else {
-      this.children[index - 1].$el.after(child.$el);
+      this.el.insertBefore(child.el, this.children[index - 1].el.nextSibling);
     }
 
     this.children.splice(index, 0, child);
@@ -755,7 +746,7 @@ define([
    * @param {Container} child the container that should be removed
    **/
   p.removeChild = function(child){
-    if (! (child && child.$el)) {
+    if (! (child && child.el)) {
       throw new Error('removeChild expects child to be a container');
     }
 
@@ -790,12 +781,12 @@ define([
     if (kids[index]) {
       var child = kids[index];
 
-      if (! (child && child.$el)) {
+      if (! (child && child.el)) {
         throw new Error('removeChildAt expects child to be a container');
       }
 
       this.children.splice(index, 1);
-      child.$el.remove();
+      child.el.parentNode.removeChild(child.el);
       child._removed();
 
       return child;
@@ -1101,7 +1092,6 @@ define([
       }
 
       this.stage = null;
-      this.$stage = null;
     }
 
     this.removeAllEventListeners();
@@ -1121,7 +1111,6 @@ define([
 
     if (stage) {
       this.stage = stage;
-      this.$stage = $(stage);
     }
 
     var kids = this.children;
@@ -1154,6 +1143,53 @@ define([
   };
 
   /**
+   * creates a native dom element out of an html string<br>
+   * assigns corrected children as ._children
+   *
+   * @method _createDomElement
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  var _createDomElement = function(html){
+    var div = document.createElement('div');
+    div.innerHTML = html;
+
+    var children = _correctDomChildren(div);
+
+    // check if only one main node was passed
+    if (children.length !== 1) {
+      throw new Error('Container must only contain 1 target html element, not a list of dom elements');
+    }
+
+    var element = children[0];
+    element._children = _correctDomChildren(element);
+    return element;
+  };
+
+  /**
+   * corrects dom element children (i.e. removing text nodes, removing br tags, etc.)
+   *
+   * @method _correctDomChildren
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  var _correctDomChildren = function(element){
+    var children = [];
+
+    if (element.children) {
+      for (var i = 0, _len = element.children.length; i < _len; i++) {
+        if (element.children[i].tagName !== 'BR') {
+          children.push(element.children[i]);
+        }
+      }
+    }
+
+    return children;
+  };
+
+  /**
    * fetches a container instance by passing in a jquery object
    *
    * automatically disables autoPaint on fetched container
@@ -1171,9 +1207,9 @@ define([
    * @param {jQuery} $el the jquery object that the container should handle
    * @static
    **/
-  Container.fetch = function($el){
+  Container.fetch = function(el){
     // fetch defined container class through data-class
-    var className = $el[0].getAttribute('data-class');
+    var className = el.getAttribute('data-class');
 
     // assume it's a simple container
     var ClassTemplate = Container;
@@ -1187,7 +1223,7 @@ define([
       ClassTemplate = require(className);
       options = {};
 
-      var opts = $el[0].getAttribute('data-options');
+      var opts = el.getAttribute('data-options');
 
       if (opts) {
         options = JSON.parse(opts);
@@ -1195,9 +1231,9 @@ define([
     }
 
     // create new class instance and set autoPainting and autoUpdating to false by default to save some performance
-    var ct = new ClassTemplate($el, null, options);
+    var container = new ClassTemplate(el, null, options);
 
-    return ct;
+    return container;
   };
 
   /**
@@ -1209,8 +1245,8 @@ define([
    * @static
    **/
   Container.create = function(html){
-    var $el = $(html);
-    return Container.fetch($el);
+    var element = _createDomElement(html);
+    return Container.fetch(element);
   };
 
   /**

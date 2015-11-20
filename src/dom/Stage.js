@@ -24,7 +24,6 @@ function(
     this.isStage = true;
     Container.call(this, template, data, options);
     this.stage = this.el;
-    this.$stage = $(this.stage);
 
     this._resizeTimeout = null;
     this._doResize = this.__bind(_doResize);
