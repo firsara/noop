@@ -4,20 +4,26 @@ define([
   './utils/fps',
   './utils/Context',
   './utils/dispatch',
-  './utils/EventDispatcher'
+  './utils/EventDispatcher',
+  './utils/uri',
+  './utils/Router'
 ], function(
   console,
   css3,
   fps,
   Context,
   dispatch,
-  EventDispatcher
+  EventDispatcher,
+  uri,
+  Router
 ){
   return {
     css3: css3,
     fps: fps,
     Context: Context,
     dispatch: dispatch,
-    EventDispatcher: EventDispatcher
+    EventDispatcher: EventDispatcher,
+    uri: uri,
+    Router: Router
   };
 });

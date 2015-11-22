@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['../uri', '../vendor/Base64'], function(uri, Base64){
+define(['../utils/uri', '../vendor/Base64'], function(uri, Base64){
 
   /**
    * api function wrapper
