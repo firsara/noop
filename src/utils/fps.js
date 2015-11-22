@@ -50,7 +50,7 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     window.stats.begin();
     this.dispatchEvent('tick');
     window.stats.end();
-    if (this._ticked++ > 120) this._calc();
+    if (this._ticked++ > 240) this._calc();
   };
 
 
@@ -67,7 +67,7 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     requestAnimationFrame(this._update);
 
     this.dispatchEvent('tick');
-    if (this._ticked++ > 120) this._calc();
+    if (this._ticked++ > 240) this._calc();
   };
 
   /**
