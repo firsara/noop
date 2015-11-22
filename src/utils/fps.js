@@ -19,7 +19,6 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
 
     // properties to calculate average fps
     this._startTime = Date.now();
-    this._currentTime = this._startTime;
     this._ticked = 0;
 
     this._update = _update.bind(this);
@@ -51,7 +50,7 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     window.stats.begin();
     this.dispatchEvent('tick');
     window.stats.end();
-    this._calc();
+    if (this._ticked++ > 120) this._calc();
   };
 
 
@@ -68,11 +67,11 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     requestAnimationFrame(this._update);
 
     this.dispatchEvent('tick');
-    this._calc();
+    if (this._ticked++ > 120) this._calc();
   };
 
   /**
-   * stop tracking fps
+   * calculate current fps
    *
    * @method _calc
    * @memberof utils.FPSHandler
@@ -80,16 +79,13 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
    * @private
    **/
   var _calc = function(){
-    this._currentTime = Date.now();
-    this._ticked++;
+    var now = Date.now();
 
-    var offset = this._currentTime - this._startTime;
+    var offset = now - this._startTime;
 
-    if (offset > 1000) {
-      this.measured = this._ticked;
-      this._startTime = this._currentTime;
-      this._ticked = 0;
-    }
+    this.measured = Math.round(this._ticked * 1000 / offset);
+    this._startTime = now;
+    this._ticked = 0;
   };
 
   return new FPSHandler();
