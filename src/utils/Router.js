@@ -8,6 +8,8 @@ define(['./uri'], function(uri){
   var currentDomain = uri(window.location.href.toString()).join(['protocol', 'domain', 'port']);
 
   /**
+   * handles routes defined as javascript object and maps them to specific controllers and their according action
+   *
    * @example
    *
    * var controller = {layout: ...};
@@ -16,6 +18,7 @@ define(['./uri'], function(uri){
    * router.route();
    *
    * @class Router
+   * @memberof utils
    * @param {Object} controller an object that gets passed on to every controller when route changes are detected
    * @param {Object} routes a list of routes, see example for configuration
    **/
