@@ -197,7 +197,7 @@ define([
 
     if (! this.__lockedResize) {
       this.__lockedResize = true;
-      this.__unlockResize = setTimeout(this._unlockResize, 170);
+      this.__unlockResize = setTimeout(this._unlockResize, 85);
     }
   };
 
