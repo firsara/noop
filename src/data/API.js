@@ -23,6 +23,7 @@ define(['../utils/uri', '../vendor/Base64'], function(uri, Base64){
    * api.set('token', 'MY ACCESS TOKEN');
    *
    * @namespace api
+   * @memberof data
    */
   var api = {};
 

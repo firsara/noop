@@ -35,7 +35,7 @@ define([
    * _syncer.start();
    *
    * @class Synchronizer
-   * @extends EventDispatcher
+   * @extends utils.EventDispatcher
    * @memberof data
    **/
   function Synchronizer(){

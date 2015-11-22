@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: data</title>
+    <title>JSDoc: Namespace: api</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: data</h1>
+    <h1 class="page-title">Namespace: api</h1>
 
     
 
@@ -29,7 +29,9 @@
 <header>
     
         <h2>
-        data
+            <span class="ancestors"><a href="data.html">data</a>.</span>
+        
+        api
         </h2>
         
     
@@ -38,6 +40,9 @@
 <article>
     <div class="container-overview">
     
+        
+            <div class="description"><p>api function wrapper
+handles local storage, calls server api, authenticates, etc</p></div>
         
 
         
@@ -72,7 +77,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Loader.js.html">data/Loader.js</a>, <a href="data_Loader.js.html#line6">line 6</a>
+        <a href="data_API.js.html">data/API.js</a>, <a href="data_API.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -85,6 +90,19 @@
 
 
         
+            <h3>Examples</h3>
+            
+    <pre class="prettyprint"><code>api.prefix = 'my_application_id_';
+api.init('my application secret');
+
+// handling local storage
+api.get('start');
+api.set('myData', 'data');</code></pre>
+
+    <pre class="prettyprint"><code>// retrieve token by logging user in
+api.set('token', 'MY ACCESS TOKEN');</code></pre>
+
+        
     
     </div>
 
@@ -93,35 +111,9 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="data.Collection.html">Collection</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Loader.html">Loader</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Model.html">Model</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Synchronizer.html">Synchronizer</a></dt>
-            <dd></dd>
-        </dl>
-    
 
      
 
-    
-        <h3 class="subsection-title">Namespaces</h3>
-
-        <dl>
-            <dt><a href="data.api.html">api</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.fs.html">fs</a></dt>
-            <dd></dd>
-        </dl>
     
 
     

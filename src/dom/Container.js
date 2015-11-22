@@ -48,11 +48,11 @@ define([
    * </div>
    *
    * @example
-   * var container = new Container($('.wrapper'));
+   * var container = new Container(document.querySelector('.wrapper'));
    * container.mover.el.innerHTML; // outputs -> "DATA"
    *
    * @class Container
-   * @extends EventDispatcher
+   * @extends utils.EventDispatcher
    * @memberof dom
    * @param {Handlebars} template should be a compiled handlebars template. alternatively can be a plain string or jquery object
    * @param {object} data the data to pass through the template, optional

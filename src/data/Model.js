@@ -3,7 +3,6 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-/** @namespace models **/
 define([
   '../sys',
   '../utils/EventDispatcher',
@@ -31,7 +30,7 @@ define([
    * model.push({data}, callback);
    *
    * @class Model
-   * @extends EventDispatcher
+   * @extends utils.EventDispatcher
    * @memberof data
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/

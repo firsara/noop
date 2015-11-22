@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: data</title>
+    <title>JSDoc: Class: Router</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: data</h1>
+    <h1 class="page-title">Class: Router</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-        data
+        Router
         </h2>
         
     
@@ -40,7 +40,100 @@
     
         
 
+    
+
+    <h4 class="name" id="Router"><span class="type-signature"></span>new Router<span class="signature">(controller, routes)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>handles routes defined as javascript object and maps them to specific controllers and their according action</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
         
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>controller</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>an object that gets passed on to every controller when route changes are detected</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>routes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>a list of routes, see example for configuration</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
 
 
 <dl class="details">
@@ -72,7 +165,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_Loader.js.html">data/Loader.js</a>, <a href="data_Loader.js.html#line6">line 6</a>
+        <a href="utils_Router.js.html">utils/Router.js</a>, <a href="utils_Router.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -84,7 +177,28 @@
 </dl>
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var controller = {layout: ...};
+var router = new Router(controller, {...routes})
+router.parse(controller.layout);
+router.route();</code></pre>
+
+
+
     
     </div>
 
@@ -93,35 +207,9 @@
     
 
     
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="data.Collection.html">Collection</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Loader.html">Loader</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Model.html">Model</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.Synchronizer.html">Synchronizer</a></dt>
-            <dd></dd>
-        </dl>
-    
 
      
 
-    
-        <h3 class="subsection-title">Namespaces</h3>
-
-        <dl>
-            <dt><a href="data.api.html">api</a></dt>
-            <dd></dd>
-        
-            <dt><a href="data.fs.html">fs</a></dt>
-            <dd></dd>
-        </dl>
     
 
     

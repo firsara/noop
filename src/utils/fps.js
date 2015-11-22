@@ -6,15 +6,27 @@
 define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher, createjs) {
 
   /**
-   * helper class to handle fps ticking based on EaselJS Ticker
+   * helper class to handle fps ticking based on EaselJS Ticker.<br>
+   * dispatches tick on every new frame request.
    *
-   * @class FPSHandler
-   * @extends EventDispatcher
+   * @example
+   *
+   * fps.addEventListener('tick', paint);
+   * fps.measured // = 60
+   *
+   * @class fps
+   * @extends utils.EventDispatcher
    * @memberof utils
    **/
-  function FPSHandler(){
+  function fps(){
     EventDispatcher.call(this);
 
+    /**
+     * measured fps
+     * @memberof utils.fps
+     * @instance
+     * @var {Number} measured
+     */
     this.measured = 60;
 
     // properties to calculate average fps
@@ -33,14 +45,14 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     }
   }
 
-  var p = sys.extend(FPSHandler, EventDispatcher);
+  var p = sys.extend(fps, EventDispatcher);
 
   /**
    * delegate application rendering
    * calculates fps through stats.js
    *
    * @method _updateStats
-   * @memberof utils.FPSHandler
+   * @memberof utils.fps
    * @instance
    * @private
    **/
@@ -59,7 +71,7 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
    * tracks fps for further potential adjustments if lags were detected
    *
    * @method _update
-   * @memberof utils.FPSHandler
+   * @memberof utils.fps
    * @instance
    * @private
    **/
@@ -74,7 +86,7 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
    * calculate current fps
    *
    * @method _calc
-   * @memberof utils.FPSHandler
+   * @memberof utils.fps
    * @instance
    * @private
    **/
@@ -88,5 +100,5 @@ define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher
     this._ticked = 0;
   };
 
-  return new FPSHandler();
+  return new fps();
 });

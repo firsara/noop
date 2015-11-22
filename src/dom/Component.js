@@ -3,7 +3,6 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-/** @namespace components **/
 define([
   '../sys',
   './Container',

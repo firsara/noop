@@ -3,7 +3,6 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-/** @namespace modules **/
 define([
   '../sys',
   '../config',
@@ -49,7 +48,7 @@ define([
    * * _this.show: shows module by animating elements in (optional)
    *
    * @class Module
-   * @extends EventDispatcher
+   * @extends utils.EventDispatcher
    * @memberof dom
    * @param {Class} ContainerClass class reference of a container or component that the module uses
    * @param {object} options to override in component
