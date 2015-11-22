@@ -14,6 +14,8 @@ define([
   fs,
   API
 ) {
+  var Collection = null;
+
   /**
    * A model holds data that gets pulled from a server
    * and pushes data
@@ -35,6 +37,8 @@ define([
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Model(data){
+    if (! Collection) Collection = require('noop/data/Collection');
+
     EventDispatcher.call(this);
 
     /**
@@ -224,7 +228,8 @@ define([
    * @protected
    **/
   p.getPullURL = function(){
-    return API.endpoint + this.model + 's' + '/' + this.id + this.getQuery();
+    if (this.id) return API.endpoint + this.model + 's' + '/' + this.id + this.getQuery();
+    return API.endpoint + this.model + 's';
   };
 
   /**
@@ -366,7 +371,7 @@ define([
     // if data was a number: assume it was the model's id
     if (! isNaN(data) || typeof data === 'string') {
       // if it's a collection, but only has one item: don't set the collection's id
-      if (this instanceof require('noop/data/Collection') === false) {
+      if (this instanceof Collection === false) {
         this.id = data;
       }
 
@@ -393,7 +398,7 @@ define([
             _didSetId = true;
           } else {
             // if it's an already assigned collection
-            if (this[k] && this instanceof require('noop/data/Collection') === true && this[k].set) {
+            if (this[k] && this instanceof Collection === true && this[k].set) {
               // set partial data through collection item
               this[k].set(data[k]);
             } else {
@@ -450,7 +455,7 @@ define([
 
       var items = [_this];
 
-      if (_this instanceof require('noop/data/Collection') === true) {
+      if (_this instanceof Collection === true) {
         items = _this.getItems();
       }
 
@@ -552,7 +557,7 @@ define([
 
           require(['models/' + modelClassName], function(ModelClass){
             if (type === 'hasMany') {
-              instance = require('noop/data/Collection').factory(modelClassName, targetData);
+              instance = Collection.factory(modelClassName, targetData);
               instance.__oldOverwrite = instance.overwrite;
               instance.overwrite = _this.overwrite;
             } else {
@@ -788,7 +793,7 @@ define([
    * @public
    * @static
    * @example
-   * Model.create({
+   * var User = Model.create({
    *   model: 'user',
    *   hasMany: 'apps',
    *   ...

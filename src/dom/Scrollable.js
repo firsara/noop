@@ -7,13 +7,11 @@
  */
 define([
   '../sys',
-  './Moveable',
-  'EaselJS'
+  './Moveable'
 ],
 function(
   sys,
-  Moveable,
-  createjs
+  Moveable
 ) {
   var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
 

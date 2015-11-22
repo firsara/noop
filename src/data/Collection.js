@@ -5,13 +5,11 @@
  */
 define([
   '../sys',
-  'EaselJS',
   './Model',
   './fs',
   './API'
 ], function(
   sys,
-  createjs,
   Model,
   fs,
   API
@@ -91,8 +89,13 @@ define([
   p.getPullURL = function(){
     var ids = [];
     var items = this.getItems();
+    var _len = items.length;
 
-    for (var i = 0, _len = items.length; i < _len; i++) {
+    if (_len === 0) {
+      return API.endpoint + this.model + 's';
+    }
+
+    for (var i = 0; i < _len; i++) {
       ids.push('ids[]=' + items[i].id);
     }
 
@@ -216,7 +219,7 @@ define([
       var data = [];
 
       var getItem = function(index){
-        if (options.local[index]) {
+        if (options.local[index] || options.local.length === 0) {
           var localPath = fs.correctLocalFilePath(options.local[index]);
 
           fs.exists(localPath, function(exists){

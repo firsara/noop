@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['../sys', './EventDispatcher', 'EaselJS'], function(sys, EventDispatcher, createjs) {
+define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
 
   /**
    * helper class to handle fps ticking based on EaselJS Ticker.<br>
