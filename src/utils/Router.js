@@ -190,9 +190,9 @@ define(['./uri'], function(uri){
     }
 
     if (definition && definition.controller) {
-      var InstanceClass = definition.controller;
-      var instance = new InstanceClass(this.controller);
       var action = definition.action || 'index';
+      var InstanceClass = definition.controller;
+      var instance = new InstanceClass(this.controller, action);
       action = 'action' + action.substring(0, 1).toUpperCase() + action.substring(1);
 
       if (instance[action]) {
