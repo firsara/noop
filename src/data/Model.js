@@ -586,7 +586,7 @@ define([
     };
 
     // if instance already defined data
-    if (_this._definedData) {
+    if (_this._definedData || (_this instanceof Collection === false && ! _this.id)) {
       // call pulled callback directly and check relations accordingly
       pulled();
     } else {
