@@ -87,7 +87,12 @@ define([
    * @protected
    **/
   p.add = function(item){
-    var instance = Model.factory(this.modelClass, item);
+    var instance = item;
+
+    if (item instanceof Model === false) {
+      instance = Model.factory(this.modelClass, item);
+    }
+
     this[this.length] = instance;
     this.length++;
   };
