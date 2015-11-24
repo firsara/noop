@@ -1094,7 +1094,9 @@ define([
       this.stage = null;
     }
 
-    this.removeAllEventListeners();
+    if (! this.keepEventListeners) {
+      this.removeAllEventListeners();
+    }
   };
 
   /**
