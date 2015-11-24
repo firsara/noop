@@ -786,7 +786,7 @@ define([
       }
 
       this.children.splice(index, 1);
-      child.el.parentNode.removeChild(child.el);
+      if (child.el.parentNode) child.el.parentNode.removeChild(child.el);
       child._removed();
 
       return child;
