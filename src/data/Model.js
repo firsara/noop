@@ -421,6 +421,24 @@ define([
   };
 
   /**
+   * clears model data and only keeps needed properties
+   *
+   * @method clear
+   * @memberof data.Model
+   * @public
+   * @instance
+   **/
+  p.clear = function(){
+    for (var k in this) {
+      if (this.hasOwnProperty(k)) {
+        if (! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0)) {
+          delete this[k];
+        }
+      }
+    }
+  };
+
+  /**
    * pulls data from server. automatically fetches model name from class name.<br>
    * calls target api function and stores data locally
    *
