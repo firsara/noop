@@ -28,7 +28,7 @@ define([
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Collection(model, data){
-    this.model = model.toLowerCase();
+    this.model = model.substring(0, 1).toUpperCase() + model.substring(1);
 
     Model.call(this);
 
@@ -77,6 +77,19 @@ define([
     }
 
     return this;
+  };
+
+  /**
+   * adds an item to the collection list
+   * @method add
+   * @memberof data.Collection
+   * @instance
+   * @protected
+   **/
+  p.add = function(item){
+    var instance = Model.factory(this.modelClass, item);
+    this[this.length] = instance;
+    this.length++;
   };
 
   /**

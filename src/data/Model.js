@@ -63,7 +63,7 @@ define([
      * @instance
      * @var {String} model
      */
-    this.model = sys.setDefaultValue(this.model, '').toLowerCase();
+    this.model = sys.setDefaultValue(this.model, '');
 
     /**
      * model's Class name (first character uppercased)
@@ -776,8 +776,6 @@ define([
    * @param {object} data (optional). if defined returns the stored model if it already exists
    **/
   Model.factory = function(model, data) {
-    model = model.toLowerCase();
-
     var className = model.substring(0, 1).toUpperCase() + model.substring(1);
     var ModelClass = require('models/' + className);
 
