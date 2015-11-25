@@ -191,6 +191,11 @@ define([
   };
 
   var _windowResized = function(event){
+    if (event.force) {
+      _resize.call(this, false);
+      return;
+    }
+
     event.stopped = true;
     this._oldDomEvent = event;
 
