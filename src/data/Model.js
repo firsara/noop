@@ -357,7 +357,7 @@ define([
     if (! dataOrKey) return;
 
     // if has a value
-    if (value) {
+    if (! (value === null || typeof value === 'undefined')) {
       // assume dataOrKey was a key
       var options = {};
       options[dataOrKey] = value;
