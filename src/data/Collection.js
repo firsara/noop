@@ -59,6 +59,10 @@ define([
 
   var p = sys.extend(Collection, Model);
 
+  p.toString = function(){
+    return '[object Collection]';
+  };
+
   /**
    * loops through collection items and calls callback for each of the items
    * @method each
@@ -84,7 +88,7 @@ define([
    * @method add
    * @memberof data.Collection
    * @instance
-   * @protected
+   * @public
    **/
   p.add = function(item){
     var instance = item;
@@ -95,6 +99,38 @@ define([
 
     this[this.length] = instance;
     this.length++;
+  };
+
+  /**
+   * removes an item from the collection list
+   * @method remove
+   * @memberof data.Collection
+   * @instance
+   * @public
+   **/
+  p.remove = function(item){
+    var items = this.getItems();
+    var index = -1, i, _len;
+
+    for (i = 0, _len = items.length; i < _len; i++) {
+      if (items[i] === item) {
+        index = i;
+      }
+
+      delete this[i];
+    }
+
+    if (index !== -1) {
+      items.splice(index, 1);
+    }
+
+    for (i = 0, _len = items.length; i < _len; i++) {
+      this[i] = items[i];
+    }
+
+    this.length = items.length;
+
+    return i;
   };
 
   /**

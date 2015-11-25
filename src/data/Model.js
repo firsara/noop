@@ -198,6 +198,10 @@ define([
 
   var p = sys.extend(Model, EventDispatcher);
 
+  p.toString = function(){
+    return '[object Model]';
+  };
+
   /**
    * gets the model's query arguments
    * @method getQuery
@@ -385,7 +389,7 @@ define([
     // otherwise assign all properties to model if they're not reserved words
     for (var k in data) {
       if (data.hasOwnProperty(k)) {
-        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0) {
+        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0) {
           throw new Error('data key  > ' + k + ' <  is a reserved name in  > Model <');
         } else {
           if (k === 'id') {
