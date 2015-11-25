@@ -293,7 +293,7 @@ define([
                 }
 
                 var writeItem = function(itemIndex){
-                  if (result[itemIndex]) {
+                  if (result[itemIndex] && Model.writeFileSystem) {
                     fs.writeFile(options.local[itemIndex], JSON.stringify(result[itemIndex]), function(){
                       writeItem(itemIndex + 1);
                     });

@@ -732,7 +732,9 @@ define([
               result = JSON.parse(result.toString());
             }
 
-            fs.writeFile(options.local, JSON.stringify(result));
+            if (Model.writeFileSystem) {
+              fs.writeFile(options.local, JSON.stringify(result));
+            }
 
             if (options.success) {
               options.success(result);
@@ -771,6 +773,16 @@ define([
    * @var {Object} queryArgs
    **/
   Model.queryArgs = {};
+
+  /**
+   * writes pulled models to filesystem if available (i.e. nwjs, phonegap)
+   *
+   * @memberof data.Model
+   * @public
+   * @static
+   * @var {Object} writeFileSystem
+   **/
+  Model.writeFileSystem = true;
 
   /**
    * factories a new model
