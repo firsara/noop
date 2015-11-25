@@ -90,7 +90,7 @@ define(['./uri'], function(uri){
 
       if (elements[i].getAttribute('data-route') === 'false') internalLink = false;
       if (elements[i].getAttribute('target') === '_blank') internalLink = false;
-      if (itemHref.indexOf('http://') !== -1 || itemHref.indexOf('https://') !== -1) {
+      if (itemHref.indexOf('http://') !== -1 || itemHref.indexOf('https://') !== -1 || itemHref.indexOf('file://') !== -1) {
         if (itemHref.indexOf(currentDomain) === -1) internalLink = false;
       }
 
@@ -120,7 +120,7 @@ define(['./uri'], function(uri){
    * @param {String} path that should be switched to
    **/
   Router.prototype.to = function(path){
-    if (path.indexOf('http://') === -1 && path.indexOf('https://') === -1) path = Router.generate(path);
+    if (path.indexOf('http://') === -1 && path.indexOf('https://') === -1 && path.indexOf('file://') === -1) path = Router.generate(path);
     history.pushState(null, null, path);
     this._urlChange();
   };
