@@ -90,7 +90,6 @@ define(function() {
       for (var i = 0, _len = listeners.length; i < _len; i++) {
         if (listeners[i].listener === listener) {
           return true;
-          break;
         }
       }
 
@@ -138,7 +137,7 @@ define(function() {
       this._listeners[type] = this._listeners[type] || [];
       if (this._listeners[type].length === 0) delete this._listeners[type];
     } else {
-      delete this._listeners[type]
+      delete this._listeners[type];
     }
   };
 

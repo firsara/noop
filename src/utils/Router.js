@@ -208,8 +208,8 @@ define(['./uri'], function(uri){
    * @instance
    * @private
    **/
-  var _splitPath = function(path){
-    var tmp = path.split('/');
+  var _splitPath = function(url){
+    var tmp = url.split('/');
     var path = [];
 
     for (var i = 0, _len = tmp.length; i < _len; i++) {

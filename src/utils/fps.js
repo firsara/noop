@@ -18,7 +18,7 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
    * @extends utils.EventDispatcher
    * @memberof utils
    **/
-  function fps(){
+  function FPSHandler(){
     EventDispatcher.call(this);
 
     /**
@@ -45,7 +45,7 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
     }
   }
 
-  var p = sys.extend(fps, EventDispatcher);
+  var p = sys.extend(FPSHandler, EventDispatcher);
 
   /**
    * delegate application rendering
@@ -100,5 +100,5 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
     this._ticked = 0;
   };
 
-  return new fps();
+  return new FPSHandler();
 });
