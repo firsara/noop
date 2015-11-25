@@ -209,7 +209,7 @@ define(['./base', '../API'], function(fileSystem, API){
 
       // pass in request data if set
       if (options.data) {
-        requestOptions.form = options.data
+        requestOptions.form = options.data;
       }
 
       var success = null, r;
