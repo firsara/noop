@@ -16,18 +16,7 @@ define(function(){
    * @param {data} data (optional) that should be added to the event
    **/
   var dispatch = function(obj, name, data){
-    var event = new Event(name, {
-      bubbles: true,
-      cancelable: true
-    });
-
-    if (data && typeof data === 'object') {
-      for (var k in data) {
-        if (data.hasOwnProperty(k)) {
-          event[k] = data[k];
-        }
-      }
-    }
+    var event = dispatch.create(name, data);
 
     if (obj && obj.dispatchEvent) {
       obj.dispatchEvent(event);
