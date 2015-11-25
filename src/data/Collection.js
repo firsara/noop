@@ -28,7 +28,7 @@ define([
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Collection(model, data){
-    this.model = model.substring(0, 1).toUpperCase() + model.substring(1);
+    this.model = model.substring(0, 1).toLowerCase() + model.substring(1);
 
     Model.call(this);
 

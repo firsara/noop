@@ -417,7 +417,13 @@ define([
     }
 
     // update stored collection data
-    _cacheModel(this);
+    if (this instanceof Collection) {
+      for (var i = 0, _len = this.length; i < _len; i++) {
+        _cacheModel(this[i]);
+      }
+    } else {
+      _cacheModel(this);
+    }
 
     if (_didSetId && _didSetData) {
       return true;
@@ -782,6 +788,8 @@ define([
   Model.factory = function(model, data) {
     if (data instanceof Model) return data;
 
+    model = model.substring(0, 1).toLowerCase() + model.substring(1);
+
     var className = model.substring(0, 1).toUpperCase() + model.substring(1);
     var ModelClass = require('models/' + className);
 
@@ -972,7 +980,9 @@ define([
       Model.collection[model.model] = {};
     }
 
-    Model.collection[model.model][model.id] = model;
+    if (model.id) {
+      Model.collection[model.model][model.id] = model;
+    }
   };
 
   return Model;
