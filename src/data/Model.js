@@ -780,6 +780,8 @@ define([
    * @param {object} data (optional). if defined returns the stored model if it already exists
    **/
   Model.factory = function(model, data) {
+    if (data instanceof Model) return data;
+
     var className = model.substring(0, 1).toUpperCase() + model.substring(1);
     var ModelClass = require('models/' + className);
 

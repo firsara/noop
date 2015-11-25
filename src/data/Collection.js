@@ -347,6 +347,7 @@ define([
    * @param {object} data (optional). if defined returns the stored model if it already exists
    **/
   Collection.factory = function(model, data) {
+    if (data instanceof Collection) return data;
     return new Collection(model, data);
   };
 
