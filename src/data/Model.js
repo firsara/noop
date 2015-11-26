@@ -4,11 +4,13 @@
  * Copyright 2015, Licensed GPL & MIT
  */
 define([
+  '../config',
   '../sys',
   '../utils/EventDispatcher',
   './fs',
   './API'
 ], function(
+  config,
   sys,
   EventDispatcher,
   fs,
@@ -471,10 +473,18 @@ define([
   p.pull = function(callback, errorCallback){
     var _this = this;
 
+    var done = function(){
+      requestAnimationFrame(callCallback);
+    };
+
+    var callCallback = function(){
+      // call pulled callback directly
+      if (callback) callback(_this);
+    };
+
     // if it's a cached instance
     if (_this._cached && ! _this.overwrite) {
-      // call pulled callback directly
-      if (callback) callback(this);
+      done();
       return;
     }
 
@@ -506,7 +516,7 @@ define([
           items[i].dispatchEvent('pulled');
         }
 
-        if (callback) callback(_this);
+        done();
       }
     };
 
@@ -782,7 +792,7 @@ define([
    * @static
    * @var {Object} writeFileSystem
    **/
-  Model.writeFileSystem = true;
+  Model.writeFileSystem = config.environment !== 'browser';
 
   /**
    * factories a new model
