@@ -201,6 +201,40 @@ define([
   };
 
   /**
+   * gets all collection models as an array by filtering through specific options
+   *
+   * @method filter
+   * @memberof data.Collection
+   * @public
+   **/
+  p.filter = function(options){
+    var items = this.getItems();
+    var tmp = [];
+
+    if (! options) return items;
+
+    for (var i = 0, _len = items.length; i < _len; i++) {
+      var itemAllowed = true;
+
+      for (var k in options.filter) {
+        if (options.filter.hasOwnProperty(k)) {
+          var filter = options.filter[k];
+          if (! Array.isArray(filter)) filter = [filter];
+          if (filter.indexOf(items[i][k]) === -1) {
+            itemAllowed = false;
+          }
+        }
+      }
+
+      if (itemAllowed) {
+        tmp.push(items[i]);
+      }
+    }
+
+    return tmp;
+  };
+
+  /**
    * overwrite get method. only call individual item's get function
    *
    * @method get
