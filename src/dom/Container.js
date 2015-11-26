@@ -547,7 +547,7 @@ define([
   };
 
   /**
-   * gets the elements inner width
+   * gets the elements inner height
    *
    * @method getWidth
    * @memberof dom.Container
@@ -555,7 +555,7 @@ define([
    * @instance
    **/
   p.getHeight = function(){
-    return parseFloat(this.getStyle().width);
+    return parseFloat(this.getStyle().height);
   };
 
   /**
