@@ -207,20 +207,20 @@ define([
    * @memberof data.Collection
    * @public
    **/
-  p.filter = function(options){
+  p.filter = function(filter){
     var items = this.getItems();
     var tmp = [];
 
-    if (! options) return items;
+    if (! filter) return items;
 
     for (var i = 0, _len = items.length; i < _len; i++) {
       var itemAllowed = true;
 
-      for (var k in options.filter) {
-        if (options.filter.hasOwnProperty(k)) {
-          var filter = options.filter[k];
-          if (! Array.isArray(filter)) filter = [filter];
-          if (filter.indexOf(items[i][k]) === -1) {
+      for (var k in filter) {
+        if (filter.hasOwnProperty(k)) {
+          var options = filter[k];
+          if (! Array.isArray(options)) options = [options];
+          if (options.indexOf(items[i][k]) === -1) {
             itemAllowed = false;
           }
         }
