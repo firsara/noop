@@ -300,7 +300,8 @@ define([
     options.progress = function(p){
       // call progress event
       if (_this._overallSize !== 0) {
-        _progress.call(_this, (_this._overallProgress + (p * item.size)) / _this._overallSize);
+        var correctedProgress = (_this._overallProgress + (p * item.size));
+        _progress.call(_this, correctedProgress / _this._overallSize, correctedProgress, _this._overallSize);
       } else {
         _progress.call(_this, (_this._index + p) / _this._needsToDownload.length);
       }
@@ -319,7 +320,7 @@ define([
       // call progress event
       if (_this._overallSize !== 0) {
         _this._overallProgress += item.size;
-        _progress.call(_this, _this._overallProgress / _this._overallSize);
+        _progress.call(_this, _this._overallProgress / _this._overallSize, _this._overallProgress, _this._overallSize);
       } else {
         _progress.call(_this, _this._index / _this._needsToDownload.length);
       }
@@ -386,12 +387,12 @@ define([
     this.dispatchEvent({type: LIST_PROGRESS, progress: p});
   };
 
-  var _progress = function(p) {
+  var _progress = function(p, l, t) {
     if (this.progress) {
-      this.progress(p);
+      this.progress(p, l, t);
     }
 
-    this.dispatchEvent({type: PROGRESS, progress: p});
+    this.dispatchEvent({type: PROGRESS, progress: p, loadedBytes: l, totalBytes: t});
   };
 
   var _error = function(err) {
