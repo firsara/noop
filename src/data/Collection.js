@@ -328,7 +328,7 @@ define([
 
                 var writeItem = function(itemIndex){
                   if (result[itemIndex] && Model.writeFileSystem) {
-                    fs.writeFile(options.local[itemIndex], JSON.stringify(result[itemIndex]), function(){
+                    fs.writeFile(options.local[itemIndex], JSON.stringify(result[itemIndex], null, '\t'), function(){
                       writeItem(itemIndex + 1);
                     });
                   } else {
