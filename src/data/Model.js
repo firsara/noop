@@ -265,7 +265,7 @@ define([
    **/
   p.serialize = function(deep){
     var data = this.get(deep);
-    return JSON.stringify(data);
+    return JSON.stringify(data, null, '\t');
   };
 
   /**
@@ -644,7 +644,7 @@ define([
    * @memberof data.Model
    * @public
    * @instance
-   * @param {function|object} dataOrCallback
+   * @param {function|object} dataOrCallback (optional)
    * @param {function} callback (optional)
    * @param {function} errorCallback (optional)
    **/
@@ -682,17 +682,75 @@ define([
       options.method = 'POST';
     }
 
-    var done = function(){
+    var done = function(result){
+      if (typeof result !== 'object') {
+        if (result.length > 0) {
+          result = JSON.parse(result.toString());
+        }
+      }
+
+      if (result) {
+        _this.set(result);
+
+        if (_this.pulled) _this.pulled.call(_this, _this);
+        _this.dispatchEvent('pulled');
+      }
+
       _this._cached = true;
 
       if (_this.pushed) _this.pushed.call(_this, _this);
       _this.dispatchEvent('pushed');
+
+      if (callback) {
+        callback(_this);
+      }
     };
 
     if (this._cached) {
       done();
     } else {
-      fs.request(options, callback, errorCallback);
+      fs.request(options, done, errorCallback);
+    }
+  };
+
+  /**
+   * deletes model on server
+   *
+   * @example
+   * model.delete(callback); // delets model from server
+   *
+   * @method delete
+   * @memberof data.Model
+   * @public
+   * @instance
+   * @param {function} callback (optional)
+   * @param {function} errorCallback (optional)
+   **/
+  p.delete = function(callback, errorCallback){
+    var _this = this;
+
+    // define request options for model
+    var options = {};
+    options.url = this.getPushURL();
+
+    // delete model via DELETE
+    options.method = 'DELETE';
+
+    var done = function(result){
+      _this._cached = false;
+
+      if (_this.deleted) _this.deleted.call(_this, _this);
+      _this.dispatchEvent('deleted');
+
+      if (callback) {
+        callback(_this);
+      }
+    };
+
+    if (this.id) {
+      fs.request(options, done, errorCallback);
+    } else {
+      done();
     }
   };
 
@@ -743,7 +801,7 @@ define([
             }
 
             if (Model.writeFileSystem) {
-              fs.writeFile(options.local, JSON.stringify(result));
+              fs.writeFile(options.local, JSON.stringify(result, null, '\t'));
             }
 
             if (options.success) {
