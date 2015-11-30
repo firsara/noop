@@ -23,6 +23,16 @@ define(['./uri'], function(uri){
    * @param {Object} routes a list of routes, see example for configuration
    **/
   function Router(controller, routes){
+    /**
+     * action to call before routes are executed<br>
+     * action gets passed in callback as first parameter and needs to call it when finished
+     * @memberof Router
+     * @instance
+     * @public
+     * @var {Function} before
+     */
+    this.before = null;
+
     // store controller instance
     this.controller = controller;
 
@@ -189,14 +199,24 @@ define(['./uri'], function(uri){
       }
     }
 
-    if (definition && definition.controller) {
+    var _this = this;
+
+    var executeRoute = function(){
       var action = definition.action || 'index';
       var InstanceClass = definition.controller;
-      var instance = new InstanceClass(this.controller, action);
+      var instance = new InstanceClass(_this.controller, action);
       action = 'action' + action.substring(0, 1).toUpperCase() + action.substring(1);
 
       if (instance[action]) {
         instance[action].apply(instance, route.params);
+      }
+    };
+
+    if (definition && definition.controller) {
+      if (this.before) {
+        this.before(executeRoute);
+      } else {
+        executeRoute();
       }
     }
   };
