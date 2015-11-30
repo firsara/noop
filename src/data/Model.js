@@ -731,7 +731,7 @@ define([
 
     // define request options for model
     var options = {};
-    options.url = this.getPushURL();
+    options.url = this.getPullURL();
 
     // delete model via DELETE
     options.method = 'DELETE';
@@ -747,7 +747,7 @@ define([
       }
     };
 
-    if (this.id) {
+    if (this.id || (this instanceof Collection === true && this.length > 0)) {
       fs.request(options, done, errorCallback);
     } else {
       done();
