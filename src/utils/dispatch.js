@@ -4,6 +4,7 @@
  * Copyright 2015, Licensed GPL & MIT
  */
 define(function(){
+  var NativeEvent = window.Event;
 
   /**
    * helper function to dispatch event on a given object<br>
@@ -34,7 +35,7 @@ define(function(){
    * @param {data} data (optional) that should be added to the event
    **/
   dispatch.create = function(name, data){
-    var event = new Event(name, {
+    var event = new NativeEvent(name, {
       bubbles: true,
       cancelable: true
     });
