@@ -99,6 +99,23 @@ define([
      */
     this.el = null;
 
+    /**
+     * wheter element should be auto destroyed<br>
+     * (i.e. removes all stored references inside the container)
+     * @memberof dom.Container
+     * @instance
+     * @var {Boolean} autoDestroy
+     */
+    this.autoDestroy = true;
+
+    /**
+     * wheter or not event listeners should be kept when removing the container element
+     * @memberof dom.Container
+     * @instance
+     * @var {Boolean} keepEventListeners
+     */
+    this.keepEventListeners = false;
+
     // TRANSFORMATIONS
     // ---------------
 
@@ -1115,6 +1132,10 @@ define([
         this._$el.find('*').off();
       }
     }
+
+    if (this.autoDestroy) {
+      setTimeout(_destroy.bind(this), 85);
+    }
   };
 
   /**
@@ -1160,6 +1181,24 @@ define([
     e.stopPropagation();
     e.stopImmediatePropagation();
     e.preventDefault();
+  };
+
+  /**
+   * destroys all references created by a container element
+   *
+   * @method _destroy
+   * @memberof dom.Container
+   * @private
+   * @instance
+   **/
+  var _destroy = function(){
+    if (this.el && this.el.container) {
+      this.el.container = null;
+    }
+
+    for (var k in this) {
+      delete this[k];
+    }
   };
 
   /**
