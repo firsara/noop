@@ -1107,6 +1107,13 @@ define([
 
     if (! this.keepEventListeners) {
       this.removeAllEventListeners();
+
+      if (this._$el) {
+        this._$el.unbind();
+        this._$el.off();
+        this._$el.find('*').unbind();
+        this._$el.find('*').off();
+      }
     }
   };
 
