@@ -45,7 +45,7 @@ define(function(){
 
       // find stored method
       for (i = 0, _len = this.__context.length; i < _len; i++) {
-        if (this.__context[i].src === fct) {
+        if (this.__context[i].src === fct || this.__context[i].bound === fct) {
           return this.__context[i].bound;
         }
       }
