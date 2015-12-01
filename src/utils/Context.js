@@ -21,7 +21,6 @@ define(function(){
   Context.mixin = function(target){
     // cache class prototype
     var p = target.prototype;
-    var i, _len, bound;
 
     /**
      * binds a function to the target
@@ -31,6 +30,8 @@ define(function(){
      * @param {function} fct that should be bound
      **/
     p.__bind = function(fct){
+      var i, _len, bound;
+
       // initialize context storage if not found yet
       if (! this.__context) {
         /**
