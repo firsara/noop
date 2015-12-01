@@ -7,13 +7,11 @@
 define([
   '../sys',
   '../config',
-  'EaselJS',
   'PreloadJS',
   './fs'
 ], function(
   sys,
   config,
-  createjs,
   preloadjs,
   fs
 ) {
@@ -297,7 +295,7 @@ define([
         _preloadTextFiles.call(this, 0);
       } else {
         // otherwise: dispatch complete
-        this.dispatchEvent(new createjs.Event('complete'));
+        this.dispatchEvent('complete');
       }
     }
   };
@@ -311,7 +309,7 @@ define([
    * @private
    **/
   var _downloadProgress = function(progress){
-    var event = new createjs.Event('cached');
+    var event = {type: 'cached'};
     event.progress = (this._loadIndex + 1 * progress) / this._manifest.length;
     this.dispatchEvent(event);
   };
@@ -337,7 +335,7 @@ define([
       this._loadIndex++;
 
       // dispatch cached event
-      var event = new createjs.Event('cached');
+      var event = {type: 'cached'};
       event.progress = this._loadIndex / this._manifest.length;
       this.dispatchEvent(event);
 
@@ -363,7 +361,7 @@ define([
 
     this._loadIndex++;
 
-    var event = new createjs.Event('cached');
+    var event = {type: 'cached'};
     event.progress = this._loadIndex / this._manifest.length;
     this.dispatchEvent(event);
 
@@ -418,7 +416,7 @@ define([
         this.loadManifest(this._manifest);
       } else {
         // otherwise: dispatch complete
-        this.dispatchEvent(new createjs.Event('complete'));
+        this.dispatchEvent('complete');
       }
     }
   };
