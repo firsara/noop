@@ -32,16 +32,20 @@
  * Copyright 2015, Licensed GPL &amp; MIT
  */
 define([
+  '../config',
   '../sys',
   '../utils/EventDispatcher',
   './fs',
   './API'
 ], function(
+  config,
   sys,
   EventDispatcher,
   fs,
   API
 ) {
+  var Collection = null;
+
   /**
    * A model holds data that gets pulled from a server
    * and pushes data
@@ -63,6 +67,8 @@ define([
    * @param {object|Number} data is either a data object or an id of the model that should be fetched
    **/
   function Model(data){
+    if (! Collection) Collection = require('noop/data/Collection');
+
     EventDispatcher.call(this);
 
     /**
@@ -87,7 +93,7 @@ define([
      * @instance
      * @var {String} model
      */
-    this.model = sys.setDefaultValue(this.model, '').toLowerCase();
+    this.model = sys.setDefaultValue(this.model, '');
 
     /**
      * model's Class name (first character uppercased)
@@ -222,6 +228,10 @@ define([
 
   var p = sys.extend(Model, EventDispatcher);
 
+  p.toString = function(){
+    return '[object Model]';
+  };
+
   /**
    * gets the model's query arguments
    * @method getQuery
@@ -252,7 +262,8 @@ define([
    * @protected
    **/
   p.getPullURL = function(){
-    return API.endpoint + this.model + 's' + '/' + this.id + this.getQuery();
+    if (this.id) return API.endpoint + this.model + 's' + '/' + this.id + this.getQuery();
+    return API.endpoint + this.model + 's';
   };
 
   /**
@@ -282,7 +293,7 @@ define([
    **/
   p.serialize = function(deep){
     var data = this.get(deep);
-    return JSON.stringify(data);
+    return JSON.stringify(data, null, '\t');
   };
 
   /**
@@ -376,7 +387,7 @@ define([
     if (! dataOrKey) return;
 
     // if has a value
-    if (value) {
+    if (! (value === null || typeof value === 'undefined')) {
       // assume dataOrKey was a key
       var options = {};
       options[dataOrKey] = value;
@@ -394,7 +405,7 @@ define([
     // if data was a number: assume it was the model's id
     if (! isNaN(data) || typeof data === 'string') {
       // if it's a collection, but only has one item: don't set the collection's id
-      if (this instanceof require('noop/data/Collection') === false) {
+      if (this instanceof Collection === false) {
         this.id = data;
       }
 
@@ -408,7 +419,7 @@ define([
     // otherwise assign all properties to model if they're not reserved words
     for (var k in data) {
       if (data.hasOwnProperty(k)) {
-        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0 || this.filter.indexOf(k) >= 0) {
+        if (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0) {
           throw new Error('data key  > ' + k + ' &lt;  is a reserved name in  > Model &lt;');
         } else {
           if (k === 'id') {
@@ -421,7 +432,7 @@ define([
             _didSetId = true;
           } else {
             // if it's an already assigned collection
-            if (this[k] &amp;&amp; this instanceof require('noop/data/Collection') === true &amp;&amp; this[k].set) {
+            if (this[k] &amp;&amp; this instanceof Collection === true &amp;&amp; this[k].set) {
               // set partial data through collection item
               this[k].set(data[k]);
             } else {
@@ -436,10 +447,34 @@ define([
     }
 
     // update stored collection data
-    _cacheModel(this);
+    if (this instanceof Collection) {
+      for (var i = 0, _len = this.length; i &lt; _len; i++) {
+        _cacheModel(this[i]);
+      }
+    } else {
+      _cacheModel(this);
+    }
 
     if (_didSetId &amp;&amp; _didSetData) {
       return true;
+    }
+  };
+
+  /**
+   * clears model data and only keeps needed properties
+   *
+   * @method clear
+   * @memberof data.Model
+   * @public
+   * @instance
+   **/
+  p.clear = function(){
+    for (var k in this) {
+      if (this.hasOwnProperty(k)) {
+        if (! (typeof this[k] === 'function' || _reservedWords.indexOf(k) >= 0)) {
+          delete this[k];
+        }
+      }
     }
   };
 
@@ -466,10 +501,18 @@ define([
   p.pull = function(callback, errorCallback){
     var _this = this;
 
+    var done = function(){
+      requestAnimationFrame(callCallback);
+    };
+
+    var callCallback = function(){
+      // call pulled callback directly
+      if (callback) callback(_this);
+    };
+
     // if it's a cached instance
     if (_this._cached &amp;&amp; ! _this.overwrite) {
-      // call pulled callback directly
-      if (callback) callback(this);
+      done();
       return;
     }
 
@@ -478,7 +521,7 @@ define([
 
       var items = [_this];
 
-      if (_this instanceof require('noop/data/Collection') === true) {
+      if (_this instanceof Collection === true) {
         items = _this.getItems();
       }
 
@@ -501,7 +544,7 @@ define([
           items[i].dispatchEvent('pulled');
         }
 
-        if (callback) callback(_this);
+        done();
       }
     };
 
@@ -580,7 +623,7 @@ define([
 
           require(['models/' + modelClassName], function(ModelClass){
             if (type === 'hasMany') {
-              instance = require('noop/data/Collection').factory(modelClassName, targetData);
+              instance = Collection.factory(modelClassName, targetData);
               instance.__oldOverwrite = instance.overwrite;
               instance.overwrite = _this.overwrite;
             } else {
@@ -609,7 +652,7 @@ define([
     };
 
     // if instance already defined data
-    if (_this._definedData) {
+    if (_this._definedData || (_this instanceof Collection === false &amp;&amp; ! _this.id)) {
       // call pulled callback directly and check relations accordingly
       pulled();
     } else {
@@ -629,7 +672,7 @@ define([
    * @memberof data.Model
    * @public
    * @instance
-   * @param {function|object} dataOrCallback
+   * @param {function|object} dataOrCallback (optional)
    * @param {function} callback (optional)
    * @param {function} errorCallback (optional)
    **/
@@ -667,17 +710,91 @@ define([
       options.method = 'POST';
     }
 
-    var done = function(){
+    var done = function(result){
+      if (typeof result !== 'object') {
+        if (result.length > 0) {
+          result = JSON.parse(result.toString());
+        }
+      }
+
+      if (result) {
+        _this.set(result);
+
+        if (_this.pulled) _this.pulled.call(_this, _this);
+        _this.dispatchEvent('pulled');
+      }
+
       _this._cached = true;
 
       if (_this.pushed) _this.pushed.call(_this, _this);
       _this.dispatchEvent('pushed');
+
+      if (callback) {
+        callback(_this);
+      }
     };
 
     if (this._cached) {
       done();
     } else {
-      fs.request(options, callback, errorCallback);
+      fs.request(options, done, errorCallback);
+    }
+  };
+
+  /**
+   * deletes model on server
+   *
+   * @example
+   * model.delete(callback); // delets model from server
+   *
+   * @method delete
+   * @memberof data.Model
+   * @public
+   * @instance
+   * @param {function} callback (optional)
+   * @param {function} errorCallback (optional)
+   **/
+  p.delete = function(callback, errorCallback){
+    var _this = this;
+
+    // define request options for model
+    var options = {};
+    options.url = this.getPullURL();
+
+    // delete model via DELETE
+    options.method = 'DELETE';
+
+    var done = function(result){
+      _this._cached = false;
+
+      if (this instanceof Collection === true) {
+        for (var i = 0, _len = this.length; i &lt; _len; i++) {
+          if (Model.collection[this.model] &amp;&amp; Model.collection[this.model][this[i].id]) {
+            delete Model.collection[this.model][this[i].id];
+          }
+
+          fs.unlink('json/' + this.model + 's/' + this.model + '-' + this[i].id + '.json');
+        }
+      } else {
+        if (Model.collection[this.model] &amp;&amp; Model.collection[this.model][this.id]) {
+          delete Model.collection[this.model][this.id];
+        }
+
+        fs.unlink('json/' + this.model + 's/' + this.model + '-' + this.id + '.json');
+      }
+
+      if (_this.deleted) _this.deleted.call(_this, _this);
+      _this.dispatchEvent('deleted');
+
+      if (callback) {
+        callback(_this);
+      }
+    };
+
+    if (this.id || (this instanceof Collection === true &amp;&amp; this.length > 0)) {
+      fs.request(options, done, errorCallback);
+    } else {
+      done();
     }
   };
 
@@ -727,7 +844,9 @@ define([
               result = JSON.parse(result.toString());
             }
 
-            fs.writeFile(options.local, JSON.stringify(result));
+            if (Model.writeFileSystem) {
+              fs.writeFile(options.local, JSON.stringify(result, null, '\t'));
+            }
 
             if (options.success) {
               options.success(result);
@@ -768,6 +887,16 @@ define([
   Model.queryArgs = {};
 
   /**
+   * writes pulled models to filesystem if available (i.e. nwjs, phonegap)
+   *
+   * @memberof data.Model
+   * @public
+   * @static
+   * @var {Object} writeFileSystem
+   **/
+  Model.writeFileSystem = config.environment !== 'browser';
+
+  /**
    * factories a new model
    *
    * @method factory
@@ -781,7 +910,9 @@ define([
    * @param {object} data (optional). if defined returns the stored model if it already exists
    **/
   Model.factory = function(model, data) {
-    model = model.toLowerCase();
+    if (data instanceof Model) return data;
+
+    model = model.substring(0, 1).toLowerCase() + model.substring(1);
 
     var className = model.substring(0, 1).toUpperCase() + model.substring(1);
     var ModelClass = require('models/' + className);
@@ -816,7 +947,7 @@ define([
    * @public
    * @static
    * @example
-   * Model.create({
+   * var User = Model.create({
    *   model: 'user',
    *   hasMany: 'apps',
    *   ...
@@ -973,7 +1104,9 @@ define([
       Model.collection[model.model] = {};
     }
 
-    Model.collection[model.model][model.id] = model;
+    if (model.id) {
+      Model.collection[model.model][model.id] = model;
+    }
   };
 
   return Model;
@@ -994,7 +1127,7 @@ define([
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Nov 22 2015 13:39:20 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Dec 01 2015 12:20:05 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

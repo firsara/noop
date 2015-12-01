@@ -74,7 +74,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line8">line 8</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line7">line 7</a>
     </li></ul></dd>
     
 
@@ -234,7 +234,7 @@ useful when not using the global namespace at all (i.e. through requirejs)</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line174">line 174</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -421,7 +421,7 @@ function Car(){
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line206">line 206</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line157">line 157</a>
     </li></ul></dd>
     
 
@@ -458,189 +458,6 @@ com.firsara.utils.NotUtil = 'not';
 var myImports = {};
 sys.exportPackage(myImports, com.firsara.utils, 'Util');
 console.log(myImports); // prints 'one' and 'two'</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".extend"><span class="type-signature">(static) </span>extend<span class="signature">(subclass, superclass)</span><span class="type-signature"> &rarr; {function}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Sets up the prototype chain and constructor property for a new class.</p>
-<p>This should be called right after creating the class constructor.</p>
-<p> function MySubClass() {}
- createjs.extend(MySubClass, MySuperClass);
- ClassB.prototype.doSomething = function() { }</p>
-<p> var foo = new MySubClass();
- console.log(foo instanceof MySuperClass); // true
- console.log(foo.prototype.constructor === MySubClass); // true</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subclass</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The subclass.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>superclass</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The superclass to extend.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line16">line 16</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Returns the subclass's new prototype.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">function</span>
-
-
-    </dd>
-</dl>
-
-    
 
 
 
@@ -774,7 +591,7 @@ See node.js implementation: https://github.com/joyent/node/blob/master/lib/util.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line86">line 86</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -963,7 +780,7 @@ useful when using the global namespace</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line148">line 148</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line99">line 99</a>
     </li></ul></dd>
     
 
@@ -998,206 +815,6 @@ var com = {};
 com.firsara = {};
 com.firsara.utils = {};
 com.firsara.utils.ArrayUtils = MyAwesomePredefinedClass;</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".promote"><span class="type-signature">(static) </span>promote<span class="signature">(subclass, prefix)</span><span class="type-signature"> &rarr; {function}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Promotes any methods on the super class that were overridden, by creating an alias in the format <code>prefix_methodName</code>.
-It is recommended to use the super class's name as the prefix.
-An alias to the super class's constructor is always added in the format <code>prefix_constructor</code>.
-This allows the subclass to call super class methods without using <code>function.call</code>, providing better performance.</p>
-<p>For example, if <code>MySubClass</code> extends <code>MySuperClass</code>, and both define a <code>draw</code> method, then calling <code>promote(MySubClass, &quot;MySuperClass&quot;)</code>
-would add a <code>MySuperClass_constructor</code> method to MySubClass and promote the <code>draw</code> method on <code>MySuperClass</code> to the
-prototype of <code>MySubClass</code> as <code>MySuperClass_draw</code>.</p>
-<p>This should be called after the class's prototype is fully defined.</p>
-<p> function ClassA(name) {
-   this.name = name;
- }
- ClassA.prototype.greet = function() {
-   return &quot;Hello &quot;+this.name;
- }</p>
-<p> function ClassB(name, punctuation) {
-   this.ClassA_constructor(name);
-   this.punctuation = punctuation;
- }
- createjs.extend(ClassB, ClassA);
- ClassB.prototype.greet = function() {
-   return this.ClassA_greet()+this.punctuation;
- }
- createjs.promote(ClassB, &quot;ClassA&quot;);</p>
-<p> var foo = new ClassB(&quot;World&quot;, &quot;!?!&quot;);
- console.log(foo.greet()); // Hello World!?!</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>subclass</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The class to promote super class methods on.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>prefix</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The prefix to add to the promoted method names. Usually the name of the superclass.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line37">line 37</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>Returns the subclass.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">function</span>
-
-
-    </dd>
-</dl>
-
-    
 
 
 
@@ -1332,7 +949,7 @@ prototype of <code>MySubClass</code> as <code>MySuperClass_draw</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line252">line 252</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line203">line 203</a>
     </li></ul></dd>
     
 
@@ -1490,7 +1107,7 @@ if property is undefined</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line239">line 239</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -1621,7 +1238,7 @@ if property is undefined</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line121">line 121</a>
+        <a href="sys.js.html">sys.js</a>, <a href="sys.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -1679,7 +1296,7 @@ com.firsara.utils = {};</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Nov 22 2015 13:39:20 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Dec 01 2015 12:20:06 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
