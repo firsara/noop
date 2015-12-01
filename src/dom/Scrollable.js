@@ -52,7 +52,7 @@ function(
     container.__setScrollbarTimeout = null;
     container.__unsetScrollbarTimeout = null;
 
-    container.setScrollBounds = _setScrollBounds.bind(container);
+    container.setScrollBounds = container.__bind(_setScrollBounds);
 
     container.on('addedToStage', _render, container);
     container.on('removedFromStage', _dispose, container);
@@ -170,12 +170,8 @@ function(
    **/
   var _resize = function(){
     if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
-    this.__setScrollbarTimeout = setTimeout(this.__bind(this.setScrollBounds), 100);
+    this.__setScrollbarTimeout = setTimeout(this.__bind(_setScrollBounds), 100);
   };
-
-  // create public functions resize + setScrollBounds
-  p.resize = _resize;
-  p.setScrollBounds = _setScrollBounds;
 
   /**
    * initializes events on Scrollable object
@@ -196,7 +192,7 @@ function(
     this.addEventListener('resize', this.__bind(_resize));
 
     this.setScrollBounds();
-    this.resize();
+    _resize.call(this);
   };
 
   /**
@@ -408,11 +404,11 @@ function(
 
   var _addedChild = function(event){
     _addChildEvents.call(this, event.child);
-    this.resize();
+    _resize.call(this);
   };
 
   var _removedChild = function(){
-    this.resize();
+    _resize.call(this);
   };
 
   var _disposeChild = function(event){
