@@ -739,6 +739,22 @@ define([
     var done = function(result){
       _this._cached = false;
 
+      if (this instanceof Collection === true) {
+        for (var i = 0, _len = this.length; i < _len; i++) {
+          if (Model.collection[this.model] && Model.collection[this.model][this[i].id]) {
+            delete Model.collection[this.model][this[i].id];
+          }
+
+          fs.unlink('json/' + this.model + 's/' + this.model + '-' + this[i].id + '.json');
+        }
+      } else {
+        if (Model.collection[this.model] && Model.collection[this.model][this.id]) {
+          delete Model.collection[this.model][this.id];
+        }
+
+        fs.unlink('json/' + this.model + 's/' + this.model + '-' + this.id + '.json');
+      }
+
       if (_this.deleted) _this.deleted.call(_this, _this);
       _this.dispatchEvent('deleted');
 
