@@ -561,14 +561,25 @@ define([
   /**
    * alternative for query selector
    *
+   * @method findAll
+   * @memberof dom.Container
+   * @public
+   * @instance
+   **/
+  p.findAll = function(query){
+    return this.el.querySelectorAll(query);
+  };
+
+  /**
+   * alternative for query selector
+   *
    * @method find
    * @memberof dom.Container
    * @public
    * @instance
    **/
   p.find = function(query){
-    // TODO: include underscore and return array with functions like forEach, first, etc.
-    return this.el.querySelectorAll(query);
+    return this.el.querySelector(query);
   };
 
   /**
