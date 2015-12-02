@@ -96,6 +96,21 @@ define(function(){
     };
 
     /**
+     * throttles a function by a delay (i.e. function will only be called every timeout time)
+     *
+     * @method choke
+     * @memberof utils.Context
+     * @param {function} fct that should be called after the delay
+     * @param {Number} timeout after which function should be called
+     * @param {Array} params that should be called on callback after invocation
+     **/
+    p.choke = function(fct, timeout, params){
+      var timeoutId = this.hasDelay(fct);
+      if (timeoutId) return timeoutId;
+      return this.delay(fct, timeout, params);
+    };
+
+    /**
      * stops the delay of a specific function call on the target instance.<br>
      * if no fct is defined automatically stops all delays
      *
@@ -125,6 +140,32 @@ define(function(){
           this.__delays = [];
         }
       }
+    };
+
+    /**
+     * checks wheter or not has a delay function for a specific function
+     *
+     * @method hasDelay
+     * @memberof utils.Context
+     * @param {function} fct that should be checked for
+     **/
+    p.hasDelay = function(fct){
+      if (this.__delays) {
+        var i, _len;
+
+        if (fct) {
+          var bound = this.__bind(fct);
+
+          for (i = 0, _len = this.__delays.length; i < _len; i++) {
+            if (this.__delays[i].fct === bound) {
+              return this.__delays[i].uid;
+              break;
+            }
+          }
+        }
+      }
+
+      return false;
     };
   };
 
