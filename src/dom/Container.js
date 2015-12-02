@@ -1138,7 +1138,7 @@ define([
     }
 
     if (this.autoDestroy) {
-      _garbageCollectionContainers[this.id] = this;
+      _garbageCollectionContainers[this._containerID] = this;
       if (_garbageCollectionTimeout) clearTimeout(_garbageCollectionTimeout);
       _garbageCollectionTimeout = setTimeout(_garbageCollect, 1000);
     }
@@ -1203,8 +1203,9 @@ define([
     for (var k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
 
-      if (instance.el && instance.el.container) {
-        instance.el.container = null;
+      if (instance.el) {
+        delete instance.el.container;
+        delete instance.el._children;
       }
 
       for (var instanceProperty in instance) {
