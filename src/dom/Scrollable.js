@@ -49,8 +49,6 @@ function(
     container.__scrollOldSize = {width: 0, height: 0};
     container.__scrollsHorizontal = false;
     container.__scrollOldParentSize = {width: 0, height: 0};
-    container.__setScrollbarTimeout = null;
-    container.__unsetScrollbarTimeout = null;
 
     container.setScrollBounds = container.__bind(_setScrollBounds);
 
@@ -169,8 +167,7 @@ function(
    * @public
    **/
   var _resize = function(){
-    if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
-    this.__setScrollbarTimeout = setTimeout(this.__bind(_setScrollBounds), 100);
+    this.delay(_setScrollBounds, 100);
   };
 
   /**
@@ -212,9 +209,6 @@ function(
 
     this.removeEventListener('move', this.__bind(_positionScrollbar));
     this.removeEventListener('resize', this.__bind(_resize));
-
-    if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
-    if (this.__setScrollbarTimeout) clearTimeout(this.__setScrollbarTimeout);
   };
 
   /**
@@ -247,8 +241,7 @@ function(
     }
 
     if (this.parent.vScrollbar || this.parent.hScrollbar) {
-      if (this.__unsetScrollbarTimeout) clearTimeout(this.__unsetScrollbarTimeout);
-      this.__unsetScrollbarTimeout = setTimeout(this.__bind(_unsetScrollbar), 300);
+      this.delay(_unsetScrollbar, 300);
     }
   };
 
