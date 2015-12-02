@@ -29,6 +29,10 @@ define([
   // store container transform status
   var _containerTransform = null;
 
+  // all stored containers that need to be repainted on each frame
+  var _garbageCollectionContainers = {};
+  var _garbageCollectionTimeout = null;
+
   /**
    * Base class of all other dom classes<br>
    * gets extended by Moveable, Component, etc.
@@ -1134,7 +1138,9 @@ define([
     }
 
     if (this.autoDestroy) {
-      setTimeout(_destroy.bind(this), 85);
+      _garbageCollectionContainers[this.id] = this;
+      if (_garbageCollectionTimeout) clearTimeout(_garbageCollectionTimeout);
+      _garbageCollectionTimeout = setTimeout(_garbageCollect, 1000);
     }
   };
 
@@ -1186,18 +1192,26 @@ define([
   /**
    * destroys all references created by a container element
    *
-   * @method _destroy
+   * @method _garbageCollect
    * @memberof dom.Container
    * @private
    * @instance
    **/
-  var _destroy = function(){
-    if (this.el && this.el.container) {
-      this.el.container = null;
-    }
+  var _garbageCollect = function(){
+    var instance = null;
 
-    for (var k in this) {
-      delete this[k];
+    for (var k in _garbageCollectionContainers) {
+      instance = _garbageCollectionContainers[k];
+
+      if (instance.el && instance.el.container) {
+        instance.el.container = null;
+      }
+
+      for (var instanceProperty in instance) {
+        delete instance[instanceProperty];
+      }
+
+      delete _garbageCollectionContainers[k];
     }
   };
 
