@@ -92,22 +92,33 @@ define(['./uri'], function(uri){
    * @param {DOMElement} container
    **/
   Router.prototype.parse = function(container){
-    var elements = container.querySelectorAll('a[href]');
+    var links = _findInternalLinks(container);
 
-    for (var i = 0, _len = elements.length; i < _len; i++) {
-      var internalLink = true;
-      var itemHref = elements[i].getAttribute('href');
+    for (var i = 0, _len = links.length; i < _len; i++) {
+      this.linkElements.push(links[i]);
+      links[i].removeEventListener('click', this._clicked);
+      links[i].addEventListener('click', this._clicked);
+    }
+  };
 
-      if (elements[i].getAttribute('data-route') === 'false') internalLink = false;
-      if (elements[i].getAttribute('target') === '_blank') internalLink = false;
-      if (itemHref.indexOf('http://') !== -1 || itemHref.indexOf('https://') !== -1 || itemHref.indexOf('file://') !== -1) {
-        if (itemHref.indexOf(currentDomain) === -1) internalLink = false;
-      }
+  /**
+   * unbinds events on container elements
+   * @method unbind
+   * @memberof Router
+   * @instance
+   * @param {DOMElement} container
+   **/
+  Router.prototype.unbind = function(container){
+    var links = _findInternalLinks(container);
 
-      if (internalLink) {
-        this.linkElements.push(elements[i]);
-        elements[i].removeEventListener('click', this._clicked);
-        elements[i].addEventListener('click', this._clicked);
+    for (var i = 0, _len = links.length; i < _len; i++) {
+      links[i].removeEventListener('click', this._clicked);
+
+      for (var j = 0, _len2 = this.linkElements.length; j < _len2; j++) {
+        if (this.linkElements[j] === links[i]) {
+          this.linkElements.splice(j, 1);
+          break;
+        }
       }
     }
   };
@@ -133,6 +144,35 @@ define(['./uri'], function(uri){
     if (path.indexOf('http://') === -1 && path.indexOf('https://') === -1 && path.indexOf('file://') === -1) path = Router.generate(path);
     history.pushState(null, null, path);
     this._urlChange();
+  };
+
+  /**
+   * finds internal links on a given Dom Container
+   * @method to
+   * @memberof Router
+   * @instance
+   * @param {DOMElement} container that should be checked for
+   **/
+  var _findInternalLinks = function(container){
+    var elements = container.querySelectorAll('a[href]');
+    var internalLinks = [];
+
+    for (var i = 0, _len = elements.length; i < _len; i++) {
+      var internalLink = true;
+      var itemHref = elements[i].getAttribute('href');
+
+      if (elements[i].getAttribute('data-route') === 'false') internalLink = false;
+      if (elements[i].getAttribute('target') === '_blank') internalLink = false;
+      if (itemHref.indexOf('http://') !== -1 || itemHref.indexOf('https://') !== -1 || itemHref.indexOf('file://') !== -1) {
+        if (itemHref.indexOf(currentDomain) === -1) internalLink = false;
+      }
+
+      if (internalLink) {
+        internalLinks.push(elements[i]);
+      }
+    }
+
+    return internalLinks;
   };
 
   /**
