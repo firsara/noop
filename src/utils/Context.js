@@ -22,6 +22,9 @@ define(function(){
     // cache class prototype
     var p = target.prototype;
 
+    // if already mixed in return
+    if (p.__bind) return;
+
     /**
      * binds a function to the target
      *
