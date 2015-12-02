@@ -89,15 +89,37 @@ define([
    * @memberof data.Collection
    * @instance
    * @public
+   * @param {Model|Object} item that should be added to the collection
    **/
   p.add = function(item){
+    this.addAt(item, this.length);
+  };
+
+  /**
+   * adds an item to the collection list at a specific index
+   * @method add
+   * @memberof data.Collection
+   * @instance
+   * @public
+   * @param {Model|Object} item that should be added to the collection
+   * @param {Number} index of index where it should be added to
+   **/
+  p.addAt = function(item, index){
+    if (index === null || typeof index === 'undefined') index = this.length;
+
     var instance = item;
 
     if (item instanceof Model === false) {
       instance = Model.factory(this.modelClass, item);
     }
 
-    this[this.length] = instance;
+    var current = this.getItems();
+    current.splice(index, 0, instance);
+
+    for (var i = 0, _len = current.length; i < _len; i++) {
+      this[i] = current[i];
+    }
+
     this.length++;
   };
 
