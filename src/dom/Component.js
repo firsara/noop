@@ -50,7 +50,6 @@ define([
      */
     this.domHeight = 0;
 
-    this._unlockResize = this.__bind(_unlockResize);
     this._oldDomWidth = -1;
     this._oldDomHeight = -1;
     this._oldDomEvent = null;
@@ -200,14 +199,10 @@ define([
 
     event.stopped = true;
 
-    if (! this.__lockedResize) {
-      this.__lockedResize = true;
-      this.__unlockResize = setTimeout(this._unlockResize, 85);
-    }
+    this.choke(_bubbleResize, 85);
   };
 
-  var _unlockResize = function(){
-    this.__lockedResize = false;
+  var _bubbleResize = function(){
     _resize.call(this, true);
   };
 
