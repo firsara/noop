@@ -913,7 +913,7 @@ define([
     _containerTransform += ' rotateY(' + this._rotationY + 'deg)';
     _containerTransform += ' rotateZ(' + (this._crotationZ) + 'deg)';
 
-    this.el.style[css3.transformStylePrefix] = _containerTransform;
+    this.el.style[css3.transform] = _containerTransform;
     this.el.style.opacity = this.opacity;
   };
 

@@ -14,10 +14,10 @@ define(function(){
   /**
    * get transform style prefix based on defined vendor prefixes
    *
-   * @var {String} transformStylePrefix
+   * @var {String} transform
    * @memberof utils.css3
    **/
-  css3.transformStylePrefix = (function(){
+  css3.transform = (function(){
     var prefix = 'transform';
 
     if (! (prefix in document.body.style)) {
@@ -37,10 +37,10 @@ define(function(){
   /**
    * get transform style prefix based on defined vendor prefixes
    *
-   * @var {String} transformOriginStylePrefix
+   * @var {String} transformOrigin
    * @memberof utils.css3
    **/
-  css3.transformOriginStylePrefix = (function(){
+  css3.transformOrigin = (function(){
     var prefix = 'transformOrigin';
 
     if (! (prefix in document.body.style)) {
@@ -60,10 +60,10 @@ define(function(){
   /**
    * get transform style prefix based on defined vendor prefixes
    *
-   * @var {String} transformOriginStylePrefix
+   * @var {String} transformOrigin
    * @memberof utils.css3
    **/
-  css3.columnCountStylePrefix = (function(){
+  css3.columnCount = (function(){
     var prefix = 'columnCount';
 
     if (! (prefix in document.body.style)) {
@@ -83,10 +83,10 @@ define(function(){
   /**
    * get css filter style property based on defined vendor prefixes
    *
-   * @var {String} filterStylePrefix
+   * @var {String} filter
    * @memberof utils.css3
    **/
-  css3.filterStylePrefix = (function(){
+  css3.filter = (function(){
     var prefix = 'unknownFilter';
 
     if (! (prefix in document.body.style)) {
@@ -116,7 +116,7 @@ define(function(){
    **/
   css3.getRotation = function(domElement){
     // TODO: make simpler
-    //var matrix = domElement.style[css3.transformStylePrefix];
+    //var matrix = domElement.style[css3.transform];
 
     var obj = $(domElement);
     var matrix = obj.css('-webkit-transform') ||
