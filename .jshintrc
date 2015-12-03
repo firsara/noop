@@ -46,6 +46,7 @@
     "LocalFileSystem": true,
     "FileTransfer": true,
     "Checksum": true,
-    "md5chksum": true
+    "md5chksum": true,
+    "createjs": true
   }
 }

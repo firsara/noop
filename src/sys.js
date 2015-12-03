@@ -21,9 +21,12 @@ define(function(){
   };
 
   sys.extend = function(subclass, superclass) {
-    function o() { this.constructor = subclass; }
-    o.prototype = superclass.prototype;
-    return (subclass.prototype = new o());
+    function ClassObject() {
+      this.constructor = subclass;
+    }
+
+    ClassObject.prototype = superclass.prototype;
+    return (subclass.prototype = new ClassObject());
   };
 
   sys.mixin = function(superClass, subClass){

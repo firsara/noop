@@ -162,7 +162,6 @@ define(function(){
           for (i = 0, _len = this.__delays.length; i < _len; i++) {
             if (this.__delays[i].fct === bound) {
               return this.__delays[i].uid;
-              break;
             }
           }
         }
