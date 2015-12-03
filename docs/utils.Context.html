@@ -159,7 +159,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line36">line 36</a>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -231,7 +231,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line71">line 71</a>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -358,7 +358,184 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line26">line 26</a>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line28">line 28</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".choke"><span class="type-signature">(static) </span>choke<span class="signature">(fct, timeout, params)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>throttles a function by a delay (i.e. function will only be called every timeout time)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fct</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>that should be called after the delay</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>after which function should be called</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>that should be called on callback after invocation</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -535,7 +712,138 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line60">line 60</a>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".hasDelay"><span class="type-signature">(static) </span>hasDelay<span class="signature">(fct)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>checks wheter or not has a delay function for a specific function</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fct</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>that should be checked for</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -798,7 +1106,7 @@ if no fct is defined automatically stops all delays</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line97">line 97</a>
+        <a href="utils_Context.js.html">utils/Context.js</a>, <a href="utils_Context.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -846,7 +1154,7 @@ if no fct is defined automatically stops all delays</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Dec 01 2015 12:20:06 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Dec 03 2015 11:42:47 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

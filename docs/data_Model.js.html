@@ -111,7 +111,7 @@ define([
      * user.hasMany = [{model: 'app', through: 'users_applications', autoPull: true}, ...]
      * @memberof data.Model
      * @instance
-     * @var {String} hasMany
+     * @var {String|Object} hasMany
      */
     this.hasMany = this.hasMany || null;
 
@@ -123,7 +123,7 @@ define([
      * user.hasOne = [{model: 'project', through: 'his_project', autoPull: true}, ...]
      * @memberof data.Model
      * @instance
-     * @var {String} hasOne
+     * @var {String|Object} hasOne
      */
     this.hasOne = this.hasOne || null;
 
@@ -135,7 +135,7 @@ define([
      * app.belongsTo = [{model: 'user', through: 'user_id', autoPull: true}, ...]
      * @memberof data.Model
      * @instance
-     * @var {String} belongsTo
+     * @var {Model} belongsTo
      */
     this.belongsTo = this.belongsTo || null;
 
@@ -143,7 +143,7 @@ define([
      * if set to true: automatically pulls all relationships when pulling instance itself
      * @memberof data.Model
      * @instance
-     * @var {String} autoPull
+     * @var {Boolean} autoPull
      */
     this.autoPull = sys.setDefaultValue(this.autoPull, false);
 
@@ -152,7 +152,7 @@ define([
      * @memberof data.Model
      * @instance
      * @private
-     * @var {String} _cached
+     * @var {Boolean} _cached
      */
     this._cached = sys.setDefaultValue(this._cached, false);
 
@@ -161,7 +161,7 @@ define([
      * @memberof data.Model
      * @instance
      * @private
-     * @var {String} _loaded
+     * @var {Boolean} _loaded
      */
     this._loaded = sys.setDefaultValue(this._loaded, false);
 
@@ -170,7 +170,7 @@ define([
      * @memberof data.Model
      * @instance
      * @private
-     * @var {String} _definedData
+     * @var {Boolean} _definedData
      */
     this._definedData = sys.setDefaultValue(this._definedData, false);
 
@@ -179,9 +179,18 @@ define([
      * @memberof data.Model
      * @instance
      * @private
-     * @var {String} _relationshipKeys
+     * @var {Object} _relationshipKeys
      */
     this._relationshipKeys = {hasOne: [], belongsTo: [], hasMany: []};
+
+    /**
+     * stored request callbacks, needed for removing them when stopping
+     * @memberof data.Model
+     * @instance
+     * @private
+     * @var {Array} _requests
+     */
+    this._requests = [];
 
     // correct relationship properties:
     // convert them to an array and each of them into an object if not defined like that
@@ -500,14 +509,10 @@ define([
    **/
   p.pull = function(callback, errorCallback){
     var _this = this;
+    _startRequest(this, callback);
 
     var done = function(){
-      requestAnimationFrame(callCallback);
-    };
-
-    var callCallback = function(){
-      // call pulled callback directly
-      if (callback) callback(_this);
+      _endRequest(_this, callback);
     };
 
     // if it's a cached instance
@@ -684,6 +689,8 @@ define([
       callback = dataOrCallback;
     }
 
+    _startRequest(this, callback);
+
     // define request options for model
     var options = {};
 
@@ -729,9 +736,7 @@ define([
       if (_this.pushed) _this.pushed.call(_this, _this);
       _this.dispatchEvent('pushed');
 
-      if (callback) {
-        callback(_this);
-      }
+      _endRequest(_this, callback);
     };
 
     if (this._cached) {
@@ -756,6 +761,7 @@ define([
    **/
   p.delete = function(callback, errorCallback){
     var _this = this;
+    _startRequest(this, callback);
 
     // define request options for model
     var options = {};
@@ -786,15 +792,43 @@ define([
       if (_this.deleted) _this.deleted.call(_this, _this);
       _this.dispatchEvent('deleted');
 
-      if (callback) {
-        callback(_this);
-      }
+      _endRequest(_this, callback);
     };
 
     if (this.id || (this instanceof Collection === true &amp;&amp; this.length > 0)) {
       fs.request(options, done, errorCallback);
     } else {
       done();
+    }
+  };
+
+  /**
+   * stops model from calling callback functions
+   *
+   * @method stop
+   * @memberof data.Model
+   * @public
+   * @instance
+   **/
+  p.stop = function(callback){
+    var index = null;
+
+    if (callback) {
+      index = sys.indexOf(this._requests, callback);
+
+      if (index !== -1) {
+        this._requests.splice(index, 1);
+      }
+    } else {
+      this._requests = [];
+    }
+
+    if (this._requests.length === 0) {
+      index = sys.indexOf(_requests, this);
+
+      if (index !== -1) {
+        _requests.splice(index, 1);
+      }
     }
   };
 
@@ -971,14 +1005,43 @@ define([
   };
 
   /**
+   * stops all models from dispatching callbacks
+   *
+   * @method stopAll
+   * @memberof data.Model
+   * @public
+   * @static
+   **/
+  Model.stopAll = function() {
+    var tmp = [], i, _len;
+
+    for (i = 0, _len = _requests.length; i &lt; _len; i++) {
+      tmp.push(_requests[i]);
+    }
+
+    for (i = 0, _len = tmp.length; i &lt; _len; i++) {
+      tmp[i].stop();
+    }
+  };
+
+  /**
    * cached callers when fetching relationship via .get&lt;br>
    * to prevent circular relations -> stack overflow
    * @memberof data.Model
    * @static
    * @private
-   * @var {String} _getCallers
+   * @var {Array} _getCallers
    */
   var _getCallers = [];
+
+  /**
+   * cached models that currently run a request (push, pull, delete)
+   * @memberof data.Model
+   * @static
+   * @private
+   * @var {Array} _getCallers
+   */
+  var _requests = [];
 
   /**
    * relationships cached
@@ -1016,7 +1079,8 @@ define([
     '_relationshipKeys',
     '__oldOverwrite',
     '_listeners',
-    '_captureListeners'
+    '_captureListeners',
+    '_requests'
   ];
 
   /**
@@ -1109,6 +1173,28 @@ define([
     }
   };
 
+  var _startRequest = function(model, callback){
+    model._requests.push(callback);
+
+    if (sys.indexOf(_requests, model) === -1) {
+      _requests.push(model);
+    }
+  };
+
+  var _endRequest = function(model, callback){
+    requestAnimationFrame(function(){
+      var index = sys.indexOf(model._requests, callback);
+
+      if (index !== -1) {
+        model.stop(callback);
+
+        if (callback) {
+          callback(model);
+        }
+      }
+    });
+  };
+
   return Model;
 });
 </code></pre>
@@ -1127,7 +1213,7 @@ define([
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Tue Dec 01 2015 12:20:05 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Dec 03 2015 11:42:46 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>
