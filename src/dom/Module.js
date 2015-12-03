@@ -234,16 +234,13 @@ define([
      **/
     _this.destroy = function(){
       if (_this.loader) {
-        if (config.environment !== 'browser') {
-          try {
-            _this.loader.reset();
-          } catch(e){}
+        try {
+          _this.loader.reset();
+        } catch(e){}
 
-          _this.loader.removeAll();
-          _this.loader.destroy();
-        } else {
-          _this.loader.cancel();
-        }
+        _this.loader.removeAll();
+        _this.loader.destroy();
+        _this.loader.cancel();
 
         _this.loader = null;
       }
@@ -263,12 +260,12 @@ define([
         _this.loader.removeEventListener('progress', _progress);
         _this.loader.removeEventListener('fileload', _fileLoad);
         _this.loader.removeEventListener('complete', _complete);
+
+        _preloaded = true;
+
+        _this.dispatchEvent(PRELOADED);
+        _this.init();
       }
-
-      _preloaded = true;
-
-      _this.dispatchEvent(PRELOADED);
-      _this.init();
     };
 
     /**
