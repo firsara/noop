@@ -38,6 +38,8 @@ function(
   Scrollable.create = function(container, checkContainer){
     container.check = checkContainer;
 
+    container.el.setAttribute('data-scrollable', 'true');
+
     container.borders.x = [0, 0];
     container.borders.y = [0, 0];
     container.snap.x = 1;
