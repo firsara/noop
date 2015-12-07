@@ -61,7 +61,10 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
    * @private
    **/
   var _mousedown = function(event){
-    if (event._preventMove) return;
+    if (event._preventMove) {
+      if (event._preventMove === true) return;
+      if (event._preventMove !== this) return;
+    }
 
     this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
     this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
