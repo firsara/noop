@@ -215,5 +215,7 @@ define(function(){
     this[property] = sys.setDefaultValue(this[property], value);
   };
 
+  window.sys = sys;
+
   return sys;
 });
