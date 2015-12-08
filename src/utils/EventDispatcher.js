@@ -156,6 +156,8 @@ define(function() {
    * @param {object} scope of callback function
    **/
   p.on = function(type, listener, scope){
+    if (! listener) return;
+
     // prevent double event listeners on an item
     this.off(type, listener);
 
