@@ -236,7 +236,6 @@ define(function(sys) {
 
 
       // hold borders again without taking elasticity into account
-      // TODO: check if saves performance to first check if elastic is set. otherwise valuePairs will be identical anyways
       var valuePair2 = {};
       valuePair2.scaleX = valuePair1.scaleX;
       valuePair2.scaleY = valuePair1.scaleY;

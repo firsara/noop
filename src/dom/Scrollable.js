@@ -1,5 +1,3 @@
-// TODO: IMPORTANT: memory leak test!
-
 /*
  * Scrollable.js
  * Fabian Irsara

@@ -233,7 +233,6 @@ define(function(sys) {
 
 
       // hold borders again without taking elasticity into account
-      // TODO: check if saves performance to first check if elastic is set. otherwise valuePairs will be identical anyways
       var valuePair2 = {};
       valuePair2.rotation = valuePair1.rotation;
       this._hold('rotation', valuePair2, false);

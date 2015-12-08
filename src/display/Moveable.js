@@ -415,7 +415,6 @@ define(['../config'], function(config) {
 
 
       // hold borders again without taking elasticity into account
-      // TODO: check if saves performance to first check if elastic is set. otherwise valuePairs will be identical anyways
       var valuePair2 = {};
       valuePair2.x = valuePair1.x;
       valuePair2.y = valuePair1.y;
