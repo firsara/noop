@@ -24,7 +24,7 @@ define(['../sys', 'EaselJS'], function(sys, createjs) {
 
     var Init = function(){
       // call super constructor
-      if (Parent) Parent.call(_this);
+      Parent.call(_this);
 
       _this.on('added', _render, _this);
       _this.on('removed', _dispose, _this);

@@ -1201,6 +1201,7 @@ define([
    **/
   var _garbageCollect = function(){
     var instance = null;
+    _garbageCollectionTimeout = null;
 
     for (var k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
