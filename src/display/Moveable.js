@@ -152,6 +152,8 @@ define(['../config'], function(config) {
      */
     this._holdTimeout = null;
 
+    this.__dispatchHold = _dispatchHold.bind(this);
+
     // listen to all the events dispatched by parent class Transformable
     this.on('start', _startTransform);
     this.on('calc', _calc);
@@ -265,7 +267,7 @@ define(['../config'], function(config) {
   var _startTransform = function(event){
     if (this._activeFingers === 1 && this.recognizer.hold.time) {
       if (this._holdTimeout) clearTimeout(this._holdTimeout);
-      this._holdTimeout = setTimeout(_dispatchHold.bind(this), this.recognizer.hold.time * 1000);
+      this._holdTimeout = setTimeout(this.__dispatchHold, this.recognizer.hold.time * 1000);
     }
 
     this._stopTween(this._moveTween);

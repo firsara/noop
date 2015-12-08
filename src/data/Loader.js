@@ -108,7 +108,7 @@ define([
     createjs.LoadQueue.call(this, config.environment === 'browser' ? true : false);
 
     // bind events right at the beginning so they get fired at first
-    this.addEventListener('fileload', _fileload.bind(this));
+    this.on('fileload', _fileload, this);
   }
 
   var p = sys.extend(Loader, createjs.LoadQueue);
@@ -436,8 +436,8 @@ define([
     var instance = new Loader();
     instance._callbackComplete = complete;
     instance._callbackProgress = progress;
-    instance.addEventListener('complete', _instanceCompleted);
-    instance.addEventListener('progress', _instanceProgress);
+    instance.on('complete', _instanceCompleted, instance);
+    instance.on('progress', _instanceProgress, instance);
     instance.load(manifest);
   };
 
@@ -465,8 +465,8 @@ define([
    * @static
    **/
   var _instanceCompleted = function(event){
-    event.target.removeEventListener('complete', _instanceCompleted);
-    event.target.removeEventListener('progress', _instanceProgress);
+    event.target.off('complete', _instanceCompleted, event.target);
+    event.target.off('progress', _instanceProgress, event.target);
     if (event.target._callbackComplete) event.target._callbackComplete.call(event.target, event.target.get(), event);
   };
 

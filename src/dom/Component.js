@@ -58,7 +58,7 @@ define([
     if (! this._initializedContainer) Container.call(this, template, data, options);
 
     // initialize when added to stage
-    this.addEventListener('addedToStage', this.__bind(_init));
+    this.on('addedToStage', _init, this);
   }
 
   var p = sys.extend(Component, Container);
@@ -118,9 +118,9 @@ define([
    * @instance
    **/
   var _init = function(){
-    this.removeEventListener('addedToStage', this.__bind(_init));
-    this.addEventListener('removedFromStage', this.__bind(_dispose));
-    this.addEventListener('resize', this.__bind(_windowResized));
+    this.off('addedToStage', _init, this);
+    this.on('removedFromStage', _dispose, this);
+    this.on('resize', _windowResized, this);
 
     this.dispatchEvent('init');
 
@@ -145,8 +145,8 @@ define([
     if (this.__componentDidDispose) return;
     this.__componentDidDispose = true;
 
-    this.removeEventListener('resize', this.__bind(_windowResized));
-    this.removeEventListener('removedFromStage', this.__bind(_dispose));
+    this.off('resize', _windowResized, this);
+    this.off('removedFromStage', _dispose, this);
 
     this.dispatchEvent('dispose');
 

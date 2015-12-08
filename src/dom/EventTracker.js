@@ -18,8 +18,14 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
   function EventTracker(template, data, options){
     Container.call(this, template, data, options);
 
-    this.on('addedToStage', _render);
-    this.on('removedFromStage', _dispose);
+    this._eventTracker = {};
+    this._eventTracker.mousedown = this.__bind(_mousedown);
+    this._eventTracker.pressmove = this.__bind(_pressmove);
+    this._eventTracker.pressup = this.__bind(_pressup);
+    this._eventTracker.enterFrame = this.__bind(_enterFrame);
+
+    this.on('addedToStage', _render, this);
+    this.on('removedFromStage', _dispose, this);
   }
 
   var p = sys.extend(EventTracker, Container);
@@ -33,7 +39,7 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
    * @private
    **/
   var _render = function(){
-    this.el.addEventListener('touchmousedown', this.__bind(_mousedown));
+    this.el.addEventListener('touchmousedown', this._eventTracker.mousedown);
   };
 
   /**
@@ -45,11 +51,11 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
    * @private
    **/
   var _dispose = function(){
-    this.el.removeEventListener('touchmousedown', this.__bind(_mousedown));
+    this.el.removeEventListener('touchmousedown', this._eventTracker.mousedown);
 
-    this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
-    this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-    fps.removeEventListener('tick', this.__bind(_enterFrame));
+    this.stage.el.removeEventListener('touchmousemove', this._eventTracker.pressmove);
+    this.stage.el.removeEventListener('touchmouseup', this._eventTracker.pressup);
+    fps.removeEventListener('tick', this._eventTracker.enterFrame);
   };
 
   /**
@@ -66,14 +72,14 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
       if (event._preventMove !== this) return;
     }
 
-    this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
-    this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-    fps.removeEventListener('tick', this.__bind(_enterFrame));
+    this.stage.el.removeEventListener('touchmousemove', this._eventTracker.pressmove);
+    this.stage.el.removeEventListener('touchmouseup', this._eventTracker.pressup);
+    fps.removeEventListener('tick', this._eventTracker.enterFrame);
 
     // add events to keep track of finger positions
-    this.stage.addEventListener('touchmousemove', this.__bind(_pressmove));
-    this.stage.addEventListener('touchmouseup', this.__bind(_pressup));
-    fps.addEventListener('tick', this.__bind(_enterFrame));
+    this.stage.el.addEventListener('touchmousemove', this._eventTracker.pressmove);
+    this.stage.el.addEventListener('touchmouseup', this._eventTracker.pressup);
+    fps.addEventListener('tick', this._eventTracker.enterFrame);
 
     this._onMousedown(event);
   };
@@ -116,9 +122,9 @@ define(['../sys', '../utils/fps', './Container', './utils/touchmouse'], function
     this._onPressup(event);
 
     if (this._activeFingers === 0) {
-      this.stage.removeEventListener('touchmousemove', this.__bind(_pressmove));
-      this.stage.removeEventListener('touchmouseup', this.__bind(_pressup));
-      fps.removeEventListener('tick', this.__bind(_enterFrame));
+      this.stage.el.removeEventListener('touchmousemove', this._eventTracker.pressmove);
+      this.stage.el.removeEventListener('touchmouseup', this._eventTracker.pressup);
+      fps.removeEventListener('tick', this._eventTracker.enterFrame);
     }
   };
 

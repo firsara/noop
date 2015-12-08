@@ -860,7 +860,7 @@ define([
     if (this.parent) {
       // and parent has a defined stage or is a stage object return it
       if (this.parent.stage) return this.parent.stage;
-      if (this.parent.isStage) return this.parent.el;
+      if (this.parent.isStage) return this.parent;
     }
 
     // first try to find elements most parent item that should be a stage object
@@ -871,7 +871,7 @@ define([
       tmpNode = tmpNode.parent;
       if (! tmpNode) break;
       if (tmpNode.stage) return tmpNode.stage;
-      if (tmpNode.isStage) return tmpNode.el;
+      if (tmpNode.isStage) return tmpNode;
     }
 
     // otherwise traverse the dom and return document.body if found
@@ -885,7 +885,9 @@ define([
     }
 
     if (node.toString().indexOf('HTMLDocument') !== -1) {
-      return node.body;
+      var stage = new Container('<div></div>');
+      stage.el = node.body;
+      return stage;
     }
 
     //if (document.body.contains(this.el)) {

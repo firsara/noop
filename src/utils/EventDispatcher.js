@@ -110,7 +110,7 @@ define(function() {
    * @param {Function} listener that should be removed (optional, if null removes all listeners of that type)
    **/
   p.removeEventListener = function(type, listener){
-    this.off(type, listener);
+    this.off(type, listener, listener);
   };
 
   /**
@@ -123,12 +123,14 @@ define(function() {
    * @param {String} type of event
    * @param {Function} listener that should be removed (optional, if null removes all listeners of that type)
    **/
-  p.off = function(type, listener){
+  p.off = function(type, listener, scope){
+    scope = scope || this;
+
     var listeners = this.getListeners(type);
 
     if (listener) {
       for (var i = 0, _len = listeners.length; i < _len; i++) {
-        if (listeners[i].listener === listener) {
+        if (listeners[i].listener === listener && listeners[i].scope === scope) {
           listeners.splice(i, 1);
           break;
         }
