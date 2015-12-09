@@ -855,6 +855,7 @@ define([
   p.getStage = function(){
     // if already has a defined stage return it
     if (this.stage) return this.stage;
+    if (this.isStage) return this;
 
     // if otherwise has a parent
     if (this.parent) {
