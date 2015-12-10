@@ -175,7 +175,13 @@ define([
    **/
   p.get = function(id){
     if (id === null || typeof id === 'undefined') {
-      // if no id was passed return all loaded items instead
+      // if no id was passed
+      // if there was only one item loaded return it directly
+      if (this.items.length === 1) {
+        return this.items[0];
+      }
+
+      // return all loaded items instead
       return this.items;
     } else {
       // otherwise find loaded item by id
