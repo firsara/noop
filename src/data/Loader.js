@@ -174,12 +174,6 @@ define([
    * @param {String|Number} id of the element to get
    **/
   p.get = function(id){
-    // if there was only one item loaded return it directly
-    // regardless passed id
-    if (this.items.length === 1) {
-      return this.items[0];
-    }
-
     if (id === null || typeof id === 'undefined') {
       // if no id was passed return all loaded items instead
       return this.items;
