@@ -36,18 +36,16 @@ define([
   '../config',
   '../utils/EventDispatcher',
   './Component',
-  '../data/Loader'
+  '../data/Loader',
+  '../utils/Context'
 ], function(
   sys,
   config,
   EventDispatcher,
   Component,
-  Loader
+  Loader,
+  Context
 ) {
-  var Parent = EventDispatcher;
-
-  // Event constants
-
   var PRELOADED = 'preloaded';
   var INIT = 'init';
   var SHOW = 'show';
@@ -55,9 +53,9 @@ define([
   var HIDE = 'hide';
   var HIDDEN = 'hidden';
 
-  return sys.Class({
-    __extends: Parent
-  },
+  // empty function that get used if child class has no functions
+  var _noop = function(){};
+
   /**
    * A module is a set of components&lt;br>
    * with a separate controller and view instance
@@ -69,11 +67,11 @@ define([
    *
    * public functions that need to be overridden by child classes:
    *
-   * * _this.init: binds events and initializes module construction
-   * * _this.dispose: unbinds and destroys module
-   * * _this.progress: called when a single file got preloaded (optional)
-   * * _this.hide: hides module by animating elements out (optional)
-   * * _this.show: shows module by animating elements in (optional)
+   * * this.init: binds events and initializes module construction
+   * * this.dispose: unbinds and destroys module
+   * * this.progress: called when a single file got preloaded (optional)
+   * * this.hide: hides module by animating elements out (optional)
+   * * this.show: shows module by animating elements in (optional)
    *
    * @class Module
    * @extends utils.EventDispatcher
@@ -82,8 +80,6 @@ define([
    * @param {object} options to override in component
    **/
   function Module(ContainerClass, options){
-    var _this = this;
-
     /**
      * container holder. keeps needed component class.&lt;br>
      * gets set automatically by using passed ContainerClass from constructor
@@ -91,7 +87,7 @@ define([
      * @instance
      * @var {object} container
      */
-    _this.container = _this.container || null;
+    this.container = this.container || null;
 
     /**
      * preload element manifest. Has to be an array of objects containing id and src [{id: 'mydata', src: 'http:/file.png'}]
@@ -100,7 +96,7 @@ define([
      * @instance
      * @var {object} preload
      */
-    _this.preload = [];
+    this.preload = [];
 
     /**
      * data.Loader instance
@@ -109,7 +105,7 @@ define([
      * @instance
      * @var {object} loader
      */
-    _this.loader = new Loader();
+    this.loader = new Loader();
 
     /**
      * wheter module should autoshow after being preloaded
@@ -118,7 +114,7 @@ define([
      * @instance
      * @var {Boolean} autoShow
      */
-    _this.autoShow = true;
+    this.autoShow = true;
 
     /**
      * wheter module should autoload data
@@ -127,243 +123,221 @@ define([
      * @instance
      * @var {Boolean} autoLoad
      */
-    _this.autoLoad = true;
+    this.autoLoad = true;
 
     /**
      * if Module was preloaded
      * @memberof dom.Module
      * @instance
      * @private
-     * @var {Boolean} _preloaded
+     * @var {Boolean} this._preloaded
      */
-    var _preloaded = false;
+    this._preloaded = false;
 
-    // empty function that get used if child class has no functions
-    var _noop = function(){};
+    if (! this.init) this.init = _noop;
+    if (! this.show) this.show = this.showed;
+    if (! this.hide) this.hide = this.hidden;
+    if (! this.progress) this.progress = _noop;
 
-    // set default show and hide behaviour to simply dispatch appropriate events
-    // and call callbacks for use in template class
-    // NOTE: if overriding hide or show module MUST call _this.hidden() and _this.show() at some point
-    // otherwise template rendering functionality will be broken
-    var _childFunctions = {};
-    _childFunctions.init = _this.init || _noop;
-    _childFunctions.dispose = _this.dispose || _noop;
-    _childFunctions.progress = _this.progress || _noop;
-    _childFunctions.hide = _this.hide;
-    _childFunctions.show = _this.show;
+    this._childShow = this.show;
+    this._childHide = this.hide;
+    this.show = _show.bind(this);
+    this.hide = _hide.bind(this);
 
-    var Init = function(){
-      Parent.call(_this);
-
-      if (ContainerClass) {
-        if (typeof ContainerClass === 'string') {
-          _this.container = new Component(ContainerClass, null, options);
-        } else {
-          _this.container = new ContainerClass(options);
-        }
+    if (ContainerClass) {
+      if (typeof ContainerClass === 'string') {
+        this.container = new Component(ContainerClass, null, options);
       } else {
-        _this.container = new Component('&lt;div class="module">&lt;/div>', null, options);
+        this.container = new ContainerClass(options);
       }
+    } else {
+      this.container = new Component('&lt;div class="module">&lt;/div>', null, options);
+    }
 
-      _this.container.controller = _this;
-      _this.container.addEventListener('addedToStage', _init);
+    this.container.controller = this;
+    this.container.on('addedToStage', _init, this);
 
-      _this.loader.addEventListener('cached', _progress);
-      _this.loader.addEventListener('progress', _progress);
-      _this.loader.addEventListener('fileload', _fileLoad);
-      _this.loader.addEventListener('complete', _complete);
-    };
+    this.loader.on('cached', _progress, this);
+    this.loader.on('progress', _progress, this);
+    this.loader.on('fileload', _fileLoad, this);
+    this.loader.on('complete', _complete, this);
+  }
 
-    /**
-     * initializes module.
-     * gets called from Module.js automatically.
-     * override in child class to initialize module
-     *
-     * @method init
-     * @memberof dom.Module
-     * @instance
-     * @public
-     **/
-    _this.init = function(){
-      _childFunctions.init();
-      _this.dispatchEvent(INIT);
-      if (_this.autoShow) _this.show();
-    };
+  var p = sys.extend(Module, EventDispatcher);
 
-    /**
-     * dispatches hidden event that gets used in TemplateEngine
-     * if ovverriding hide() in child class: needs to call hidden() at some point
-     *
-     * @method hidden
-     * @memberof dom.Module
-     * @instance
-     * @public
-     **/
-    _this.hidden = function(){
-      _this.destroy();
-      _this.dispatchEvent(HIDDEN);
-    };
+  Context.mixin(Module);
 
-    /**
-     * dispatches showed event that gets used in TemplateEngine
-     * if ovverriding show() in child class: needs to call showed() at some point
-     *
-     * @method showed
-     * @memberof dom.Module
-     * @instance
-     * @public
-     **/
-    _this.showed = function(){
-      _this.dispatchEvent(SHOWED);
-    };
+  /**
+   * cleans up some data
+   *
+   * @method destroy
+   * @memberof dom.Module
+   * @instance
+   * @protected
+   **/
+  p.destroy = function(){
+    if (this.loader) {
+      try {
+        this.loader.reset();
+      } catch(e){}
 
-    /**
-     * dispatches hidden by default.
-     * if overridden needs to do some sort of animation
-     * and then call hidden manually
-     *
-     * @method hide
-     * @memberof dom.Module
-     * @instance
-     * @public
-     **/
-    _this.hide = function(){
-      // disallow multiple hide calls by setting hide to noop when first called
-      _this.hide = _noop;
-      _childFunctions.hide();
-      _this.dispatchEvent(HIDE);
-    };
+      this.loader.removeAll();
+      this.loader.destroy();
+      this.loader.cancel();
 
-    /**
-     * dispatches showed by default.
-     * if overridden needs to do some sort of animation
-     * and then call showed manually
-     *
-     * @method show
-     * @memberof dom.Module
-     * @instance
-     * @public
-     **/
-    _this.show = function(){
-      // disallow multiple show calls by setting show to noop when first called
-      _this.show = _noop;
+      this.loader = null;
+    }
+  };
 
-      _childFunctions.show();
-      _this.dispatchEvent(SHOW);
-    };
+  /**
+   * dispatches hidden event that gets used in TemplateEngine
+   * if ovverriding hide() in child class: needs to call hidden() at some point
+   *
+   * @method hidden
+   * @memberof dom.Module
+   * @instance
+   * @public
+   **/
+  p.hidden = function(){
+    this.destroy();
+    this.dispatchEvent(HIDDEN);
+  };
 
-    /**
-     * cleans up some data
-     *
-     * @method destroy
-     * @memberof dom.Module
-     * @instance
-     * @protected
-     **/
-    _this.destroy = function(){
-      if (_this.loader) {
-        if (config.environment !== 'browser') {
-          try {
-            _this.loader.reset();
-          } catch(e){}
+  /**
+   * dispatches showed event that gets used in TemplateEngine
+   * if ovverriding show() in child class: needs to call showed() at some point
+   *
+   * @method showed
+   * @memberof dom.Module
+   * @instance
+   * @public
+   **/
+  p.showed = function(){
+    this.dispatchEvent(SHOWED);
+  };
 
-          _this.loader.removeAll();
-          _this.loader.destroy();
-        } else {
-          _this.loader.cancel();
-        }
+  /**
+   * dispatches hidden by default.
+   * if overridden needs to do some sort of animation
+   * and then call hidden manually
+   *
+   * @method hide
+   * @memberof dom.Module
+   * @instance
+   * @public
+   **/
+  var _hide = function(){
+    // disallow multiple hide calls by setting hide to noop when first called
+    this.hide = _noop;
+    this._childHide();
+    this.dispatchEvent(HIDE);
+  };
 
-        _this.loader = null;
+  /**
+   * dispatches showed by default.
+   * if overridden needs to do some sort of animation
+   * and then call showed manually
+   *
+   * @method show
+   * @memberof dom.Module
+   * @instance
+   * @public
+   **/
+  var _show = function(){
+    // disallow multiple show calls by setting show to noop when first called
+    this.show = _noop;
+    this._childShow();
+    this.dispatchEvent(SHOW);
+  };
+
+  /**
+   * dispatches preloaded event and initializes module
+   *
+   * @method _complete
+   * @memberof dom.Module
+   * @instance
+   * @private
+   **/
+  var _complete = function(){
+    if (this.loader) {
+      this.loader.off('cached', _progress, this);
+      this.loader.off('progress', _progress, this);
+      this.loader.off('fileload', _fileLoad, this);
+      this.loader.off('complete', _complete, this);
+
+      this._preloaded = true;
+    }
+
+    this.dispatchEvent(PRELOADED);
+
+    this.init();
+    this.init = null;
+    this.dispatchEvent(INIT);
+    if (this.autoShow) this.show();
+  };
+
+  /**
+   * dispatches progress event used in preload components
+   *
+   * @method _progress
+   * @memberof dom.Module
+   * @instance
+   * @private
+   **/
+  var _progress = function(event){
+    this.dispatchEvent({type: event.type, progress: event.progress});
+    this.progress(event.result);
+  };
+
+  /**
+   * dispatches filelload event used in preload components
+   * also calls .progress event on child module class to display element immediately if needed
+   *
+   * @method _fileLoad
+   * @memberof dom.Module
+   * @instance
+   * @private
+   **/
+  var _fileLoad = function(event){
+    this.dispatchEvent(event);
+    this.progress(event.result);
+  };
+
+  /**
+   * preloads data, shows and initializes module
+   *
+   * @method _init
+   * @memberof dom.Module
+   * @instance
+   * @private
+   **/
+  var _init = function(){
+    this.container.off('addedToStage', _init, this);
+    this.container.on('removedFromStage', _dispose, this);
+
+    if (this.autoLoad) {
+      if (this.preload.length === 0) {
+        _complete.call(this);
+      } else {
+        this.loader.load(this.preload);
       }
-    };
+    }
+  };
 
-    /**
-     * dispatches preloaded event and initializes module
-     *
-     * @method _complete
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _complete = function(){
-      if (_this.loader) {
-        _this.loader.removeEventListener('cached', _progress);
-        _this.loader.removeEventListener('progress', _progress);
-        _this.loader.removeEventListener('fileload', _fileLoad);
-        _this.loader.removeEventListener('complete', _complete);
-      }
+  /**
+   * calls dispose to unbind events on child class module
+   *
+   * @method _dispose
+   * @memberof dom.Module
+   * @instance
+   * @private
+   **/
+  var _dispose = function(){
+    this.container.off('removedFromStage', _dispose, this);
+    if (this.dispose &amp;&amp; this._preloaded) this.dispose();
+  };
 
-      _preloaded = true;
-
-      _this.dispatchEvent(PRELOADED);
-      _this.init();
-    };
-
-    /**
-     * dispatches progress event used in preload components
-     *
-     * @method _progress
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _progress = function(event){
-      _this.dispatchEvent({type: event.type, progress: event.progress});
-    };
-
-    /**
-     * dispatches filelload event used in preload components
-     * also calls .progress event on child module class to display element immediately if needed
-     *
-     * @method _fileLoad
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _fileLoad = function(event){
-      _this.dispatchEvent(event);
-      _childFunctions.progress(event.result);
-    };
-
-    /**
-     * preloads data, shows and initializes module
-     *
-     * @method _init
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _init = function(){
-      _this.container.removeEventListener('addedToStage', _init);
-      _this.container.addEventListener('removedFromStage', _dispose);
-
-      if (_this.autoLoad) {
-        if (_this.preload.length === 0) {
-          _complete();
-        } else {
-          _this.loader.load(_this.preload);
-        }
-      }
-    };
-
-    /**
-     * calls dispose to unbind events on child class module
-     *
-     * @method _dispose
-     * @memberof dom.Module
-     * @instance
-     * @private
-     **/
-    var _dispose = function(){
-      _this.container.removeEventListener('removedFromStage', _dispose);
-      if (_this.dispose &amp;&amp; _preloaded) _this.dispose();
-    };
-
-    if (! _childFunctions.hide) _childFunctions.hide = _this.hidden;
-    if (! _childFunctions.show) _childFunctions.show = _this.showed;
-
-    Init();
-  });
+  return Module;
 });
 </code></pre>
         </article>
@@ -381,7 +355,7 @@ define([
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Thu Dec 03 2015 11:45:01 GMT+0100 (CET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Dec 12 2015 11:51:06 GMT+0100 (CET)
 </footer>
 
 <script> prettyPrint(); </script>

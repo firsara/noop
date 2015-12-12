@@ -4,6 +4,8 @@
  * Copyright 2015, Licensed GPL & MIT
  */
 define(['./base', '../API'], function(fileSystem, API){
+  var _0744 = parseInt('0744', 8);
+
   return function(){
     if (!! window.nodeRequire) {
       var nw = nodeRequire('nw.gui');
@@ -23,7 +25,7 @@ define(['./base', '../API'], function(fileSystem, API){
       var directory = fileSystem.getFolder(filename);
 
       // first ensure the directory that should be written to exists
-      fileSystem.mkdir(directory, 0744, function(){
+      fileSystem.mkdir(directory, _0744, function(){
         // write data to the file
         fs.writeFile(filename, data, function(err){
           // process result
@@ -98,7 +100,7 @@ define(['./base', '../API'], function(fileSystem, API){
       var directory = fileSystem.getFolder(options.local);
 
       // otherwise ensure local directory exists
-      fileSystem.mkdir(directory, 0744, function(){
+      fileSystem.mkdir(directory, _0744, function(){
         // create a temporary file stream (move file to real path when finished correctly)
         var file = fs.createWriteStream(options.local + '_tmp');
 

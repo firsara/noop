@@ -4,6 +4,8 @@
  * Copyright 2015, Licensed GPL & MIT
  */
 define(['./base', '../../config', '../API'], function(fileSystem, config, API){
+  var _0744 = parseInt('0744', 8);
+
   return function(){
     fileSystem.dataPath = null;
 
@@ -17,7 +19,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       filename = fileSystem.correctLocalFilePath(filename.replace('file://', ''));
 
       fileSystem.getFileSystem(function(fs){
-        fileSystem.mkdir(fileSystem.extractDirectory(filename), 0744, function(dirEntry){
+        fileSystem.mkdir(fileSystem.extractDirectory(filename), _0744, function(dirEntry){
           dirEntry.getFile(fileSystem.extractFilename(filename), {create: true}, function(fileEntry){
 
             if (callback) {
@@ -34,7 +36,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       filename = fileSystem.correctLocalFilePath(filename);
 
       fileSystem.getFileSystem(function(fs){
-        fileSystem.mkdir(fileSystem.extractDirectory(filename), 0744, function(dirEntry){
+        fileSystem.mkdir(fileSystem.extractDirectory(filename), _0744, function(dirEntry){
           dirEntry.getFile(fileSystem.extractFilename(filename), {create: true}, function(fileEntry){
 
             var fileURL = fileEntry.toURL();
@@ -135,7 +137,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       var directory = fileSystem.getFolder(options.local);
 
       // otherwise ensure local directory exists
-      fileSystem.mkdir(directory, 0744, function(){
+      fileSystem.mkdir(directory, _0744, function(){
         // create a temporary file stream (move file to real path when finished correctly)
         var fileTransfer = new FileTransfer();
         var uri = encodeURI(options.remote);
@@ -349,8 +351,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       };
 
       fileSystem.getFileSystem(function(fs){
-        fileSystem.mkdir(fileSystem.extractDirectory(path), 0744, function(dirEntry){
-          fileSystem.mkdir(fileSystem.extractDirectory(newPath), 0744, function(dirEntryNew){
+        fileSystem.mkdir(fileSystem.extractDirectory(path), _0744, function(dirEntry){
+          fileSystem.mkdir(fileSystem.extractDirectory(newPath), _0744, function(dirEntryNew){
             // if it is a file
             if (path.indexOf('.') >= 0) {
               dirEntry.getFile(fileSystem.extractFilename(path), {create: false}, function(entry){
