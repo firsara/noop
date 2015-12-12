@@ -1131,19 +1131,14 @@ define([
 
     if (! this.keepEventListeners) {
       this.removeAllEventListeners();
-
-      if (this._$el) {
-        this._$el.unbind();
-        this._$el.off();
-        this._$el.find('*').unbind();
-        this._$el.find('*').off();
-      }
     }
 
     if (this.autoDestroy) {
       _garbageCollectionContainers[this._containerID] = this;
-      if (_garbageCollectionTimeout) clearTimeout(_garbageCollectionTimeout);
-      _garbageCollectionTimeout = setTimeout(_garbageCollect, 1000);
+
+      if (! _garbageCollectionTimeout) {
+        _garbageCollectionTimeout = setTimeout(_garbageCollect, 10000);
+      }
     }
   };
 
@@ -1201,18 +1196,22 @@ define([
    * @instance
    **/
   var _garbageCollect = function(){
-    var instance = null;
+    var instance = null, instanceProperty, k;
     _garbageCollectionTimeout = null;
 
-    for (var k in _garbageCollectionContainers) {
+    for (k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
+
+      //if (instance._$el) {
+      //  instance._$el.find('*').andSelf().unbind().off();
+      //}
 
       if (instance.el) {
         delete instance.el.container;
         delete instance.el._children;
       }
 
-      for (var instanceProperty in instance) {
+      for (instanceProperty in instance) {
         delete instance[instanceProperty];
       }
 
