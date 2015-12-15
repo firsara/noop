@@ -1202,9 +1202,9 @@ define([
     for (k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
 
-      //if (instance._$el) {
-      //  instance._$el.find('*').andSelf().unbind().off();
-      //}
+      if (instance._$el) {
+        instance._$el.find('*').addBack().unbind().off();
+      }
 
       if (instance.el) {
         delete instance.el.container;
