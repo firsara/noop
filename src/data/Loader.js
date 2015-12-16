@@ -196,6 +196,25 @@ define([
   };
 
   /**
+   * gets all loaded elemnts by a key value object
+   *
+   * @method getAssoc
+   * @memberof data.Loader
+   * @instance
+   * @public
+   **/
+  p.getAssoc = function(){
+    var data = {};
+
+    // otherwise find loaded item by id
+    for (var i = 0, _len = this._results.length; i < _len; i++) {
+      data[this._results[i].item.id] = this._results[i].result;
+    }
+
+    return data;
+  };
+
+  /**
    * called when a file has been loaded
    * stores file for later use in .get
    *
@@ -437,7 +456,7 @@ define([
     instance._callbackComplete = complete;
     instance._callbackProgress = progress;
     instance.on('complete', _instanceCompleted, instance);
-    instance.on('progress', _instanceProgress, instance);
+    instance.on('fileload', _instanceProgress, instance);
     instance.load(manifest);
   };
 
@@ -466,7 +485,7 @@ define([
    **/
   var _instanceCompleted = function(event){
     event.target.off('complete', _instanceCompleted, event.target);
-    event.target.off('progress', _instanceProgress, event.target);
+    event.target.off('fileload', _instanceProgress, event.target);
     if (event.target._callbackComplete) event.target._callbackComplete.call(event.target, event.target.get(), event);
   };
 
