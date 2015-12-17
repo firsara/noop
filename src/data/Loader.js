@@ -458,6 +458,8 @@ define([
     instance.on('complete', _instanceCompleted, instance);
     instance.on('fileload', _instanceProgress, instance);
     instance.load(manifest);
+
+    return instance;
   };
 
   /**
