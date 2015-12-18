@@ -148,6 +148,20 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
 
   /*
    * Logs given value through window console
+   * usage: {{#if_isset value}}output{{else}}other_output{{/if_isset}}
+   *
+   * @helper if_isset
+   */
+  Handlebars.registerHelper('if_isset', function(value, options){
+    if (value && value.length > 0) {
+      return options.fn(this);
+    } else {
+      return options.inverse(this);
+    }
+  });
+
+  /*
+   * Logs given value through window console
    * usage: {{#if_includes values "mykey"}}output{{else}}other_output{{/if_includes}}
    *
    * @helper if_includes
