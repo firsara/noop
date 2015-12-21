@@ -346,13 +346,13 @@ define(['../config'], function(config) {
     // hold border properties while taking elasticity and fractions into account
 
     if (Math.abs(this._track.current.x) >= this.recognizer.move.x) {
-      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
+      this._hold('x', this, true, this._calc.x * this.fraction.move.x * this.fraction.base * ((BaseMoveable.strength * this.strength) || 1));
       this.recognizer.fired.x = true;
       _dispatchesUpdate = true;
     }
 
     if (Math.abs(this._track.current.y) >= this.recognizer.move.y) {
-      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * Math.max(1, BaseMoveable.strength * this.strength));
+      this._hold('y', this, true, this._calc.y * this.fraction.move.y * this.fraction.base * ((BaseMoveable.strength * this.strength) || 1));
       this.recognizer.fired.y = true;
       _dispatchesUpdate = true;
     }
@@ -395,8 +395,8 @@ define(['../config'], function(config) {
 
       // calculate throwing properties based on velocity and fractions
       var valuePair1 = {};
-      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * Math.max(1, BaseMoveable.strength * this.strength);
-      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * Math.max(1, BaseMoveable.strength * this.strength);
+      valuePair1.x = this.x + this.velocity.delta.x * this.fraction.release.x * this.fraction.base * this.velocity.x * ((BaseMoveable.strength * this.strength) || 1);
+      valuePair1.y = this.y + this.velocity.delta.y * this.fraction.release.y * this.fraction.base * this.velocity.y * ((BaseMoveable.strength * this.strength) || 1);
 
       // snaps properties if defined
       if (this.snap.x && this.snap.x !== 0) {
