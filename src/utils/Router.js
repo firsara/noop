@@ -163,6 +163,7 @@ define(['./uri'], function(uri){
 
       if (elements[i].getAttribute('data-route') === 'false') internalLink = false;
       if (elements[i].getAttribute('target') === '_blank') internalLink = false;
+      if (elements[i].getAttribute('data-href')) internalLink = true;
       if (itemHref.indexOf('http://') !== -1 || itemHref.indexOf('https://') !== -1 || itemHref.indexOf('file://') !== -1) {
         if (itemHref.indexOf(currentDomain) === -1) internalLink = false;
       }
@@ -195,7 +196,7 @@ define(['./uri'], function(uri){
 
     event.preventDefault();
 
-    var itemHref = event.currentTarget.getAttribute('href');
+    var itemHref = event.currentTarget.getAttribute('data-href') || event.currentTarget.getAttribute('href');
     var path = Router.get(itemHref);
     var route = Router.fetch(this.routes, path);
 
