@@ -139,11 +139,26 @@ define(['./uri'], function(uri){
    * @memberof Router
    * @instance
    * @param {String} path that should be switched to
+   * @param {Boolean} silent if should route to controller or just set new path
    **/
-  Router.prototype.to = function(path){
+  Router.prototype.to = function(path, silent){
     if (path.indexOf('http://') === -1 && path.indexOf('https://') === -1 && path.indexOf('file://') === -1) path = Router.generate(path);
     history.pushState(null, null, path);
-    this._urlChange();
+
+    if (silent !== true) {
+      this._urlChange();
+    }
+  };
+
+  /**
+   * switches to a specific path silently (i.e. don't calling appropriate controller)
+   * @method silent
+   * @memberof Router
+   * @instance
+   * @param {String} path that should be switched to
+   **/
+  Router.prototype.silent = function(path){
+    this.to(path, true);
   };
 
   /**
