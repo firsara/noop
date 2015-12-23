@@ -1201,6 +1201,7 @@ define([
 
     for (k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
+      delete _paintContainers[instance._containerID];
 
       if (instance._$el) {
         instance._$el.find('*').addBack().unbind().off();
