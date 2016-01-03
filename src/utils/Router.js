@@ -95,9 +95,20 @@ define(['./uri'], function(uri){
     var links = _findInternalLinks(container);
 
     for (var i = 0, _len = links.length; i < _len; i++) {
-      this.linkElements.push(links[i]);
-      links[i].removeEventListener('click', this._clicked);
-      links[i].addEventListener('click', this._clicked);
+      var alreadyParsed = false;
+
+      for (var j = 0, _len2 = this.linkElements.length; j < _len2; j++) {
+        if (this.linkElements[j] === links[i]) {
+          alreadyParsed = true;
+          break;
+        }
+      }
+
+      if (! alreadyParsed) {
+        this.linkElements.push(links[i]);
+        links[i].removeEventListener('click', this._clicked);
+        links[i].addEventListener('click', this._clicked);
+      }
     }
   };
 
@@ -117,7 +128,7 @@ define(['./uri'], function(uri){
       for (var j = 0, _len2 = this.linkElements.length; j < _len2; j++) {
         if (this.linkElements[j] === links[i]) {
           this.linkElements.splice(j, 1);
-          break;
+          j--;
         }
       }
     }
