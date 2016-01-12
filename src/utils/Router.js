@@ -187,6 +187,7 @@ define(['./uri'], function(uri){
       var internalLink = true;
       var itemHref = elements[i].getAttribute('href');
 
+      if (itemHref.indexOf('mailto:') !== -1) internalLink = false;
       if (elements[i].getAttribute('data-route') === 'false') internalLink = false;
       if (elements[i].getAttribute('target') === '_blank') internalLink = false;
       if (elements[i].getAttribute('data-href')) internalLink = true;
