@@ -306,7 +306,7 @@ define(['../../config', '../API'], function(config, API){
    *
    * * url {String} that should be downloaded
    * * method {String} request method
-   * * data {String} request data
+   * * data {Object} request data
    * * progress {Function} while downloading the file (alternative to progress)
    * * success {Function} alternative to callback
    * * error {Function} callback
