@@ -161,7 +161,7 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
   });
 
   /*
-   * Logs given value through window console
+   * checks if key is included in value
    * usage: {{#if_includes values "mykey"}}output{{else}}other_output{{/if_includes}}
    *
    * @helper if_includes
@@ -171,6 +171,35 @@ define(['jquery', 'handlebars', './dom/Container'], function($, Handlebars, Cont
       return options.fn(this);
     } else {
       return options.inverse(this);
+    }
+  });
+
+  /*
+   * checks if a specific condition applies
+   * usage: {{#if_cond var1 "===" var2}}output{{else}}other_output{{/if_cond}}
+   *
+   * @helper if_cond
+   */
+  Handlebars.registerHelper('if_cond', function(v1, operator, v2, options){
+    switch (operator) {
+      case '==':
+        return (v1 == v2) ? options.fn(this) : options.inverse(this);
+      case '===':
+        return (v1 === v2) ? options.fn(this) : options.inverse(this);
+      case '<':
+        return (v1 < v2) ? options.fn(this) : options.inverse(this);
+      case '<=':
+        return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+      case '>':
+        return (v1 > v2) ? options.fn(this) : options.inverse(this);
+      case '>=':
+        return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+      case '&&':
+        return (v1 && v2) ? options.fn(this) : options.inverse(this);
+      case '||':
+        return (v1 || v2) ? options.fn(this) : options.inverse(this);
+      default:
+        return options.inverse(this);
     }
   });
 
