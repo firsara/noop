@@ -1115,7 +1115,7 @@ define([
 
     var kids = this.children;
     for (var i = 0, _len = kids.length; i < _len; i++) {
-      if (kids[i]._childrenRemovedStage) {
+      if (kids[i] && kids[i]._childrenRemovedStage) {
         kids[i]._childrenRemovedStage();
       }
     }
