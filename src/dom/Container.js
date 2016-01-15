@@ -5,12 +5,14 @@
  */
 /** @namespace dom **/
 define([
+  '../config',
   '../sys',
   '../utils/css3',
   '../utils/EventDispatcher',
   '../utils/fps',
   '../utils/Context'
 ], function(
+  config,
   sys,
   css3,
   EventDispatcher,
@@ -1133,7 +1135,7 @@ define([
       this.removeAllEventListeners();
     }
 
-    if (this.autoDestroy) {
+    if (this.autoDestroy && config.gcContainers) {
       _garbageCollectionContainers[this._containerID] = this;
 
       if (! _garbageCollectionTimeout) {

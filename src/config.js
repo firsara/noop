@@ -38,6 +38,14 @@ define(['text!app.config.json'], function(configJSON){
    */
   config.android = (window.device && window.device.platform.toString().toLowerCase() === 'android');
 
+  /**
+   * wheter the Container instances should be garbage collected
+   * @memberof config
+   * @instance
+   * @var {Boolean} gcContainers
+   */
+  config.gcContainers = (config.gcContainers === null || typeof config.gcContainers === 'undefined') ? true : config.gcContainers;
+
   // add class to body depending on touch support
   document.body.classList.add(config.isTouch ? 'touch' : 'no-touch');
 
