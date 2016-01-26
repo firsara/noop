@@ -100,7 +100,6 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
    **/
   var onMouseEvent = function(event) {
     if (preventMouseEvents) return;
-    if (event.__prevented) return;
 
     var type, evt;
 
@@ -128,7 +127,7 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
     }
 
     // dispatch touchmouse event on target
-    target.dispatchEvent(evt);
+    if (! event.__prevented) target.dispatchEvent(evt);
 
     if (type === EVENTS.DOWN) {
       // store start mouse position
@@ -190,7 +189,7 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
       }
 
       // dispatch event on target
-      target.dispatchEvent(evt);
+      if (! event.__prevented) target.dispatchEvent(evt);
     }
 
     // delete unused tracked touches
@@ -220,7 +219,7 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
             // fake touchend event on that element
             evt = touchmouse.createEvent(type, event, touch.pageX, touch.pageY, k);
             if (trackedTouches[k].target) {
-              trackedTouches[k].target.dispatchEvent(evt);
+              if (! event.__prevented) trackedTouches[k].target.dispatchEvent(evt);
             }
           }
 
@@ -352,14 +351,14 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
       // if it was a valid tap: dispatch event, pass tap count to event
       evt = touchmouse.createEvent(EVENTS.TAP, originalEvent, x, y, pointerID);
       evt.taps = target._taps;
-      target.dispatchEvent(evt);
+      if (! event.__prevented) target.dispatchEvent(evt);
 
       // if also was a double tap
       if (wasDoubleTap) {
         // dispatch a double tap event on target, pass tap count to event
         evt = touchmouse.createEvent(EVENTS.DOUBLE_TAP, originalEvent, x, y, pointerID);
         evt.taps = target._taps;
-        target.dispatchEvent(evt);
+        if (! event.__prevented) target.dispatchEvent(evt);
       }
     }
   };
