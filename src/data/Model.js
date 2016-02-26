@@ -494,6 +494,12 @@ define([
     }
 
     var pulled = function(data){
+      if (_this instanceof Collection === true) {
+        if (! Array.isArray(data)) {
+          data = [data];
+        }
+      }
+
       _this.set(data);
 
       var items = [_this];

@@ -218,8 +218,8 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
           if (eventFiringIdentifiers.indexOf(k) === -1) {
             // fake touchend event on that element
             evt = touchmouse.createEvent(type, event, touch.pageX, touch.pageY, k);
-            if (trackedTouches[k].target) {
-              if (! event.__prevented) trackedTouches[k].target.dispatchEvent(evt);
+            if (trackedTouches[k].target && ! event.__prevented) {
+              trackedTouches[k].target.dispatchEvent(evt);
             }
           }
 
