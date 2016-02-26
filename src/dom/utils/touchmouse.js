@@ -351,14 +351,14 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
       // if it was a valid tap: dispatch event, pass tap count to event
       evt = touchmouse.createEvent(EVENTS.TAP, originalEvent, x, y, pointerID);
       evt.taps = target._taps;
-      if (! event.__prevented) target.dispatchEvent(evt);
+      if (! originalEvent.__prevented) target.dispatchEvent(evt);
 
       // if also was a double tap
       if (wasDoubleTap) {
         // dispatch a double tap event on target, pass tap count to event
         evt = touchmouse.createEvent(EVENTS.DOUBLE_TAP, originalEvent, x, y, pointerID);
         evt.taps = target._taps;
-        if (! event.__prevented) target.dispatchEvent(evt);
+        if (! originalEvent.__prevented) target.dispatchEvent(evt);
       }
     }
   };
