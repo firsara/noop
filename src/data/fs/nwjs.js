@@ -130,6 +130,7 @@ define(['./base', '../API'], function(fileSystem, API){
           r.on('data', function(chunk){
             loadedBytes += chunk.length;
             progress = loadedBytes / totalBytes;
+            if (isNaN(progress)) progress = 0;
             options.progress(progress);
           });
         }
