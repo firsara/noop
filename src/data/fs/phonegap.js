@@ -212,22 +212,9 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // correct file path
       path = fileSystem.correctLocalFilePath(path);
 
-      var dirName = fileSystem.extractDirectory(path);
-      var fileName = fileSystem.extractFilename(path);
-
-      var success = function(flist){
-        for (var i = 0; i < flist.length; i++){
-          if (flist[i].match(fileName)){
-            if (callback) {
-              callback(true);
-            }
-
-            return;
-          }
-        }
-
+      var success = function(){
         if (callback) {
-          callback(false);
+          callback(true);
         }
       };
 
@@ -237,7 +224,9 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         }
       };
 
-      fileSystem.readdir(dirName, success, error);
+      fileSystem.getFileSystem(function(fs){
+        fs.root.getFile(path, {create: false, exclusive: false}, success, error);
+      });
     };
 
     fileSystem.rmdir = function(path, callback){
@@ -370,7 +359,7 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
     fileSystem.checksum = function(path, callback){
       // correct file path
-      path = fileSystem.getLocalFilePath(path);
+      path = fileSystem.correctLocalFilePath(path);
 
       var _calledCallback = null;
       var _autoFailTimeout = null;
@@ -391,15 +380,19 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         done('');
       };
 
-      md5chksum.file(path, function(sum) {
-        if (sum && sum.length > 0) {
-          done(sum);
-        } else {
-          fail();
-        }
+      fileSystem.getFileSystem(function(fs){
+        fs.root.getFile(path, {create: false, exclusive: false}, function(fileEntry){
+          md5chksum.file(fileEntry, function(sum) {
+            if (sum && sum.length > 0) {
+              done(sum);
+            } else {
+              fail();
+            }
+          }, fail);
+        }, fail);
       }, fail);
 
-      _autoFailTimeout = setTimeout(fail, 100);
+      _autoFailTimeout = setTimeout(fail, 170);
     };
 
     fileSystem.init = function(callback){
