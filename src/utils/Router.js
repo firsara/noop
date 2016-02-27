@@ -33,6 +33,16 @@ define(['./uri'], function(uri){
      */
     this.before = null;
 
+    /**
+     * action to call after routes are executed<br>
+     * action gets passed in callback as first parameter and needs to call it when finished
+     * @memberof Router
+     * @instance
+     * @public
+     * @var {Function} after
+     */
+    this.after = null;
+
     // store controller instance
     this.controller = controller;
 
@@ -277,6 +287,10 @@ define(['./uri'], function(uri){
 
       if (instance[action]) {
         instance[action].apply(instance, route.params);
+      }
+
+      if (_this.after) {
+        _this.after();
       }
     };
 
