@@ -380,8 +380,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
         done('');
       };
 
-      fileSystem.getFileSystem(function(fs){
-        fs.root.getFile(path, {create: false, exclusive: false}, function(fileEntry){
+      var gotFile = function(fileEntry){
+        try {
           md5chksum.file(fileEntry, function(sum) {
             if (sum && sum.length > 0) {
               done(sum);
@@ -389,7 +389,17 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
               fail();
             }
           }, fail);
-        }, fail);
+        } catch(e) {
+          fail();
+        }
+      };
+
+      fileSystem.getFileSystem(function(fs){
+        try {
+          fs.root.getFile(path, {create: false, exclusive: false}, gotFile, fail);
+        } catch(e) {
+          fail();
+        }
       }, fail);
 
       _autoFailTimeout = setTimeout(fail, 170);
