@@ -498,6 +498,10 @@ define([
         if (! Array.isArray(data)) {
           data = [data];
         }
+      } else {
+        if (Array.isArray(data)) {
+          data = data[0];
+        }
       }
 
       _this.set(data);
