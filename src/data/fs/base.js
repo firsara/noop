@@ -334,6 +334,18 @@ define(['../../config', '../API'], function(config, API){
       }
     }
 
+    if (config.debug) {
+      console.log('request', options);
+
+      return $.ajax(ajaxOpts).done(function(body){
+        console.log('response', body);
+
+        if (options.success) {
+          options.success.apply(null, arguments);
+        }
+      }).fail(options.error);
+    }
+
     return $.ajax(ajaxOpts).done(options.success).fail(options.error);
   };
 
