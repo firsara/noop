@@ -136,6 +136,10 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       // get directory out of local path
       var directory = fileSystem.getFolder(options.local);
 
+      if (config.debug) {
+        console.log('download', JSON.stringify(options));
+      }
+
       // otherwise ensure local directory exists
       fileSystem.mkdir(directory, _0744, function(){
         // create a temporary file stream (move file to real path when finished correctly)
@@ -161,6 +165,10 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
         var success = function(entry) {
           fileSystem.rename(options.local + '_tmp.file', options.local, function(){
+            if (config.debug) {
+              console.log('downloaded');
+            }
+
             if (options.success) {
               options.success(options.local);
             }

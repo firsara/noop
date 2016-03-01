@@ -3,7 +3,7 @@
  * Fabian Irsara
  * Copyright 2015, Licensed GPL & MIT
  */
-define(['./base', '../API'], function(fileSystem, API){
+define(['./base', '../../config', '../API'], function(fileSystem, config, API){
   var _0744 = parseInt('0744', 8);
 
   return function(){
@@ -99,6 +99,10 @@ define(['./base', '../API'], function(fileSystem, API){
       // get directory out of local path
       var directory = fileSystem.getFolder(options.local);
 
+      if (config.debug) {
+        console.log('download', options);
+      }
+
       // otherwise ensure local directory exists
       fileSystem.mkdir(directory, _0744, function(){
         // create a temporary file stream (move file to real path when finished correctly)
@@ -156,6 +160,10 @@ define(['./base', '../API'], function(fileSystem, API){
                   options.error(err);
                 }
               } else {
+                if (config.debug) {
+                  console.log('downloaded');
+                }
+
                 // otherwise: finally call success
                 if (options.success) {
                   options.success(options.local);
@@ -214,8 +222,16 @@ define(['./base', '../API'], function(fileSystem, API){
 
       var success = null, r;
 
+      if (config.debug) {
+        console.log('request', requestOptions);
+      }
+
       if (options.success) {
         success = function(err, httpResponse, body){
+          if (config.debug) {
+            console.log('response', body);
+          }
+
           if (fileWasFound) {
             if (options.success) {
               options.success(body);
