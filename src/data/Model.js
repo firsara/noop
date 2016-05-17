@@ -531,6 +531,22 @@ define([
           items[i].dispatchEvent('pulled');
         }
 
+        checkItemsAfter(items, 0);
+      }
+    };
+
+    var checkItemsAfter = function(items, index){
+      var next = function(){
+        checkItemsAfter(items, index + 1);
+      };
+
+      if (items[index]) {
+        if (items[index].afterPull) {
+          items[index].afterPull(next);
+        } else {
+          next();
+        }
+      } else {
         done();
       }
     };
