@@ -64,11 +64,32 @@ define([
   };
 
   /**
+   * wheter all items already have an ID defined
+   * @method allLoaded
+   * @memberof data.Collection
+   * @instance
+   * @public
+   **/
+  p.allLoaded = function(){
+    var items = this.getItems();
+    var allHaveId = true;
+
+    for (var i = 0, _len = items.length; i < _len; i++) {
+      if (! items[i].id) {
+        allHaveId = false;
+        break;
+      }
+    }
+
+    return allHaveId;
+  };
+
+  /**
    * loops through collection items and calls callback for each of the items
    * @method each
    * @memberof data.Collection
    * @instance
-   * @protected
+   * @public
    * @param {Function} callback (item, index)
    **/
   p.each = function(callback){
@@ -186,6 +207,7 @@ define([
    * @protected
    **/
   p.getPushURL = function(){
+    if (this.allLoaded()) return this.getPullURL();
     return API.endpoint + this.model + 's';
   };
 

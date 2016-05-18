@@ -707,7 +707,7 @@ define([
     }
 
     // if the model was already in the model's store
-    if (this._cached || this.id) {
+    if (this._cached || this.id || (this instanceof Collection === true && this.allLoaded())) {
       // update model via PUT
       options.method = 'PUT';
     } else {
