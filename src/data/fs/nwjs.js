@@ -229,7 +229,12 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       if (options.success) {
         success = function(err, httpResponse, body){
           if (config.debug) {
-            console.log('response', body);
+            try {
+              var tmp = JSON.parse(body);
+              console.log('response', tmp);
+            } catch(parseErr) {
+              console.log('response', body);
+            }
           }
 
           if (fileWasFound) {
