@@ -194,6 +194,8 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
     };
 
     fileSystem.request = function(options, callback, errorCallback){
+      var didThrowError = false;
+
       if (typeof options === 'string') {
         options = {url: options};
       }
@@ -241,6 +243,13 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
             if (options.success) {
               options.success(body);
             }
+          } else {
+            if (options.error) {
+              if (! didThrowError) {
+                didThrowError = true;
+                options.error(body);
+              }
+            }
           }
         };
 
@@ -261,7 +270,12 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
       });
 
       if (options.error) {
-        r.on('error', options.error);
+        r.on('error', function(response){
+          if (! didThrowError) {
+            didThrowError = true;
+            options.error();
+          }
+        });
       }
 
       return r;
