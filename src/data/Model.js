@@ -841,6 +841,8 @@ define([
    * @param {function} errorCallback
    **/
   p.download = function(callback, errorCallback){
+    var _this = this;
+
     var run = function(options){
       // correct local file path first
       options.local = fs.correctLocalFilePath(options.local);
@@ -849,7 +851,7 @@ define([
 
       options.error = function(err){
         if (Model.errorHandler) {
-          Model.errorHandler(err, options.overwrite);
+          Model.errorHandler(err, _this);
         }
 
         if (options.overwrite === 'try') {

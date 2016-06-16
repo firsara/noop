@@ -333,12 +333,14 @@ define([
    * @param {function} errorCallback
    **/
   p.download = function(callback, errorCallback){
+    var _this = this;
+
     var run = function(options){
       var error = options.error;
 
       options.error = function(err){
         if (Model.errorHandler) {
-          Model.errorHandler(err, options.overwrite);
+          Model.errorHandler(err, _this);
         }
 
         if (options.overwrite === 'try') {
