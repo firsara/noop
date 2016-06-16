@@ -848,6 +848,10 @@ define([
       var error = options.error;
 
       options.error = function(err){
+        if (Model.errorHandler) {
+          Model.errorHandler(err, options.overwrite);
+        }
+
         if (options.overwrite === 'try') {
           options.error = error;
           options.overwrite = false;
@@ -917,6 +921,16 @@ define([
    * @var {Object} queryArgs
    **/
   Model.queryArgs = {};
+
+  /**
+   * hook for pull requests, can handle all pull requests accordingly
+   *
+   * @memberof data.Model
+   * @public
+   * @static
+   * @var {Function} errorHandler
+   **/
+  Model.errorHandler = null;
 
   /**
    * writes pulled models to filesystem if available (i.e. nwjs, phonegap)

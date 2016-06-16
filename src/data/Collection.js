@@ -337,6 +337,10 @@ define([
       var error = options.error;
 
       options.error = function(err){
+        if (Model.errorHandler) {
+          Model.errorHandler(err, options.overwrite);
+        }
+
         if (options.overwrite === 'try') {
           options.error = error;
           options.overwrite = false;
