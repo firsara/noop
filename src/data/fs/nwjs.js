@@ -348,7 +348,11 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
               // If we cleaned out all the files, continue
               if (count >= wait || err) {
-                fs.rmdir(path, callback);
+                fs.rmdir(path, function(err2){
+                  if (callback) {
+                    callback();
+                  }
+                });
               }
             };
 
