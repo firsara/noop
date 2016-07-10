@@ -423,7 +423,7 @@ define([
         this[property] = value;
 
         if (this.autoPaint) {
-          _opacityContainers[this._containerID] = this;
+          this.el.style.opacity = this[property];
         }
       }
     };
@@ -460,19 +460,11 @@ define([
 
   // all stored containers that need to be repainted on each frame
   var _paintContainers = {};
-  var _opacityContainers = {};
 
   var _paintAll = function(){
-    var k;
-
-    for (k in _paintContainers) {
+    for (var k in _paintContainers) {
       _paintContainers[k].paint();
       delete _paintContainers[k];
-    }
-
-    for (k in _opacityContainers) {
-      _opacityContainers[k].paintOpacity();
-      delete _opacityContainers[k];
     }
   };
 
@@ -931,18 +923,6 @@ define([
   };
 
   /**
-   * paints current opacity on container
-   *
-   * @method paintOpacity
-   * @memberof dom.Container
-   * @public
-   * @instance
-   **/
-  p.paintOpacity = function(){
-    this.el.style.opacity = this.opacity;
-  };
-
-  /**
    * dispatches event on target and all container children
    *
    * @method bubbleDispatch
@@ -1224,7 +1204,6 @@ define([
     for (k in _garbageCollectionContainers) {
       instance = _garbageCollectionContainers[k];
       delete _paintContainers[instance._containerID];
-      delete _opacityContainers[instance._containerID];
 
       if (instance._$el) {
         instance._$el.find('*').addBack().unbind().off();
