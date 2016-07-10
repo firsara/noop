@@ -423,7 +423,7 @@ define([
         this[property] = value;
 
         if (this.autoPaint) {
-          _paintContainers[this._containerID] = this;
+          this.el.style.opacity = this[property];
         }
       }
     };
