@@ -8,13 +8,16 @@ define(['./base', '../../config', '../API'], function(fileSystem, config, API){
 
   return function(){
     if (!! window.nodeRequire) {
-      var nw = nodeRequire('nw.gui');
       var fs = nodeRequire('fs');
       var request = nodeRequire('request');
       var mkdirp = nodeRequire('mkdirp');
       var checksum = nodeRequire('checksum');
 
-      fileSystem.dataPath = nw.App.dataPath + '/' + fileSystem.dataSubFolder + '/';
+      if (typeof nw !== 'undefined') {
+        fileSystem.dataPath = nw.App.dataPath + '/' + fileSystem.dataSubFolder + '/';
+      } else {
+        fileSystem.dataPath = nodeRequire('electron').remote.app.getPath('userData') + '/' + fileSystem.dataSubFolder + '/';
+      }
     }
 
     fileSystem.writeFile = function(filename, data, callback, errorCallback){
