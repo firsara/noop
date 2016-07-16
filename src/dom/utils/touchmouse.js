@@ -401,27 +401,31 @@ define(['../../config', '../../utils/dispatch'], function(config, dispatch){
     idleTimeout = setTimeout(dispatchIdle, 15000);
   };
 
-  // check if supports touch events
-  if (config.isTouch || config.trackTouch) {
-    // if it does: listen to appropriate touch events in whole window
-    window.addEventListener('touchstart', onTouchEvent);
-    window.addEventListener('touchmove', onTouchEvent);
-    window.addEventListener('touchend', onTouchEvent);
-    window.addEventListener('touchcancel', onTouchEvent);
-  }
-
-  if (! config.isTouch || config.trackMouse) {
-    // otherwise check mouse events and convert them
-    window.addEventListener('mousedown', onMouseEvent);
-    window.addEventListener('mouseup', onMouseEvent);
-    window.addEventListener('mousemove', onMouseEvent);
-  }
-
-  // TODO: is buggy, maybe leave mouse events as they are and only check for tap events as they are used internally and not by libraries?
-  // check for click events (if moved while trying to click: do not dispatch click)
-  //document.addEventListener('click', onClickEvent, true);
-
   _resetIdle();
+
+  touchmouse.init = function(target){
+    // check if supports touch events
+    if (config.isTouch || config.trackTouch) {
+      // if it does: listen to appropriate touch events in whole window
+      target.addEventListener('touchstart', onTouchEvent);
+      target.addEventListener('touchmove', onTouchEvent);
+      target.addEventListener('touchend', onTouchEvent);
+      target.addEventListener('touchcancel', onTouchEvent);
+    }
+
+    if (! config.isTouch || config.trackMouse) {
+      // otherwise check mouse events and convert them
+      target.addEventListener('mousedown', onMouseEvent);
+      target.addEventListener('mouseup', onMouseEvent);
+      target.addEventListener('mousemove', onMouseEvent);
+    }
+
+    // TODO: is buggy, maybe leave mouse events as they are and only check for tap events as they are used internally and not by libraries?
+    // check for click events (if moved while trying to click: do not dispatch click)
+    //document.addEventListener('click', onClickEvent, true);
+  };
+
+  touchmouse.init(window);
 
   return touchmouse;
 
