@@ -5,7 +5,9 @@
  */
 define([
   '../sys',
-  './Moveable'
+  './Moveable',
+  'jquery',
+  'jquery-mousewheel'
 ],
 function(
   sys,
@@ -184,7 +186,7 @@ function(
    **/
   var _render = function(){
     if (isFirefox) {
-      this.el.addEventListener('wheel', this.__scrollableEvents.wheel);
+      this.$el.on('mousewheel', this.__scrollableEvents.wheel);
     } else {
       this.el.addEventListener('mousewheel', this.__scrollableEvents.scroll);
     }
@@ -206,7 +208,7 @@ function(
    **/
   var _dispose = function(){
     if (isFirefox) {
-      this.el.removeEventListener('wheel', this.__scrollableEvents.wheel);
+      this.$el.off('mousewheel', this.__scrollableEvents.wheel);
     } else {
       this.el.removeEventListener('mousewheel', this.__scrollableEvents.scroll);
     }
@@ -287,31 +289,7 @@ function(
   var _wheel = function(event){
     if (this.lock) return;
     event.stopPropagation();
-
-    var delta = {x: parseFloat(event.deltaX.toString()), y: parseFloat(event.deltaY.toString())};
-
-    if (Math.round(delta.x * 100) / 100 === 0) delta.x = 0;
-    if (Math.round(delta.y * 100) / 100 === 0) delta.y = 0;
-
-    var options = {x: 0, y: 0};
-    var sign = {x: delta.x > 0 ? 1 : -1, y: delta.y > 0 ? 1 : -1};
-    var fixed = {x: delta.x < 0 ? delta.x * -1 : delta.x, y: delta.y < 0 ? delta.y * -1 : delta.y};
-
-    if (Math.abs(Math.round(delta.x)) === fixed.x && fixed.x > 0) {
-      options.x = delta.x;
-      options.direct = true;
-    } else {
-      options.x = Math.min(300, fixed.x * 30) * sign.x;
-    }
-
-    if (Math.abs(Math.round(delta.y)) === fixed.y && fixed.y > 0) {
-      options.y = delta.y;
-      options.direct = true;
-    } else {
-      options.y = Math.min(300, fixed.y * 30) * sign.y;
-    }
-
-    _doScroll.call(this, options);
+    _doScroll.call(this, {x: event.deltaX * event.deltaFactor * -1, y: event.deltaY * event.deltaFactor * -1});
   };
 
   /**

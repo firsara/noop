@@ -24,7 +24,8 @@ require.config({
     requirejs: '../../bower_components/requirejs/require',
     hbs: '../../bower_components/requirejs-hbs/hbs',
     'hbs-builder': '../../bower_components/requirejs-hbs/hbs-builder',
-    text: '../../bower_components/text/text'
+    text: '../../bower_components/text/text',
+    'jquery-mousewheel': '../../bower_components/jquery-mousewheel/jquery.mousewheel'
   },
   packages: [
 
