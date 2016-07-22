@@ -36,16 +36,28 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
     this._update = _update.bind(this);
     this._updateStats = _updateStats.bind(this);
     this._calc = _calc.bind(this);
+    this._raf = null;
 
-    // if stats.js is included run a different function updater
-    if (window.stats) {
-      this._updateStats();
-    } else {
-      this._update();
-    }
+    _init.call(this);
   }
 
   var p = sys.extend(FPSHandler, EventDispatcher);
+
+  p.addEventListener = function(type, listener){
+    EventDispatcher.prototype.addEventListener.call(this, type, listener);
+    _init.call(this);
+  };
+
+  p.removeEventListener = function(type, listener){
+    EventDispatcher.prototype.removeEventListener.call(this, type, listener);
+    _init.call(this);
+
+    if (this.hasEventListener('tick')) {
+      _bind.call(this);
+    } else {
+      _unbind.call(this);
+    }
+  };
 
   /**
    * delegate application rendering
@@ -57,7 +69,7 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
    * @private
    **/
   var _updateStats = function(){
-    requestAnimationFrame(this._updateStats);
+    this._raf = requestAnimationFrame(this._updateStats);
 
     window.stats.begin();
     this.dispatchEvent('tick');
@@ -76,7 +88,7 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
    * @private
    **/
   var _update = function(){
-    requestAnimationFrame(this._update);
+    this._raf = requestAnimationFrame(this._update);
 
     this.dispatchEvent('tick');
     if (this._ticked++ > 240) this._calc();
@@ -98,6 +110,32 @@ define(['../sys', './EventDispatcher'], function(sys, EventDispatcher) {
     this.measured = Math.round(this._ticked * 1000 / offset);
     this._startTime = now;
     this._ticked = 0;
+  };
+
+  var _bind = function(){
+    if (! this._raf) {
+      if (window.stats) {
+        // if stats.js is included run a different function updater
+        this._updateStats();
+      } else {
+        this._update();
+      }
+    }
+  };
+
+  var _unbind = function(){
+    if (this._raf) {
+      cancelAnimationFrame(this._raf);
+      this._raf = null;
+    }
+  };
+
+  var _init = function(){
+    if (this.hasEventListener('tick') || window.stats) {
+      _bind.call(this);
+    } else {
+      _unbind.call(this);
+    }
   };
 
   return new FPSHandler();

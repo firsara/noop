@@ -268,6 +268,9 @@ define([
     this._gotParent = false;
     this._gotStage = false;
 
+    this._isPainting = false;
+    this._paint = this.__bind(this.paint);
+
 
     // CONFIGURATION PROPERTIES
     // ------------------------
@@ -400,7 +403,16 @@ define([
         this['_c' + realProperty] = Container.correctUnit(value);
 
         if (this.autoPaint) {
-          _paintContainers[this._containerID] = this;
+          this.paint();
+
+          /*
+          if (! this._isPainting) {
+            this._isPainting = true;
+            requestAnimationFrame(this._paint);
+          }
+          */
+
+          //_paintContainers[this._containerID] = this;
         }
       }
     };
@@ -411,7 +423,16 @@ define([
         this._crotationZ = this.rotation + this.rotationZ;
 
         if (this.autoPaint) {
-          _paintContainers[this._containerID] = this;
+          this.paint();
+
+          /*
+          if (! this._isPainting) {
+            this._isPainting = true;
+            requestAnimationFrame(this._paint);
+          }
+          */
+
+          //_paintContainers[this._containerID] = this;
         }
       }
     };
@@ -433,7 +454,16 @@ define([
         this[property] = value;
 
         if (this.autoPaint) {
-          _paintContainers[this._containerID] = this;
+          this.paint();
+
+          /*
+          if (! this._isPainting) {
+            this._isPainting = true;
+            requestAnimationFrame(this._paint);
+          }
+          */
+
+          //_paintContainers[this._containerID] = this;
         }
       }
     };
@@ -468,7 +498,7 @@ define([
     }
   };
 
-  fps.addEventListener('tick', _paintAll);
+  //fps.addEventListener('tick', _paintAll);
 
   // mix in context so we can bind functions accordingly
   Context.mixin(Container);
@@ -920,6 +950,8 @@ define([
 
     this.el.style[css3.transform] = _containerTransform;
     this.el.style.opacity = this.opacity;
+
+    this._isPainting = false;
   };
 
   /**
